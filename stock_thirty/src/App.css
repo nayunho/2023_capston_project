@@ -1,0 +1,237 @@
+.App {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.wrap {
+  width: 100%;
+  height: 100vh;
+}
+a{
+  text-decoration: none;
+  color:black;
+}
+li{
+  list-style: none;
+}
+/*header*/
+#header {
+  width: 100%;
+  height: 10%;
+  display: flex;
+}
+
+#header .logo {
+  background-color: #f8b7b7;
+  width: 20%;
+  height: 100%;
+}
+
+#header .nav {
+  background-color: #e3dddd;
+  width: 80%;
+  height: 100%;
+}
+.nav>ul{
+  display: flex;
+  justify-content: right;
+}
+.nav>ul>li{
+  margin-top:41px;
+  background-color: rgba(255, 0, 0, 0.297);
+}
+.nav>ul>li>a{
+  font-size: 25px;
+display: block;
+padding:10px 20px;
+}
+.nav>ul>li>a:hover{
+  background-color: rgba(255, 0, 0, 1);
+  font-size: 25px;
+display: block;
+padding:10px 20px;
+}
+.nav>ul>li>ul{
+}
+.nav>ul>li>ul>li{
+}
+.nav>ul>li>ul>li>a{
+}
+/*contents*/
+#contents {
+  background-color: #da1414;
+  width: 100%;
+  z-index: 0;
+}
+
+/*footer*/
+#footer {
+  display: flex;
+  height: 5%;
+}
+
+#footer .footer1 {
+  background-color: #f8b7b7;
+  width: 20%;
+  height: 100%;
+}
+
+#footer .footer2 {
+  background-color: #e3dddd;
+  width: 80%;
+  height: 100%;
+}
+
+.wrap {
+  position: relative;
+}
+
+#filter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 25%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.5s ease-in-out;
+  display: flex;
+}
+
+#filter>.filter {
+ 
+  width: 90%;
+  height: 100%;
+  background-color: rgb(223, 220, 220);
+  overflow: hidden;
+  transition: transform 0.5s ease-in-out;
+}
+
+.filter_hidden {
+  transform: translateX(-90%);
+}
+
+.filter-btn {
+  width: 10%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+}
+.filter1-btn {
+  border: none;
+  position: absolute;
+  top: 45%;
+  left:27%;
+  padding: 20px 10px;
+  transform: translate(-45%, 3%);
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+  
+}
+
+.filter1-btn:hover {
+  background-color: rgba(190, 183, 183, 1);
+}
+
+/*join.js*/
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.joinWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1700px;
+  height: 900px;
+  background-color: rgb(216, 208, 208);
+  display: flex;
+  border: 3px solid black;
+}
+
+.login {
+  width: 35%;
+  background-color: #efeaea;
+  padding: 100px;
+  box-sizing: border-box;
+}
+
+p {
+  margin-top: 80px;
+  font-size: 40px;
+  margin-bottom: 30px;
+}
+
+#textFeild {
+  padding-bottom: 30px;
+}
+
+.btn {
+  width: 100px;
+  height: 50px;
+}
+
+.btn span {
+  margin-top: 25px;
+}
+
+.imgarea {
+  width: 65%;
+  background-image: url("./img/sign_up.png");
+  opacity: 0.7;
+  position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size:  cover;
+}
+
+.imgarea>.text {
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  box-sizing: border-box;
+}
+
+@media (prefers-reduion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
