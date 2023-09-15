@@ -3,7 +3,9 @@ import './App.css';
 import { useEffect, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Join from "./pages/Sign_Up.js"
+import Login from "./pages/login.js"
 import { useNavigate } from "react-router-dom";
+import Loding from './pages/Loding';
 function App() {
   const mapContainer = useRef(null);
   useEffect(() => {
@@ -74,13 +76,8 @@ function App() {
                         </a>
                       </li>
                       <li>
-                        <a href="">
+                        <a href="/login">
                           로그인
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/sign_up">
-                          회원가입
                         </a>
                       </li>
                       <li>
@@ -118,6 +115,13 @@ function App() {
           <div><Join />
           </div>
         } />
+        <Route path='/login' element={
+          <div><Login />
+          </div>
+        }/>
+        <Route path="/login/oauth2/loading" element={<div>
+          <Loding/>
+        </div>}/>
         <Route path='*' element={<div>없는 페이지</div>} />
 
       </Routes>

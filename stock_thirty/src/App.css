@@ -1,7 +1,9 @@
+
 .App {
   text-align: center;
   width: 100%;
   height: 100%;
+  font-family: 'Cafe24Supermagic-Bold-v1.0';
 }
 
 .App-logo {
@@ -13,13 +15,16 @@
   width: 100%;
   height: 100vh;
 }
-a{
+
+a {
   text-decoration: none;
-  color:black;
+  color: black;
 }
-li{
+
+li {
   list-style: none;
 }
+
 /*header*/
 #header {
   width: 100%;
@@ -38,31 +43,36 @@ li{
   width: 80%;
   height: 100%;
 }
-.nav>ul{
+
+.nav>ul {
   display: flex;
   justify-content: right;
 }
-.nav>ul>li{
-  margin-top:41px;
+
+.nav>ul>li {
+  margin-top: 41px;
   background-color: rgba(255, 0, 0, 0.297);
 }
-.nav>ul>li>a{
+
+.nav>ul>li>a {
   font-size: 25px;
-display: block;
-padding:10px 20px;
+  display: block;
+  padding: 10px 20px;
 }
-.nav>ul>li>a:hover{
+
+.nav>ul>li>a:hover {
   background-color: rgba(255, 0, 0, 1);
   font-size: 25px;
-display: block;
-padding:10px 20px;
+  display: block;
+  padding: 10px 20px;
 }
-.nav>ul>li>ul{
-}
-.nav>ul>li>ul>li{
-}
-.nav>ul>li>ul>li>a{
-}
+
+.nav>ul>li>ul {}
+
+.nav>ul>li>ul>li {}
+
+.nav>ul>li>ul>li>a {}
+
 /*contents*/
 #contents {
   background-color: #da1414;
@@ -104,7 +114,7 @@ padding:10px 20px;
 }
 
 #filter>.filter {
- 
+
   width: 90%;
   height: 100%;
   background-color: rgb(223, 220, 220);
@@ -123,16 +133,17 @@ padding:10px 20px;
   overflow: hidden;
   transition: transform 0.3s ease-in-out;
 }
+
 .filter1-btn {
   border: none;
   position: absolute;
   top: 45%;
-  left:27%;
+  left: 27%;
   padding: 20px 10px;
   transform: translate(-45%, 3%);
   overflow: hidden;
   transition: transform 0.3s ease-in-out;
-  
+
 }
 
 .filter1-btn:hover {
@@ -140,7 +151,7 @@ padding:10px 20px;
 }
 
 /*join.js*/
-.wrap {
+.join_wrap {
   position: relative;
   width: 100%;
   height: 100vh;
@@ -158,43 +169,48 @@ padding:10px 20px;
   border: 3px solid black;
 }
 
-.login {
+.join {
   width: 35%;
   background-color: #efeaea;
-  padding: 100px;
+  padding: 40px;
   box-sizing: border-box;
 }
 
-p {
-  margin-top: 80px;
+.join>p {
   font-size: 40px;
   margin-bottom: 30px;
 }
 
-#textFeild {
+.join>#textFeild {
   padding-bottom: 30px;
 }
 
-.btn {
-  width: 100px;
+.join>.btn {
+  margin-top: 15px;
+  width: 200px;
   height: 50px;
+  background-color: #48484888;
 }
 
-.btn span {
-  margin-top: 25px;
+.join>.btn> span {
+  display: block;
+  width:100%;
+  margin-top: 24px;
 }
-
-.imgarea {
+.join>.btn:hover {
+  background-color: #969191fc;
+}
+.joinWrap>.imgarea {
   width: 65%;
   background-image: url("./img/sign_up.png");
   opacity: 0.7;
   position: relative;
   background-position: center;
   background-repeat: no-repeat;
-  background-size:  cover;
+  background-size: cover;
 }
 
-.imgarea>.text {
+.joinWrap>.imgarea>.text {
   padding: 20px 40px;
   background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
@@ -203,6 +219,120 @@ p {
   transform: translate(-50%, -50%);
   color: white;
   box-sizing: border-box;
+}
+.search_adress{
+  width:50px; 
+  height:60px; 
+  background-color:#efeaea;
+  border-radius:5px;
+  opacity:0.8; 
+  cursor:pointer;
+}
+.part{
+  margin:0px 5px 10px 5px;
+  cursor:pointer;
+  border-radius:5px;
+  opacity:0.8; 
+  background-color:#efeaea;
+  width:110px; 
+  height:50px; 
+}
+.part:focus{
+  background-color:#969191;
+  color:white;
+}
+/* login */
+.wrap {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.loginWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 1700px;
+  height: 900px;
+  background-color: rgb(216, 208, 208);
+  display: flex;
+  border: 3px solid black;
+}
+.loginWrap>.imgarea{
+  width: 60%;
+  background-image: url("./img/sign_up.png");
+  opacity: 0.7;
+  position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.loginWrap>.imgarea>.text {
+  padding: 20px 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  box-sizing: border-box;
+}
+.login {
+  width: 40%;
+  background-color: #efeaea;
+  padding: 100px;
+  box-sizing: border-box;
+}
+
+.login>p {
+  margin-top: 80px;
+  font-size: 40px;
+  margin-bottom: 30px;
+}
+
+.login>#textFeild {
+  padding-bottom: 30px;
+}
+
+.login>.inventory_btn {
+  background-color: #8282828d;
+  width: 310px;
+  height: 20px;
+  margin-left: 65px;
+  padding: 13px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+.login>.inventory_btn>a {
+  color: black;
+  width: 100%;
+  display: block;
+}
+
+.login>.inventory_btn>a:hover {
+  color: white;
+}
+
+.login>.inventory_btn:hover {
+  background-color: #828282;
+}
+
+.serch_id_pw {
+  float: right;
+  margin-right: 20px;
+  padding: 10px 20px;
+  opacity: 0.8;
+  font-size: 17px;
+}
+
+.serch_id_pw a:hover {
+  text-decoration: underline;
+}
+
+.login .social_btns {
+  line-height: 2.5;
 }
 
 @media (prefers-reduion: no-preference) {
@@ -234,4 +364,31 @@ p {
   to {
     transform: rotate(360deg);
   }
+}
+@font-face {
+  font-family: 'TTWanjudaedunsancheB';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/TTWanjudaedunsancheB.woff2') format('woff2');
+  font-style: normal;
+}
+@font-face {
+  font-family: 'KCCMurukmuruk';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/KCCMurukmuruk.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GoryeongStrawberry';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/GoryeongStrawberry.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face{
+  font-family:'bitbit';
+  src:url('//cdn.df.nexon.com/img/common/font/DNFBitBit-Regular.woff'),url('//cdn.df.nexon.com/img/common/font/DNFBitBit-Regular.woff2') ;
+}
+@font-face {
+  font-family: 'Cafe24Supermagic-Bold-v1.0';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/Cafe24Supermagic-Bold-v1.0.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
 }
