@@ -28,18 +28,30 @@ li {
 /*header*/
 #header {
   width: 100%;
-  height: 10%;
+  height: 63.5px;
   display: flex;
+  transition: opacity 0.2s ease-in-out;
 }
-
+.header_hidden {
+  opacity: 0.7;
+}
 #header .logo {
-  background-color: #f8b7b7;
+  background-color: white;
   width: 20%;
   height: 100%;
+  
 }
-
+#header .logo>a {
+  display: block;
+  padding:10px 20px;
+  font-size: 30px;
+  margin-top: 5px;
+}
+#header .logo>a:hover{
+  text-decoration: underline;
+}
 #header .nav {
-  background-color: #e3dddd;
+  background-color:white;
   width: 80%;
   height: 100%;
 }
@@ -47,24 +59,24 @@ li {
 .nav>ul {
   display: flex;
   justify-content: right;
+ 
 }
 
 .nav>ul>li {
-  margin-top: 41px;
-  background-color: rgba(255, 0, 0, 0.297);
+  background-color: white;
 }
 
 .nav>ul>li>a {
+  opacity: 0.4;
   font-size: 25px;
   display: block;
-  padding: 10px 20px;
-}
+  padding: 2.5px 40px;
+}.nav>ul>li>a>p{
+  display: inline-block;
 
-.nav>ul>li>a:hover {
-  background-color: rgba(255, 0, 0, 1);
-  font-size: 25px;
-  display: block;
-  padding: 10px 20px;
+}
+.nav>ul>li>a:hover{
+  opacity: 1;
 }
 
 .nav>ul>li>ul {}
@@ -75,25 +87,38 @@ li {
 
 /*contents*/
 #contents {
-  background-color: #da1414;
   width: 100%;
-  z-index: 0;
+  border-top: 1px solid black ;
+  transition: opacity 0.2s ease-in-out;
 }
-
+.contents_hidden {
+  opacity: 0.7;
+}
 /*footer*/
 #footer {
   display: flex;
-  height: 5%;
+  height: 61px;
+  transition: opacity 0.2s ease-in-out;
 }
-
+.footer_hidden {
+  opacity: 0.7;
+}
 #footer .footer1 {
-  background-color: #f8b7b7;
+  background-color: rgba(228, 226, 226, 0.819);
   width: 20%;
   height: 100%;
 }
-
+#footer .footer1>a {
+  display: block;
+  padding:10px 20px;
+  font-size: 30px;
+  margin-top: 5px;
+}
+#footer .footer1>a:hover {
+  text-decoration: underline;
+}
 #footer .footer2 {
-  background-color: #e3dddd;
+  background-color:  rgba(228, 226, 226, 0.819);
   width: 80%;
   height: 100%;
 }
@@ -111,6 +136,7 @@ li {
   overflow: hidden;
   transition: transform 0.5s ease-in-out;
   display: flex;
+  z-index: 100;
 }
 
 #filter>.filter {
@@ -124,6 +150,7 @@ li {
 
 .filter_hidden {
   transform: translateX(-90%);
+  
 }
 
 .filter-btn {
@@ -133,7 +160,9 @@ li {
   overflow: hidden;
   transition: transform 0.3s ease-in-out;
 }
-
+#filter-btn_hidden {
+  opacity: 0.7;
+}
 .filter1-btn {
   border: none;
   position: absolute;
@@ -334,7 +363,218 @@ li {
 .login .social_btns {
   line-height: 2.5;
 }
+/*home_user_popup*/
+.App{
+  position: relative;
+}
+.popup_view{
+  width:700px;
+  height: 650px;
+  padding:20px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  box-sizing: border-box;
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  z-index: 1000;
+  border:3px solid rgba(59, 59, 59, 0.3);
+}
+.popup_view_none{
+  display: none;
+  width:700px;
+  height: 550px;
+  padding:20px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  box-sizing: border-box;
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  border:3px solid rgba(59, 59, 59, 0.3);
+}
 
+.popup_btn{
+  position: absolute;
+  bottom:10px;
+  left:44%;
+  transform: translate(-10px,-50%);
+  background-color: rgb(218, 216, 216);
+  box-sizing: border-box;
+  opacity: 1;
+  border-radius: 10px;
+  border: 2px solid rgb(158, 154, 154);
+}
+.store_registration{
+  position: absolute;
+  bottom:10px;
+  left:60%;
+  transform: translate(-10px,-50%);
+  background-color: rgb(218, 216, 216);
+  box-sizing: border-box;
+  opacity: 1;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid rgb(158, 154, 154);
+}
+.popup_btn>a{
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding:10px 20px;
+  box-sizing: border-box;
+}
+.popup_btn>a:hover{
+  color:white;
+  padding:10px 20px;
+  box-sizing: border-box;
+}
+.store_registration:hover{
+  opacity: 0.9;
+  cursor: pointer;
+  background-color: rgb(169, 168, 168);
+}
+.store_registration>a{
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding:10px 20px;
+  box-sizing: border-box;
+}
+.store_registration>a:hover{
+  color:white;
+}
+.popup_btn:hover{
+  opacity: 0.9;
+  cursor: pointer;
+  background-color: rgb(169, 168, 168);
+}
+#popsec1{
+  border-top: 1px solid gainsboro;
+  font-size: x-large;
+  text-align: center;
+  height: 55px;
+}
+#popsec2{
+  border-top: 1px solid gainsboro;
+  font-size: x-large;
+  text-align: center;
+  height: 55px;
+}
+#popsec3{
+  border-top: 1px solid gainsboro;
+  font-size: x-large;
+  text-align: center;
+  height: 55px;
+}
+#popsec1:hover{
+  background-color: gainsboro;
+}
+#popsec2:hover{
+  background-color: gainsboro;
+}
+#popsec3:hover{
+  background-color: gainsboro;
+}
+.modal-content{
+  position: relative;
+}
+.close-button{
+  position: absolute;
+    top: -477.8px;
+    left: 877.8px;
+    transform: translate(-50%, -50%);
+    z-Index: 1000;
+    background-color: white;
+    cursor: pointer;
+    color:rgb(118, 116, 116);
+    box-sizing: border-box;
+}
+.close-button>span{
+padding:15.5px 15px 15.5px 15px;
+box-sizing: border-box;
+border:1px solid rgb(158, 154, 154);
+}
+.close-button>span:hover{
+    color: black
+}
+.App{
+  position: relative;
+}
+/*owner*/
+.ownerWrap{
+  width: 100%;
+  height: 100%;
+}
+.ownerWrap>.banner{
+  width: 100%;
+  height: 550px;
+  background-color: red;
+}
+.ownerWrap>.banner_hidden {
+  opacity: 0.7;
+}
+.ownerWrap>.contents{
+  width: 60%;
+  height: 570px;
+  margin: 0 auto;
+}
+.ownerWrap>.contents_area{
+  width: 60%;
+  height: 900px;
+  margin: 0 auto;
+}
+.owner_table_none{
+  display: none;
+}
+.ownerWrap table{
+  margin:0 auto;
+  border-collapse: collapse;
+}
+.ownerWrap .select_text{
+  color:#6e6e6e
+}
+.ownerWrap .select_text_show{
+  color:black;
+}
+#owner_popup{
+  margin-bottom: 100px;
+}
+.owner_store_btn{
+  background-color: rgb(218, 216, 216);
+  border-radius: 10px;
+}
+.owner_store_btn>span{
+  color:rgb(81, 80, 80);
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  font-family: 'Cafe24Supermagic-Bold-v1.0';
+  padding-bottom: 5px;
+}
+.owner_store_btn>span:hover{
+  color:black
+}
+.search{
+  color:rgb(81, 80, 80);
+  background-color: rgb(218, 216, 216);
+  border-radius: 10px;
+}
+.search>span{
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  font-family: 'Cafe24Supermagic-Bold-v1.0';
+}
+.search>span:hover{
+  color:black
+}
 @media (prefers-reduion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
