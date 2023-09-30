@@ -19,13 +19,13 @@ function Join() {
         })
 
 
-    const [id, setId] = useState("2");
+    const [id, setId] = useState("");
     const [pw, setpw] = useState("");
     const [name, setName] = useState("");
     const [phone, setphone] = useState("");
     const [check_pw, setCehck_pw] = useState("");
     const [role, setrole] = useState("");
-    const [temp, SetTemp] = useState(true);
+    var [temp, SetTemp] = useState(true);
     const hasNotSameError = pwEntered =>
         pw != check_pw ? true : false;
 
@@ -47,8 +47,8 @@ function Join() {
     return (
         <div className="join_wrap" style={{ backgroundColor: "rgb(209, 209, 214)" }}>
 
-            <div className="joinWrap">
-                <div className="join">
+            <div className="joinWrap" style={{borderRadius:"20px"}}>
+                <div className="join" style={{borderTopLeftRadius: "20px",borderBottomLeftRadius: "20px",boxShadow:"10px 0px 5px rgba(0, 0, 0, 0.3)"}}>
                     <p>Sign Up</p>
                     <div id="textFeild" style={{ marginLeft: "10px" }}>
                         <TextField
@@ -59,6 +59,7 @@ function Join() {
                                     </InputAdornment>
                                 ),
                             }}
+                            placeholder='아이디를 입력해주세요'
                             label="ID"
                             required
                             name="id"
@@ -87,6 +88,7 @@ function Join() {
                                         </InputAdornment>
                                     ),
                                 }}
+                                placeholder='비밀번호를 입력해주세요'
                                 label="pw"
                                 type="pw"
                                 required
@@ -113,6 +115,7 @@ function Join() {
                                         </InputAdornment>
                                     ),
                                 }}
+                                placeholder='비밀번호를 재입력해주세요'
                                 label="check_pw"
                                 type="pw"
                                 required
@@ -143,6 +146,7 @@ function Join() {
                                     </InputAdornment>
                                 ),
                             }}
+                            placeholder='이름을 입력해주세요'
                             label="Name"
                             required
                             name="name"
@@ -165,6 +169,7 @@ function Join() {
                                     </InputAdornment>
                                 ),
                             }}
+                            placeholder='전화 번호를 입력해주세요'
                             label="Phone phone"
                             required
                             name="pn"
@@ -192,7 +197,7 @@ function Join() {
                     <Button onClick={() => { SetTemp(!temp) }} id="textFeild" className="btn" type="submit" Width variant="contained"><span>sign up</span></Button>
 
                 </div>
-                <div className="imgarea">
+                <div className="imgarea" style={{borderTopRightRadius: "20px",borderBottomRightRadius: "20px"}}>
                     <div className="text">
                         <h2>제목</h2>
                         <span>환영합니다</span>
@@ -213,7 +218,8 @@ function Join() {
                 }
             }).then(() => {
                 window.alert("회원가입 완료")
-                // navigate("/login")
+                navigate("/login")
+                
             }).catch(function () {
                 console.log('실패함')
             })
