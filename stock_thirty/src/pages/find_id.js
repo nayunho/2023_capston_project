@@ -389,18 +389,6 @@ function Find_id() {
                                                     navigate("/find_pw");
                                                 })
                                             } else if (id_phone_result == false) {
-                                                window.alert("인증번호가 일치합니다.");
-                                                const width = 500; // Width of the popup window
-                                                const height = 500; // Height of the popup window
-                                                const left = window.innerWidth / 2 - width / 2; // Center the window horizontally
-                                                const top = window.innerHeight / 2 - height / 2; // Center the window vertically
-                                                // Open a new popup window with the desired URL and properties
-                                                window.open(
-                                                    "pw_result",
-                                                    "Popup",
-                                                    `width=${width},height=${height},left=500px,top=200px`
-                                                );
-                                                navigate("/login");
                                                 window.alert("아이디와 전화번호를 확인해 주세요");
                                             }
                                         }} style={{ cursor: "pointer" }}>확인</a>

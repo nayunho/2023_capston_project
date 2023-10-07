@@ -14,7 +14,9 @@ import StoreIcon from '@mui/icons-material/Store';
 import { TextField, Button, InputAdornment } from "@mui/material";
 import PermIdentityIcon from "@material-ui/icons/PermIdentity";
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import RoomIcon from '@mui/icons-material/Room';
+import SettingsIcon from '@mui/icons-material/Settings';
 function Home_user() {
   /*마이페이지*/
   const [Image, setImage] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
@@ -126,7 +128,7 @@ function Home_user() {
               <ul>
                 <li>
                   <a onClick={() => {
-                    setTemp(switchTemp);
+                    setTemp(!temp);
                   }} style={{ cursor: "pointer" }}>
                     <SearchIcon fontSize="large" />
                   </a>
@@ -167,22 +169,30 @@ function Home_user() {
             필터링
           </div>
           <div className="filter-btn">
-            <button className="filter1-btn" id={`${temp == true ? "" : "filter-btn_hidden"}`} onClick={(e) => {
-              setTemp(switchTemp);
+            <button className="filter1-btn" id={`${temp1 == true ? "" : "filter-btn_hidden"}`} onClick={(e) => {
+              setTemp(!temp);
             }}>
               {temp ? '▶️' : '◀️'}
             </button>
           </div>
         </div>
 
-        <div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} >
+        <div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} style={{ top: "50%" }}>
           <div>
             <Avatar
               src={Image}
               style={{ margin: '20px' }}
               size={150}
               onClick={() => { fileInput.current.click() }} />
-            <div><a href='/' style={{ color: "gray", textDecorationLine: 'underline' }}>회원 정보 수정</a></div>
+            <div><a style={{ color: "gray", textDecorationLine: 'underline', cursor: 'pointer' }}
+              onClick={() => {
+                if (userInfo.social == "normal") {//이부분 수정하기
+                  navigate("/edit_member_information");
+                } else {//이부분 수정하기
+                  navigate("/edit_member_information_social");
+                }
+
+              }}>회원 정보 수정</a></div>
             <div><h1 style={{ margin: "20px 0px 30px 30px" }}>{userInfo.nickname}
               <a onClick={() => {
                 setTemp2(false)
@@ -268,7 +278,7 @@ function Home_user() {
 
 
             }).catch(error => {//데이터를받아오는게 실패시 오류 메세지출력하고 다시 login페이지 호출
-              window.alert("다음 조건을 확인하세요")
+              window.alert(error.response.result);
 
             })
             setTemp2(!temp2);
@@ -285,8 +295,81 @@ function Home_user() {
           </div>
         </div>
         <div id={`${temp3 == true ? "fv_view_none" : "fv_view"}`}>
-          <div>
-            <span>즐겨찾기 목록</span>
+          <span className="fv_view_close" style={{fontSize:"25px", position:"absolute",top:"10px",right:"19px",cursor:"pointer",padding:"0px 10px",border:"1px solid rgba(0,0,0,0.3)",borderRadius:"10px"}} onClick={()=>{
+            setTemp3(!temp3);
+          }}>X</span>
+          <div className='fv_view_title'>
+            <span>내 장소</span><span style={{ fontSize: "18px", textAlign: "right" }}><RoomIcon fontSize="small" />0개</span>
+          </div>
+
+          <div className='fv_view_edit' style={{ border: "2px solid gray", marginLeft: "210px", color: "rgba(0,0,0,0.8)" }} >
+            <EditNoteIcon className="fv_view_EditNoteIcon" fontSize="large" style={{ marginLeft: "10px" }} /><span style={{ padding: "5px 0px", fontSize: "20px" }}> 편집</span>
+          </div>
+          <div className='divide'><span style={{ display: "none" }}>asd</span></div>
+          <div className='fv_store_content' style={{ position: "relative" }}>
+            <SettingsIcon fontSize="large" style={{ position: "absolute", top: "-20px", right: "0",cursor:"pointer" }} />
+            <div style={{display:"flex",marginTop:"20px"}}>
+              <div className='fv_store_name'>
+                가게이름
+              </div>
+              <div className='fv_store_category'>
+                가게 종류
+              </div>
+            </div>
+            <div className='fv_store_address'>
+              가게주소
+            </div>
+            <div className='fv_store_image'>
+              가게 이미지
+            </div>
+          </div>
+          <div className='fv_store_content' style={{ position: "relative" }}>
+            <div style={{display:"flex",marginTop:"20px"}}>
+              <div className='fv_store_name'>
+                가게이름
+              </div>
+              <div className='fv_store_category'>
+                가게 종류
+              </div>
+            </div>
+            <div className='fv_store_address'>
+              가게주소
+            </div>
+            <div className='fv_store_image'>
+              가게 이미지
+            </div>
+          </div>
+          <div className='fv_store_content' style={{ position: "relative" }}>
+            <div style={{display:"flex",marginTop:"20px"}}>
+              <div className='fv_store_name'>
+                가게이름
+              </div>
+              <div className='fv_store_category'>
+                가게 종류
+              </div>
+            </div>
+            <div className='fv_store_address'>
+              가게주소
+            </div>
+            <div className='fv_store_image'>
+              가게 이미지
+            </div>
+          </div>
+          <div className='fv_store_content' style={{ position: "relative" }}>
+            <div style={{display:"flex",marginTop:"20px"}}>
+              <div className='fv_store_name'>
+                가게이름
+              </div>
+              <div className='fv_store_category'>
+                가게 종류
+              </div>
+            </div>
+            <div className='fv_store_address'>
+              가게주소
+            </div>
+            <div className='fv_store_image'>
+              가게 이미지
+            </div>
           </div>
         </div>
       </div>

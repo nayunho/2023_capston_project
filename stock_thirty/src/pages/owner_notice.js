@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import './../App.css';
 import axios from "axios";
 import { useEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import Avatar from 'react-avatar';
 import StoreIcon from '@mui/icons-material/Store';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Outlet } from 'react-router-dom';
 function Owner_notice() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
@@ -16,6 +18,7 @@ function Owner_notice() {
     let [temp2, setTemp2] = useState(true);
     let [temp3, setTemp3] = useState(true);
     let [shopsData, setShopsData] = useState([]);
+    let navigate = useNavigate();
     function switchTemp() {
         setTemp(!temp);
     }
@@ -189,7 +192,7 @@ function Owner_notice() {
                             <li>
                                 <a onClick={() => {
                                     setTemp(switchTemp);
-                                }} style={{ cursor: "pointer" }} href='/owner'>
+                                }} style={{ cursor: "pointer" }} href='/owner_storelist'>
                                     가게등록
                                 </a>
                             </li>
@@ -238,7 +241,9 @@ function Owner_notice() {
                         {currentPosts.map(post => (
                             <tr className='notice_main_content' key={post.id} style={{ height: "40px", fontSize: "20px" }}>
                                 <td id="notice_row">{post.id}</td>
-                                <td id="notice_row" style={{ textAlign: "left" }}><span>{post.title}</span></td>
+                                <td id="notice_row" onClick= {()=>{
+                                    navigate(`/owner_noticeview/${post.id}`)
+                                }} style={{ textAlign: "left" }}><span>{post.title}</span></td>
                                 <td id="notice_row">{post.date}</td>
                             </tr>
                         ))}
@@ -274,7 +279,7 @@ function Owner_notice() {
                     borderRadius: "20px",
                     marginTop: "32px"
                 }}>
-                    <div className='footer1'><a href="/">재고 30</a></div>
+                    <div className='footer1'><a href="/"><Outlet></Outlet>재고 30</a></div>
                     <div className='footer2'>개인정보 및 보호정책 등</div>
                 </footer>
                 <div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} style={{top:"50%"}}>
@@ -284,7 +289,15 @@ function Owner_notice() {
                             style={{ margin: '20px' }}
                             size={150}
                             onClick={() => { fileInput.current.click() }} />
-                        <div><a href='/' style={{ color: "gray", textDecorationLine: 'underline' }}>회원 정보 수정</a></div>
+                        <div><a style={{ color: "gray", textDecorationLine: 'underline',cursor:'pointer' }}
+            onClick={() => {
+              if (userInfo.social == "normal") {//이부분 수정하기
+                navigate("/edit_member_information");
+              } else {//이부분 수정하기
+                navigate("/edit_member_information_social");
+              }
+              
+            }}>회원 정보 수정</a></div>
                         <div><h1 style={{ margin: "20px 0px 30px 30px" }}>{userInfo.nickname}
                             <a onClick={() => {
                                 setTemp2(false)

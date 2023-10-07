@@ -16,6 +16,10 @@ import Pw_result from './pages/pw_result.js';
 import Owner_main_page from './pages/owner_main_page.js';
 import Owner_addmenu from './pages/owner_addmenu.js';
 import Owner_notice from './pages/owner_notice.js';
+import Owner_noticeView from './pages/owner_noticeview.js';
+import Edit_member_information from "./pages/edit_member_information.js";
+import Edit_member_information_social from "./pages/edit_member_information_social.js";
+import Owner_storelist from "./pages/owner_storelist.js";
 function App() {
   const mapContainer = useRef(null);
 
@@ -168,8 +172,18 @@ function App() {
         <Route path="/owner_addmenu" element={<div>
           <Owner_addmenu />
         </div>} />
-        <Route path="/owner_notice" element={<div>
-          <Owner_notice />
+        <Route path="/owner_storelist" element={<div>
+          <Owner_storelist />
+        </div>} />
+        <Route>
+           <Route path="/owner_notice" element={<div><Owner_notice /></div>}></Route>
+           <Route path="/owner_noticeview/:id" element={<Owner_noticeView />} />
+        </Route>
+        <Route path="/edit_member_information" element={<div>
+          <Edit_member_information />
+        </div>} />
+        <Route path="/edit_member_information_social" element={<div>
+          <Edit_member_information_social />
         </div>} />
         <Route path='*' element={<div>없는 페이지</div>} />
 

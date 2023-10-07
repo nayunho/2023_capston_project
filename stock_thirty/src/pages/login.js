@@ -11,19 +11,20 @@ import { lazy, Suspense, createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login(props) {
+    const a="/logo192.png";
     let navigate = useNavigate();
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
     return (
         <div className='wrap' style={{ backgroundColor: "rgb(209, 209, 214)" }}>
-            <div className="loginWrap" style={{ borderRadius: "20px", boxShadow: "0px 0px 5px rgba(0, 0, 0, 1)" }} >
-                <div className="imgarea" style={{ borderTopLeftRadius: "20px", borderBottomLeftRadius: "20px" }}>
+            <div className="loginWrap"style={{borderRadius:"20px",boxShadow: "0px 0px 5px rgba(0, 0, 0, 1)" }} >
+                <div className="imgarea" style={{borderTopLeftRadius: "20px",borderBottomLeftRadius: "20px"}}>
                     <div className="text">
                         <h2>제목</h2>
                         <span>환영합니다</span>
                     </div>
                 </div>
-                <div className="login" style={{ borderTopRightRadius: "20px", borderBottomRightRadius: "20px", boxShadow: "-10px 0px 5px rgba(0, 0, 0, 0.3)" }} >
+                <div className="login"style={{borderTopRightRadius: "20px",borderBottomRightRadius: "20px",boxShadow:"-10px 0px 5px rgba(0, 0, 0, 0.3)"}} >
                     <p>Login</p>
                     <div id="textFeild">
                         <TextField
@@ -74,7 +75,7 @@ function Login(props) {
                                 setPw(e.target.value);
                             }} />
                     </div>
-                    <div className='inventory_btn'>
+                   <div className='inventory_btn'>
                         <a onClick={() => {//데이터스프링에전송하고 
                             axios.post('/login', {
                                 id: id,

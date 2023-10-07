@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import './../App.css';
 import axios from "axios";
 import { useEffect, useRef } from 'react';
+import Avatar from 'react-avatar';
+import { useParams } from 'react-router-dom';
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-function Owner_community(){
+
+function Owner_noticeview() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
     let [temp, setTemp] = useState(true);
+    const { id } = useParams();
     const [userInfo, setUserInfo] = useState("");
     function switchTemp() {
         setTemp(!temp);
@@ -30,9 +34,9 @@ function Owner_community(){
                 console.error('세션 데이터를 가져오는데 실패함', error);
             });
     }, [recall]);
-    return(
+    return (
         <div>
-            <div className='owner_main_pageWrap' >
+            <div className='owner_noticeWrap' >
                 <header id='header' className={`${temp1 == true ? "" : "header_hidden"}`} style={{
                     backgroundColor: 'white', // 헤더 배경색
                     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)', // 그림자 효과
@@ -62,27 +66,39 @@ function Owner_community(){
                                 </a>
                             </li>
                             <li>
-                                <a href="owner_community" >
-                                    커뮤니티
+                                <a href="/">
+                                    로그아웃
                                 </a>
                             </li>
                             <li>
-                                <a className='mypages' style={{ cursor: "pointer" }}>
+                                <a className='mypages' style={{ cursor: "pointer" }} onClick={() => {
+                                    setTemp1(!temp1);
+                                }}>
                                     <AccountCircleIcon fontSize="large" /> <span>{userInfo.nickname}</span>
                                 </a>
 
                             </li>
                         </ul></nav>
                 </header>
-                <div style={{ width: "100%", height: "25px" }}></div>
-                <div className={`banner ${temp1 == true ? "" : "banner_hidden"}`} style={{ borderRadius: "20px", boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.3)' }}>
-                    <div className='text'>
-                        <span >가게를 등록하여</span><br />
-                        <span>자신의 가게를 보여주세요!</span>
-                    </div>
-                </div>
-               </div>
+            </div>
+            <div className='notview_header'>
+                <h1>공지사항</h1>
+            </div>
+            <div className='notinfo'>
+                <p className='nottitle'>title</p>
+                <p className='notdate'>2023-10-23</p>
+            </div>
+            <div className='nottxt'>
+                <p>content</p>
+            </div>
+            <div className='notfooter'>
+                <div className='curnot'><a >다음 게시글</a></div>
+                <div className='curnot'><a>이전 게시글</a></div>
+            </div>
+            <div>
+                <button className='notlist_btn'>목록</button>
+            </div>
         </div>
     );
 }
-export default Owner_community;
+export default Owner_noticeview;
