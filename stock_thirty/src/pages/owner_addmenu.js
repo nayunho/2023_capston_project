@@ -13,11 +13,14 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs, { Dayjs } from 'dayjs';
+
 function Owner_Addmenu() {
     let [temp, setTemp] = useState(true);
     let [temp1, setTemp1] = useState(true);
     let [recall, setRecall] = useState(false);
     let [temp2, setTemp2] = useState(true);
+    let [temp4, setTemp4] = useState(true);
     let [store_img, setStore_img] = useState("");
     let navigate = useNavigate();
     function switchTemp() {
@@ -80,7 +83,7 @@ function Owner_Addmenu() {
     let [selectedValue, setSelectedValue] = useState("select1");
     let [selectedStore, setSelectedStore] = useState("select2");
     let [menuData, setMenuData] = useState([]);
-    let [menu_count, setMenu_count] = useState("");
+    let [menu_count, setMenu_count] = useState("0");
     useEffect(() => {
 
         if (selectedValue !== 'select1' && selectedStore != "select2") {
@@ -119,14 +122,33 @@ function Owner_Addmenu() {
     const [discountStartTime, setDiscountStartTime] = useState('');
     const [discountEndTime, setDiscountEndTime] = useState('');
     const [quantity, setQuantity] = useState('');
+    const [menuidx, setMenuidx] = useState('');
 
-    /*시간설정*/
+    /*메뉴 수정*/
+    let [currentitem, setCurrentitem] = useState("current");
+    useEffect(() => {
+    if(currentitem!="current"){
+        setMenuName(currentitem.itemname)
+        setMenu_explanation(currentitem.itemnotice)
+        setMenu_price(currentitem.cost)
+        setMenu_price_discount(currentitem.salecost)
+        setMenuimg(currentitem.image)
+        setCategory(currentitem.category)
+        setDiscountStartTime(currentitem.starttime)
+        setDiscountEndTime(currentitem.endtime)
+        setQuantity(currentitem.quantity)
+        setMenuidx(currentitem.itemidx)
+    }
+    }, [currentitem]);
+   /*시간설정*/
     const handleDiscountStartTimeChange = (newTime) => {
         setDiscountStartTime(newTime);
     };
     const handleDiscountEndTimeChange = (newTime) => {
         setDiscountEndTime(newTime);
     };
+    const discountStartTimeDate = dayjs(discountStartTime)
+    const discountEndTimeDate = dayjs(discountEndTime)
     return (
         <div>
             <div className='owner_addmenu_pageWrap' >
@@ -145,7 +167,7 @@ function Owner_Addmenu() {
                                 <a onClick={() => {
                                     setTemp(switchTemp);
                                 }} style={{ cursor: "pointer" }} href='/owner_storelist'>
-                                    가게등록
+                                    내가게
                                 </a>
                             </li>
                             <li>
@@ -159,7 +181,12 @@ function Owner_Addmenu() {
                                 </a>
                             </li>
                             <li>
-                                <a href="/">
+                            <a href="/" onClick={() => {
+                                    axios.get('/SessionLogout', {
+                                    })
+                                    window.alert("로그아웃되었습니다.");
+                                }
+                                }>
                                     로그아웃
                                 </a>
                             </li>
@@ -178,11 +205,9 @@ function Owner_Addmenu() {
                         </span>
                         <select value={selectedValue} onChange={(e) => {
                             setSelectedStore(userStore.find(store => store.shopname === e.target.value));
-
                             setSelectedValue(e.target.value)
-
                             // selectedStore에 선택한 가게의 객체가 저장됩니다. 가게이름으로 찾기
-                        }}>
+                        }} style={{marginRight:"110px",height:"28px",fontSize:"20px",borderRadius:"50px"}}>
                             <option value="select">Select a your store</option>
                             {userStore.map((store, index) => (
                                 <option value={store.shopname} key={index}>
@@ -194,7 +219,11 @@ function Owner_Addmenu() {
                     <div className='menucont'>
                         <span><EditNoteIcon fontSize="large" style={{ paddingTop: "20px" }} /> 메뉴 관리 {`>`} 메뉴 개수 [ {menu_count} 개]</span>
                         <button className='addmenu_btn' onClick={() => {
-                            setTemp2(!temp2);
+                            if(selectedStore!="select2"){
+                                setTemp2(!temp2);
+                            }else{
+                                window.alert("먼저 가게를 선택해주세요")
+                            }
                         }} style={{ cursor: "pointer" }}>
                             <span>메뉴 추가</span>
                         </button>
@@ -210,12 +239,15 @@ function Owner_Addmenu() {
                                     <li key={index}>
                                         {/* 각 가게 데이터에 대한 표시 */}
                                         <div className='item'>
-                                            <div className='item_img' style={{ width: "150px", height: "150px", backgroundColor: "blue" }}>{menu.image}</div>
+                                        <div className='item_img' style={{ width: "150px", height: "150px" }}><img src={"/itemimages/"+`${menu.image}`}  alt={menu.image} style={{backgroundCover:"cover",backgroundPosition:"center",backgroundRepeat:"no-repeat", width: "150px", height: "150px" }}/></div>
                                             <div className='itme_name'>{menu.itemname}</div>
                                             <div className='item_ex'>{menu.itemnotice}</div>
                                             <div className='item_pr'>{menu.cost}</div>
                                             <div className='item_dis'>{menu.salecost}</div>
-                                            <div className='item_btn'><button className='item_change_btn'><span>수정</span></button><button className='item_delete_btn'><span>삭제</span></button></div>
+                                            <div className='item_btn'><button className='item_change_btn'onClick={() => {    
+                                                setCurrentitem(menu);
+                                                setTemp4(!temp4);
+                                            }} style={{ cursor: "pointer" }}><span>수정</span></button><button className='item_delete_btn'><span>삭제</span></button></div>
                                         </div>
                                         {/* 이미지 표시 등 추가 정보 표시 */}
                                     </li>
@@ -236,6 +268,9 @@ function Owner_Addmenu() {
                 </footer>
             </div>
             <div className={`${temp2 == true ? "addpop_view_none" : "addpop_view"}`} >
+            <span className="fv_view_close" style={{ fontSize: "25px", position: "absolute", top: "10px", right: "19px", cursor: "pointer", padding: "0px 10px", fontSize: "25px", fontWeight: "700" }} onClick={() => {
+            setTemp2(!temp2);
+          }}>X</span>
                 <div className='addpop_title'>
                     <span>메뉴 추가</span>
                 </div>
@@ -283,31 +318,31 @@ function Owner_Addmenu() {
                     ></TextField>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-                    <span>할인 시작 시간</span><span style={{ color: "red" }}>(필수)&nbsp;&nbsp;</span>
+               <span>할인 시작 시간</span><span style={{ color: "red" }}>(필수)&nbsp;&nbsp;</span>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
-                            value={discountEndTime}
-                            onChange={handleDiscountEndTimeChange}
+                            value={discountStartTimeDate}
+                            onChange={handleDiscountStartTimeChange}
                             renderInput={(params) => (
                                 <TextField
                                     style={{ width: "349px", marginRight: "10px" }}
                                     placeholder='할인 시작 시간을 입력해주세요'
                                     autoFocus
-                                    name="discountEndTime"
+                                    name="discountStartTime"
                                     required
                                     {...params}
                                 />
                             )}
                             ampm={false} // AM/PM 선택 비활성화
-                            format="YYYY-MM-DD HH:mm" // 원하는 날짜 및 시간 형식 설정
+                            format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
                         />
                     </LocalizationProvider>
                     <div style={{ position: "absolute", top: "80px", right: "20px" }}>
                         <span>할인 마감 시간</span><span style={{ color: "red" }}>&nbsp;&nbsp;(필수)&nbsp;&nbsp;&nbsp;</span>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
-                            value={discountEndTime}
-                            onChange={handleDiscountStartTimeChange}
+                            value={discountEndTimeDate}
+                            onChange={handleDiscountEndTimeChange}
                             renderInput={(params) => (
                                 <TextField
                                     style={{ width: "349px", marginRight: "10px" }}
@@ -319,7 +354,7 @@ function Owner_Addmenu() {
                                 />
                             )}
                             ampm={false} // AM/PM 선택 비활성화
-                            format="YYYY-MM-DD HH:mm" // 원하는 날짜 및 시간 형식 설정
+                            format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
                         />
                     </LocalizationProvider>
                     </div>
@@ -445,7 +480,226 @@ function Owner_Addmenu() {
                     setTemp2(!temp2)
 
                 }}><a>[ SUBMIT ]</a></button>
-            </div><div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} style={{ top: "50%" }}>
+            </div>
+            <div className={`${temp4 == true ? "addpop_view_none" : "addpop_view"}`} >
+                <div className='addpop_title'>
+                    <span>메뉴 수정</span>
+                </div>
+                <div className='addmenu_name' >
+                    <span>메뉴 이름</span><span style={{ color: "red" }}>(필수)</span>
+                    <TextField
+                        style={{ width: "400px" }}
+                        placeholder='메뉴 이름을 입력해주세요'
+                        autoFocus
+                        name="menuname"
+                        required
+                        value={menuName}
+                        onChange={(e) => {
+                            setMenuName(e.target.value);
+                        }}></TextField>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    <span>상품 종류</span><span style={{ color: "red" }}>(필수)</span>
+                    <TextField
+                        style={{ width: "340px" }}
+                        placeholder='상품 종류를 입력해주세요'
+                        required
+                        name="category"
+                        value={category}
+                        onChange={(e) => {
+                            setCategory(e.target.value);
+                        }}
+                    ></TextField>
+                </div>
+                <div className='addmenu_ex' style={{ position: "relative" }}>
+                    <span style={{ fontSize: "20px", float: "left", marginLeft: "28px" }}>메뉴 설명 &nbsp;&nbsp;</span>
+                    <TextField
+                        style={{ width: "435px" }}
+                        placeholder='상품 설명를 입력해주세요'
+                        multiline
+                        name="menu_explanation"
+                        rows={3}
+                        value={menu_explanation}
+                        inputProps={{
+                            style: {
+                                height: "100px",
+                            },
+                        }}
+                        required
+                        onChange={(e) => {
+                            setMenu_explanation(e.target.value);
+                        }}
+                    ></TextField>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                    <span>할인 시작 시간</span><span style={{ color: "red" }}>(필수)&nbsp;&nbsp;</span>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateTimePicker
+                            onChange={handleDiscountStartTimeChange}
+                            renderInput={(params) => (
+                                <TextField
+                                    style={{ width: "349px", marginRight: "10px" }}
+                                    placeholder='할인 시작 시간을 입력해주세요'
+                                    autoFocus
+                                    name="discountStartTime"
+                                    required
+                                    {...params}
+                                />
+                            )}
+                            ampm={false} // AM/PM 선택 비활성화
+                            format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
+                        />
+                    </LocalizationProvider>
+                    <div style={{ position: "absolute", top: "80px", right: "20px" }}>
+                        <span>할인 마감 시간</span><span style={{ color: "red" }}>&nbsp;&nbsp;(필수)&nbsp;&nbsp;&nbsp;</span>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DateTimePicker
+                            onChange={handleDiscountEndTimeChange}
+                            renderInput={(params) => (
+                                <TextField
+                                    style={{ width: "349px", marginRight: "10px" }}
+                                    placeholder='할인 마감 시간을 입력해주세요'
+                                    autoFocus
+                                    name="discountEndTime"
+                                    required
+                                    {...params}
+                                />
+                            )}
+                            ampm={false} // AM/PM 선택 비활성화
+                            format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
+                        />
+                    </LocalizationProvider>
+                    </div>
+                </div>
+
+                <div className='addmunu_price' style={{ marginTop: "80px" }}>
+                    <span>메뉴 가격</span><span style={{ color: "red" }}>(필수)</span>
+                    <TextField
+                        style={{ width: "392px" }}
+                        placeholder='메뉴 가격을 입력해주세요'
+                        required
+                        name="menu_price"
+                        value={menu_price}
+                        onChange={(e) => {
+                            setMenu_price(e.target.value);
+                        }}
+                    ></TextField>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span>할인 가격</span><span style={{ color: "red", paddingLeft: "20px" }}>(필수)</span>
+                    <TextField
+                        style={{ width: "370px" }}
+                        placeholder='할인 가격을 입력해주세요'
+                        required
+                        name="menu_price_discount"
+                        value={menu_price_discount}
+                        onChange={(e) => {
+                            setMenu_price_discount(e.target.value);
+                        }}
+                    ></TextField>
+                </div>
+
+                <div className='stock_img' style={{ marginRight: "570px", position: "relative" }}>
+                    <span >상품 이미지</span>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                    <label htmlFor="fileInput">
+                        <TextField
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                            placeholder='상품 이미지를 넣어주세요'
+                            label="img"
+                            required
+                            name="menu_img"
+                            autoComplete="menu_img"
+                            sx={{
+                                width: { sm: 200, md: 375 },
+                                "& .MuiInputBase-root": {
+                                    height: 60
+                                }
+                            }}
+                            onChange={(e) => {
+                                setMenuimg(e.target.value);
+                            }}
+                            variant="outlined"
+                            fullWidth
+                            value={selectedFile ? selectedFile.name : ''}
+                        />
+                    </label>
+
+                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "60px", marginLeft: "25px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
+                </div>
+                <div style={{ position: "absolute", top: "550px", right: "60px" }}>
+                    <span style={{ fontSize: "20px" }}>수량</span><span style={{ color: "red", paddingLeft: "20px", fontSize: "20px" }}>(필수) &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <TextField
+                        style={{ width: "370px" }}
+                        placeholder='수량을 입력해주세요'
+                        required
+                        name="menu_price_discount"
+                        value={quantity}
+                        onChange={(e) => {
+                            setQuantity(e.target.value);
+                        }}
+                    ></TextField>
+                </div>
+                <button className="addmenu_sub" onClick={() => {
+                    const formData = new FormData();
+
+                    formData.append('image', selectedFile);
+                    formData.append('shopidx', selectedStore.shopidx);
+                    formData.append('itemName', menuName);
+                    formData.append('itemnotice', menu_explanation);
+                    formData.append('cost', menu_price);
+                    formData.append('salecost', menu_price_discount);
+                    formData.append('category', category);
+                    formData.append('starttime', discountStartTime);
+                    formData.append('endtime', discountEndTime);
+                    formData.append('quantity', quantity);
+                    formData.append('itemidx', menuidx);
+                    formData.append('existingImage', menuimg);
+                    formData.append('method', "modify");
+
+                    axios.post('/item/register', formData)
+                        .then((response) => {
+                            const item = response.data;
+                            console.log(item);
+                            window.alert("메뉴 수정 완료")
+                            if (selectedValue !== 'select1' && selectedStore != "select2") {
+                                // 이곳에서 API 요청 등을 실행
+                                axios.post('/item/getItems', {
+
+                                    shopName: selectedStore.shopname,
+                                    shopTel: selectedStore.shoptel,
+                                    shopAddress: selectedStore.shopaddress,
+                                    shopWebsite: selectedStore.shopwebsite,
+                                    imageFilename: selectedStore.imagefilename,
+                                    ownerIdx: selectedStore.owneridx,
+                                    latitude: selectedStore.latitude,
+                                    longitude: selectedStore.longitude,
+                                    promotionText: selectedStore.promotionText
+
+
+                                }).then((response) => {
+                                    const menudata = response.data;
+                                    setMenuData(menudata);
+                                    setMenu_count(menudata.length);
+                                }).catch(function () {
+                                    // 에러 처리 등
+                                });
+                            }
+                        }).catch(error => {
+                            console.log(error.result)
+                            console.log('실패함')
+                        })
+                    setTemp4(!temp4)
+
+                }}><a>[ SUBMIT ]</a></button>
+            </div>
+            <div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} style={{ top: "50%" }}>
                 <div>
                     <Avatar
                         src={Image}

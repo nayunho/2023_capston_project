@@ -47,10 +47,12 @@ function Owner_Storelist() {
     }, [recall]);
     /*사업자가 등록한 가게*/
     let [userStore, setUser_store] = useState([]);
+    let [userStore_cnt, setUser_store_cnt] = useState("0");
     useEffect(() => {
         axios.get('/getMyShop')
             .then(response => {
                 const userStore = response.data;
+                setUser_store_cnt(userStore.length);
                 if (userStore.redirect) {
                     console.log("페이지 이동");
                     window.location.href = userStore.redirect;
@@ -110,6 +112,7 @@ function Owner_Storelist() {
     let [store_address, setStore_address] = useState("");
     let [store_promotionText, setStore_promotionText] = useState("");
     let [store_website, setStore_website] = useState("");
+    let [store_index, setStore_index] = useState("");
     useEffect(() => {
         if (temp == false) {
             sendUserData();
@@ -120,20 +123,21 @@ function Owner_Storelist() {
     useEffect(() => {
         console.log(selectedAddress);
     }, [selectedAddress]);
-    
-/* 가게 수정*/
-let [currentstore, setCurrentstore] = useState("current");
-useEffect(() => {
-    if(currentstore!="current"){
-        setStore_name(currentstore.shopname)
-        setStore_img(currentstore.imagefilename)
-        setStore_address(currentstore.shopaddress)
-        setStore_phon(currentstore.shoptel)
-        setStore_promotionText(currentstore.promotionText)
-        setStore_website(currentstore.shopwebsite)
-    }
-}, [currentstore]);
-  
+
+    /* 가게 수정*/
+    let [currentstore, setCurrentstore] = useState("current");
+    useEffect(() => {
+        if (currentstore != "current") {
+            setStore_index(currentstore.shopidx)
+            setStore_name(currentstore.shopname)
+            setStore_img(currentstore.imagefilename)
+            setStore_address(currentstore.shopaddress)
+            setStore_phon(currentstore.shoptel)
+            setStore_promotionText(currentstore.promotionText)
+            setStore_website(currentstore.shopwebsite)
+        }
+    }, [currentstore]);
+
     return (
         <div>
             <div className='owner_storelist_pageWrap' >
@@ -185,7 +189,7 @@ useEffect(() => {
                         </span>
                     </div>
                     <div className='menucont'>
-                        <span><EditNoteIcon fontSize="large" style={{ paddingTop: "20px" }} /> 가게 관리 {`>`} 가게 목록 [ { } 개]</span>
+                        <EditNoteIcon fontSize="large" style={{ paddingTop: "20px" }} /> <span> 가게 관리 {`>`} 가게 목록 [ {userStore_cnt} 개]</span>
                         <button className='storelist_btn' onClick={() => {
                             setTemp2(!temp2);
                         }} style={{ cursor: "pointer" }}>
@@ -202,13 +206,13 @@ useEffect(() => {
                                 {userStore.map((store, index) => (
                                     <li key={index}>
                                         <div className='shop'>
-                                            <div className='shop_img' style={{ width: "150px", height: "150px", backgroundColor: "blue" }}><span>{store.imagefilename}</span></div>
+                                            <div className='shop_img' style={{ width: "150px", height: "150px" }}><img src={"/shopimages/" + `${store.imagefilename}`} alt={store.imagefilename} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "150px", height: "150px" }} /></div>
                                             <div className='shop_name'><span>{store.shopname}</span></div>
                                             <div className='shop_ex'><span>{store.promotionText}</span></div>
                                             <div className='shop_web'><span>{store.shopwebsite}</span></div>
                                             <div className='shop_tel'><span>{store.shoptel}</span></div>
                                             <div className='shop_btn'><button className='shop_change_btn' onClick={() => {
-                                                
+
                                                 setCurrentstore(store);
                                                 setTemp3(!temp3);
                                             }} style={{ cursor: "pointer" }}>
@@ -294,7 +298,7 @@ useEffect(() => {
                         />
                     </label>
 
-                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "60px", marginLeft: "25px", marginTop: "35px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
+                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "58px", marginLeft: "25px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
                 </div>
                 <div className='addstore_address' >
                     <div className='addst_address'>
@@ -306,12 +310,12 @@ useEffect(() => {
                         name="store_address"
                         autoComplete="store_address"
                         value={selectedAddress}
-                        style={{ width: "1350px", marginRight: "30px", marginTop: "40px" }}
+                        style={{ width: "1350px", marginRight: "25px", marginTop: "40px" }}
                         onChange={(e) => {
                             setStore_address(e.currentTarget.value);
                         }} />
 
-                    <a className="search" style={{ fontSize: "20px", display: "inline-block", lineHeight: "1.5", width: "50px", height: "59px", marginLeft: "25px", marginTop: "35px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}>주소 찾기</a>
+                    <button className="search" style={{ display: "inline-block", width: "50px", height: "58px", marginLeft: "5px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}><span>주소 &nbsp;찾기</span></button>
                 </div>
                 {isModalOpen && (
                     <div className="modal">
@@ -355,13 +359,31 @@ useEffect(() => {
                         }}
                     ></TextField>
                 </div>
-                <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "50px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
+                <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "3px solid rgb(74, 74, 247)" }} onClick={() => {
 
                     if (store_name == "" && store_phon == "" && store_img == "" && store_address == "") {
                         window.alert("가게등록실패 다시입력");
+                        setTemp2(!temp2)
+                        navigate("/owner_storelist")
+                    } else if (store_name == "") {
+                        window.alert("가게이름을 등록해주세요");
+                        setTemp2(!temp2)
+                        navigate("/owner_storelist")
+                    } else if (store_phon == "") {
+                        window.alert("가게 전화번호를 등록해주세요");
+                        setTemp2(!temp2)
+                        navigate("/owner_storelist")
+                    } else if (store_img == "") {
+                        window.alert("가게이미지을 등록해주세요");
+                        setTemp2(!temp2)
+                        navigate("/owner_storelist")
+                    } else if (store_address == "") {
+                        window.alert("가게주소을 등록해주세요");
+                        setTemp2(!temp2)
                         navigate("/owner_storelist")
                     } else {
                         setTemp(!temp)
+                        setTemp2(!temp2)
                     }
                 }}>가게 등록</a>
             </div>
@@ -378,7 +400,7 @@ useEffect(() => {
                         <span>가게 이름</span>
                     </div>
                     <TextField
-                        style={{ width: "1350px", marginRight: "20px", marginTop: "110px" }}
+                        style={{ width: "1350px", marginRight: "75px", marginTop: "110px" }}
                         placeholder={`${store_name}`}
                         autoFocus
                         name="store_name"
@@ -388,12 +410,13 @@ useEffect(() => {
                             setStore_name(e.target.value);
                         }}
                     ></TextField>
-                    <div className='addstore_phon' >
+                </div>
+                <div className='addstore_phon' >
                     <div className='addst_phon'>
                         <span>가게 전화번호</span>
                     </div>
                     <TextField
-                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        style={{ width: "1350px", marginRight: "140px", marginTop: "40px" }}
                         placeholder='가게 전화번호 입력해주세요'
                         name="store_phon"
                         autoComplete="store_phon"
@@ -401,7 +424,7 @@ useEffect(() => {
                             setStore_phon(e.target.value);
                         }}
                         value={store_phon}
-                        ></TextField>
+                    ></TextField>
                 </div>
                 <div className='addstore_img' >
                     <div className='addst_img'>
@@ -415,22 +438,21 @@ useEffect(() => {
                     />
                     <label htmlFor="fileInput">
                         <TextField
-                            placeholder={`${selectedFile }`}
+                            placeholder={`${selectedFile}`}
                             required
                             name="store_img"
                             autoComplete="store_img"
-                            style={{ width: "1350px", marginRight: "10px", marginTop: "40px" }}
+                            style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
                             onChange={(e) => {
                                 setStore_img(e.currentTarget.value);
                             }}
                             variant="outlined"
                             fullWidth
                             value={selectedFile ? selectedFile.name : ''}
-                            
+
                         />
                     </label>
-
-                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "60px", marginLeft: "25px", marginTop: "35px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
+                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "60px", marginLeft: "5px", marginTop: "35px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
                 </div>
                 <div className='addstore_address' >
                     <div className='addst_address'>
@@ -444,12 +466,12 @@ useEffect(() => {
                         value={selectedAddress}
 
                         currentStor
-                        style={{ width: "1350px", marginRight: "30px", marginTop: "40px" }}
+                        style={{ width: "1350px", marginRight: "90px", marginTop: "40px" }}
                         onChange={(e) => {
                             setStore_address(e.currentTarget.value);
                         }} />
 
-                    <a className="search" style={{ fontSize: "20px", display: "inline-block", lineHeight: "1.5", width: "50px", height: "59px", marginLeft: "25px", marginTop: "35px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}>주소 찾기</a>
+                    <button className="search" style={{ display: "inline-block", width: "50px", height: "58px", marginLeft: "-5px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}><span>주소 &nbsp;찾기</span></button>
                 </div>
                 {isModalOpen && (
                     <div className="modal">
@@ -467,7 +489,7 @@ useEffect(() => {
                         <span>가게 웹사이트</span>
                     </div>
                     <TextField
-                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        style={{ width: "1350px", marginRight: "140px", marginTop: "40px" }}
                         placeholder='가게 웹사이트를 입력해주세요'
                         name="store_website"
                         autoComplete="store_website"
@@ -483,7 +505,7 @@ useEffect(() => {
                         <span>가게 홍보문구</span>
                     </div>
                     <TextField
-                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        style={{ width: "1350px", marginRight: "140px", marginTop: "40px" }}
                         placeholder='가게 홍보문구를 입력해주세요'
                         multiline
                         name="store_promotionText"
@@ -495,11 +517,10 @@ useEffect(() => {
                         }}
                     ></TextField>
                 </div>
-                <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "50px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
-                        navigate("/owner_storelist")
-                        setTemp3(!temp3)
+                <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
+                    navigate("/owner_storelist")
+                    setTemp3(!temp3)
                 }}>수정 완료</a>
-                </div>
             </div>
         </div>
     );

@@ -58,14 +58,14 @@ function Owner_main_page() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a href="/owner_main_page">재고 30 </a></div>
+                    <div className='logo'><a href="/home_user">재고 30 </a></div>
                     <nav className='nav'>
                         <ul>
                             <li>
                                 <a onClick={() => {
                                     setTemp(switchTemp);
                                 }} style={{ cursor: "pointer" }} href='/owner_storelist'>
-                                    가게등록
+                                    내가게
                                 </a>
                             </li>
                             <li>
@@ -79,7 +79,12 @@ function Owner_main_page() {
                                 </a>
                             </li>
                             <li>
-                                <a href="/">
+                                <a href="/" onClick={() => {
+                                    axios.get('/SessionLogout', {
+                                    })
+                                    window.alert("로그아웃되었습니다.");
+                                }
+                                }>
                                     로그아웃
                                 </a>
                             </li>
@@ -92,27 +97,59 @@ function Owner_main_page() {
                             </li>
                         </ul></nav>
                 </header>
-                <div className={`banner ${temp1 == true ? "" : "banner_hidden"}`} style={{ borderRadius: "20px", boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.3)' }}>
-                    <div className='text'>
-                        <span >가게를 등록하여</span><br />
-                        <span>자신의 가게를 보여주세요!</span>
+                <div className={`banner ${temp1 == true ? "" : "banner_hidden"}`} style={{ display: "flex" }}>
+                    <div className="baner_img1" style={{ position: "relative" }}>
+                        <a><img style={{ width: "100%", height: "654px", filter: "brightness(60%)" }} src='https://i.pinimg.com/564x/a6/54/72/a65472b2e830a9fc1d5cff837443656c.jpg'></img>
+                        </a>
+                        <div className='text1' style={{ position: "absolute", top: "35%", left: "50%" }} >
+                            <span style={{ fontSize: '70px', fontWeight: "1000" }}>SHOP</span><br />
+                            <span >본인 가게를 등록해보세요</span>
+                            <div className='own_main_btn1' style={{ position: "absolute", top: "165%", left: "65%" }}>
+
+                                <button className='own_main_btn' style={{ cursor: "pointer" }} onClick={() => {
+                                    navigate("/owner_storelist");
+                                }}><span>ADD NOW</span></button>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <div className="baner_img2" style={{ position: "relative" }}>
+                        <a><img style={{ width: "100%", height: "654px", filter: "brightness(60%)" }} src='https://i.pinimg.com/564x/20/81/1f/20811fd104585bc0543457408647ee23.jpg'></img></a>
+                        <div className='text2' style={{ position: "absolute", top: "35%", left: "50%" }}>
+                            <span style={{ fontSize: '70px', fontWeight: "1000" }}>ITEM</span><br />
+                            <span>가게 떨이를 등록해보세요</span>
+                            <div className='own_main_btn2' style={{ position: "absolute", top: "125%", left: "25%" }}>
+                                <button className='own_main_btn' style={{ cursor: "pointer" }} onClick={() => {
+                                    navigate("/owner_addmenu");
+                                }}><span>ADD NOW</span></button>
+                            </div>
+                        </div>
+
+
+                    </div>
+
                 </div>
-                <div style={{ width: "100%", height: "25px" }}></div>
                 <div className='contents'>
-                    <div className={`content1 ${temp1 == true ? "" : "contents_hidden"}`} style={{ boxShadow: '1px 3px 5px rgba(0, 0, 0, 0.5)' }}>
-                        <div className='text'>
-                            가게등록
+                    <div className='text'><span>내 가게</span></div>
+                    <div className={`content1 ${temp1 == true ? "" : "contents_hidden"}`}>
+                        <div>
+                            <div className='cont_text1'>
+                                <span style={{ fontSize: "32px", fontWeight: "600", textAlign: "left", marginBottom: "10px" }}>내 가게 확인하기</span>
+                                <span>사장님들의 가게를 등록해보세요! 등록한 가게들을 한 눈에 살펴 볼 수 있고, 가게에 대한 정보를 입력해 홍보해보세요</span>
+                                <span style={{ marginTop: "30px" }}><a style={{ borderBottom: "1px dashed black" }}>알아보기 {`>`} </a></span>
+                            </div>
+                            <a style={{ width: "1000px", height: "1000px", backgroundColor: "red" }}><img style={{ marginTop: "-100px", width: "1000px" }} src='https://i.pinimg.com/564x/a6/54/72/a65472b2e830a9fc1d5cff837443656c.jpg'></img></a>
                         </div>
                     </div>
-                    <div className={`content2 ${temp1 == true ? "" : "contents_hidden"}`} style={{ boxShadow: '1px 3px 5px rgba(0, 0, 0, 0.5)' }}>
+                    <div className='text'><span>상품 등록</span></div>
+                    <div className={`content2 ${temp1 == true ? "" : "contents_hidden"}`}>
                         <div className='text'>
-                            상품등록
                         </div>
                     </div>
-                    <div className={`content3 ${temp1 == true ? "" : "contents_hidden"}`} style={{ boxShadow: '1px 3px 5px rgba(0, 0, 0, 0.5)' }}>
+                    <div className='text'><span>공지사항</span></div>
+                    <div className={`content3 ${temp1 == true ? "" : "contents_hidden"}`}>
                         <div className='text'>
-                            공지사항
                         </div>
                     </div>
                 </div>
@@ -133,18 +170,18 @@ function Owner_main_page() {
                             style={{ margin: '20px' }}
                             size={150}
                             onClick={() => { fileInput.current.click() }} />
-                        <div><a style={{ color: "gray", textDecorationLine: 'underline',cursor:'pointer' }}
-            onClick={() => {
-              if (userInfo.social == "normal") {//이부분 수정하기
-                navigate("/edit_member_information");
-              } else {//이부분 수정하기
-                navigate("/edit_member_information_social");
-              }
-              
-            }}>회원 정보 수정</a></div>
+                        <div><a style={{ color: "gray", textDecorationLine: 'underline', cursor: 'pointer' }}
+                            onClick={() => {
+                                if (userInfo.social == "normal") {//이부분 수정하기
+                                    navigate("/edit_member_information");
+                                } else {//이부분 수정하기
+                                    navigate("/edit_member_information_social");
+                                }
+
+                            }}>회원 정보 수정</a></div>
                         <div><h1 style={{ margin: "20px 0px 30px 30px" }}>{userInfo.nickname}
                             <a onClick={() => {
-                                setTemp2(false)
+                                setTemp2(!temp2)
                             }}><DriveFileRenameOutlineIcon fontSize="midium" className="popup_log_out" style={{ cursor: "pointer", margin: "0px 0px -5px 7px" }}></DriveFileRenameOutlineIcon></a>
                             <a href="/" onClick={() => {
                                 window.alert("로그아웃되었습니다.");
@@ -187,7 +224,10 @@ function Owner_main_page() {
                     }}><a>[ CLOSE ]</a></button>
 
                 </div>
-                <div className={`${temp2 == true ? "popup_view2_none" : "popup_view2"}`} >
+                <div className={`${temp2 == true ? "popup_view2_none" : "popup_view2"}`} style={{ position: "fixed", top: "50%" }}>
+                    <div style={{position:"absolute",top:"20px",right:"20px",fontSize:"25px",cursor:"pointer"}}><a onClick={()=>{
+                        setTemp2(!temp2)
+                    }}>X</a></div>
                     <div className='nicname_change'>닉네임 수정</div>
                     <TextField
                         InputProps={{
