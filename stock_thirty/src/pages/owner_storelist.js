@@ -7,6 +7,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import axios from "axios";
 import { TextField, Button, InputAdornment } from "@mui/material";
 import DaumPostcode from 'react-daum-postcode';
+import HouseIcon from '@mui/icons-material/House';
 import Avatar from 'react-avatar';
 import StoreIcon from '@mui/icons-material/Store';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -149,9 +150,14 @@ function Owner_Storelist() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a href="/owner_main_page">재고 30 </a></div>
+                    <div className='logo'><a href="/home_user">재고 30 </a></div>
                     <nav className='nav'>
                         <ul>
+                        <li>
+                                <a href="/owner_main_page" style={{ cursor: "pointer" }}>
+                                    <HouseIcon fontSize="large" />
+                                </a>
+                            </li>
                             <li>
                                 <a onClick={() => {
                                     setTemp(switchTemp);
@@ -252,6 +258,7 @@ function Owner_Storelist() {
                         placeholder='가게 이름을 입력해주세요'
                         autoFocus
                         name="store_name"
+                        value={store_name}
                         autoComplete="store_name"
                         required
                         onChange={(e) => {
@@ -266,6 +273,7 @@ function Owner_Storelist() {
                         style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
                         placeholder='가게 전화번호 입력해주세요'
                         name="store_phon"
+                        value={store_phon}
                         autoComplete="store_phon"
                         required
                         onChange={(e) => {
@@ -337,6 +345,7 @@ function Owner_Storelist() {
                         placeholder='가게 웹사이트를 입력해주세요'
                         name="store_website"
                         autoComplete="store_website"
+                        value={store_website}
                         required
                         onChange={(e) => {
                             setStore_website(e.target.value);
@@ -352,6 +361,7 @@ function Owner_Storelist() {
                         placeholder='가게 홍보문구를 입력해주세요'
                         multiline
                         name="store_promotionText"
+                        value={store_promotionText}
                         rows={3}
                         required
                         onChange={(e) => {
@@ -539,10 +549,22 @@ function Owner_Storelist() {
                 .then((response) => {
                     window.alert("가게 등록 완료");
                     window.location.href = response.data;
+                    setSelectedAddress("");
+                    setSelectedFile("");
+                    setStore_website("");
+                    setStore_promotionText("");
+                    setStore_phon("");
+                    setStore_name("");
                 })
                 .catch(error => {
                     window.alert(error.response.data.result);
-                    navigate("/owner");
+                    setSelectedAddress("");
+                    setSelectedFile("");
+                    setStore_website("");
+                    setStore_promotionText("");
+                    setStore_phon("");
+                    setStore_name("");
+                    
                 })
         );
     }

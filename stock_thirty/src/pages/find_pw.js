@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { TextField, Button, InputAdornment } from "@mui/material";
 import LockIcon from "@material-ui/icons/Lock";
-function Find_id() {
+function Find_pw() {
     let [temp1, setTemp1] = useState(true);
     let navigate = useNavigate();
     let [temp, setTemp] = useState(true);
@@ -57,6 +57,10 @@ function Find_id() {
                                 setSearch_switch1(true);
                                 setSearch_switch2(false);
                                 setTapmenu(true);
+                                setUser_pw_phone("");
+                                setUser_id("");
+                                setUser_verification_code2("");
+
                             } else {
 
                             }
@@ -66,6 +70,9 @@ function Find_id() {
                                 setSearch_switch1(false);
                                 setSearch_switch2(true);
                                 setTapmenu(false);
+                                setUser_phone("");
+                                setUser_name("");
+                                setUser_verification_code1("");
                             } else {
 
                             }
@@ -87,6 +94,7 @@ function Find_id() {
                                         label="user_name"
                                         required
                                         name="user_name"
+                                        value={user_name}
                                         autoComplete="user_name"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -119,6 +127,7 @@ function Find_id() {
                                         label="user_phone"
                                         required
                                         name="user_phone"
+                                        value={user_phone}
                                         autoComplete="user_phone"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -144,6 +153,8 @@ function Find_id() {
                                                 window.alert("인증번호를 보냈습니다.");
                                             }).catch(error => {//실패시
                                                 setName_result(false);
+                                                setUser_name("");
+                                                setUser_phone("");
                                                 window.alert("이름 또는 전화번호가 일치하지 않습니다.");
                                             })
                                         }} style={{cursor:"pointer"}}>인증번호 요청</a>
@@ -156,7 +167,7 @@ function Find_id() {
                             </tr>
                             <tr>
                                 <td>
-                                    <TextField
+                                <TextField
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -169,6 +180,7 @@ function Find_id() {
                                         required
                                         name="user_verification_code1"
                                         autoComplete="verification code"
+                                        value={user_verification_code1}
                                         sx={{
                                             width: { sm: 200, md: 350 },
                                             "& .MuiInputBase-root": {
@@ -181,24 +193,29 @@ function Find_id() {
                                 </td>
                                 <td>
                                     <div >
-                                        <a className='number_request_result' onClick={()=>{
-                                            if(name_result==true){
-                                               console.log(user_verification_code1)
+                                    <a className='number_request_result' onClick={() => {
+                                            if (name_result == true) {
+                                                console.log(user_verification_code1)
                                                 axios.get('/Id_Code_verification', {
-                                       params:{
-                                                       code: user_verification_code1,
+                                                    params: {
+                                                        code: user_verification_code1,
                                                     }
                                                 }).then(response => {//데이터 전송 성공시
                                                     window.alert("인증번호가 일치합니다.");
                                                     setVerification_code_result1(true)
+
                                                 }).catch(error => {//실패시
                                                     window.alert("인증번호가 일치하지않습니다.");
                                                     setVerification_code_result1(false)
+                                                    setUser_verification_code1("");
                                                 })
-                                            }else if(name_result==false){
+                                            } else if (name_result == false) {
                                                 window.alert("이름과 전화번호를 확인해 주세요");
+                                                setUser_verification_code1("");
+                                                setUser_name("");
+                                                setUser_phone("");
                                             }
-                                        }} style={{cursor:"pointer"}}>확인</a>
+                                        }} style={{ cursor: "pointer" }}>확인</a>
                                     </div>
                                 </td>
                             </tr>
@@ -206,11 +223,37 @@ function Find_id() {
                                 <td colspan={2} style={{height:"100px"}}>
                                     <a className="search_id_btn" style={{cursor:"pointer", padding:"15px 200px",borderRadius:"20px", border:"3px solid rgb(219, 215, 215)"}}
                                     onClick={()=>{
-                                        if(verification_code_result1==true){
-                                            navigate("");//새로운 페이지로이동 아이디알려주는
-                                        }else{
+                                        if (verification_code_result1 == true) {
+                                            axios.get('/find_id', {
+
+                                            }).then(response => {//데이터 전송 성공시
+                                                const width = 500; // Width of the popup window
+                                                const height = 400; // Height of the popup window
+                                                const left = window.innerWidth / 2 - width / 2; // Center the window horizontally
+                                                const top = window.innerHeight / 2 - height / 2; // Center the window vertically
+                                                const user_id = response.data;
+                                                const queryString = `?user_id=${user_id}`;
+                                                const popupURL = `/id_result${queryString}`;
+                                                // Open a new popup window with the desired URL and properties
+                                                window.open(
+                                                    popupURL,
+                                                    "Popup",
+                                                    `width=${width},height=${height},left=500px,top=200px`
+                                                );
+                                                setUser_name("");
+                                                setUser_phone("");
+                                                setUser_verification_code1("");
+                                            }).catch(error => {//실패시
+                                                window.alert("이름 또는 전화번호가 일치하지 않습니다.");
+                                                setUser_name("");
+                                                setUser_phone("");
+                                                setUser_verification_code1("");
+                                            })
+                                        } else {
                                             window.alert("선행과정을 진행해주세요")
-                                            navigate("/find_id");
+                                            setUser_name("");
+                                                setUser_phone("");
+                                                setUser_verification_code1("");
                                         }
                                     }}>아이디 찾기</a>
                                 </td>
@@ -233,6 +276,7 @@ function Find_id() {
                                         label="user_id"
                                         required
                                         name="user_id"
+                                        value={user_id}
                                         autoComplete="user_id"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -258,6 +302,7 @@ function Find_id() {
                                             }).catch(error => {//실패시
                                                 setId_result(false);
                                                 window.alert("아이디가 존재하지 않습니다.");
+                                                setUser_id("");
                                             })
                                         }} style={{cursor:"pointer"}}>확인 요청</a>
                                     </div>
@@ -281,6 +326,7 @@ function Find_id() {
                                         label="user_phone"
                                         required
                                         name="user_phone"
+                                        value={user_pw_phone}
                                         autoComplete="user_phone"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -294,20 +340,27 @@ function Find_id() {
                                 </td>
                                 <td>
                                     <div >
-                                        <a  className='number_request' onClick={() => {
+                                    <a className='number_request' onClick={() => {
+                                            if(id_result==true){
                                             //데이터스프링에전송하고 
                                             axios.get('/findPw_sendMessage', {
-                                    params: {
-                                                   phone: user_pw_phone,
+                                                params: {
+                                                    phone: user_pw_phone,
                                                 }
                                             }).then(response => {//데이터 전송 성공시
                                                 setId_Phone_result(true);
                                                 window.alert("인증번호를 보냈습니다.");
                                             }).catch(error => {//실패시
                                                 setId_Phone_result(false);
-                                                window.alert("이름 또는 전화번호가 일치하지 않습니다.");
+                                                setUser_pw_phone("");
+;                                                window.alert("전화번호가 일치하지 않습니다.");
                                             })
-                                        }} style={{cursor:"pointer"}}>인증번호 요청</a>
+                                        }else{
+                                            window.alert("아이디를 먼저 확인해주세요");
+                                            setUser_pw_phone("");
+                                            setUser_id("");
+                                        }
+                                        }} style={{ cursor: "pointer",height:"40px",lineHeight:"1.35" }}>인증번호 요청</a>
                                     </div>
                                 </td>
                             </tr>
@@ -329,6 +382,7 @@ function Find_id() {
                                         label="verification code"
                                         required
                                         name="user_verification_code2"
+                                        value={user_verification_code2}
                                         autoComplete="verification code"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -342,28 +396,44 @@ function Find_id() {
                                 </td>
                                 <td>
                                     <div >
-                                        <a  className='number_request_result' onClick={()=>{
-                                            if(id_phone_result==true){
-                                    console.log(user_verification_code2)
+                                    <a className='number_request_result' onClick={() => {
+                                            if (id_phone_result == true) {
+                                                console.log(user_verification_code2)
                                                 axios.get('/Pw_Code_verification', {
-                                       params:{
-                                                      code: user_verification_code2,
-                                                      
+                                                    params: {
+                                                        code: user_verification_code2,
+
                                                     }
-    
                                                 }).then(response => {//데이터 전송 성공시
                                                     window.alert("인증번호가 일치합니다.");
-                                                    setVerification_code_result2(true)//여기서 다른페이지로 넘어가 새로운비밀번호 입력
-
+                                                    const width = 500; // Width of the popup window
+                                                    const height = 400; // Height of the popup window
+                                                    const left = window.innerWidth / 2 - width / 2; // Center the window horizontally
+                                                    const top = window.innerHeight / 2 - height / 2; // Center the window vertically
+                                                    // Open a new popup window with the desired URL and properties
+                                                    window.open(
+                                                        response.data.redirect,
+                                                        "Popup",
+                                                        `width=${width},height=${height},left=500px,top=200px`
+                                                    );
+                                                    navigate("/login");
+                                                    setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                                 }).catch(error => {//실패시
                                                     window.alert("인증번호가 일치하지않습니다.");
-                                                    setVerification_code_result2(false)
-                                                    navigate("/find_id");
+                                                    navigate("/find_pw");
+                                                    setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                                 })
-                                            }else if(id_phone_result==false){
+                                            } else if (id_phone_result == false) {
                                                 window.alert("아이디와 전화번호를 확인해 주세요");
+                                                setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                             }
-                                        }} style={{cursor:"pointer"}}>확인</a>
+                                        }} style={{ cursor: "pointer" }}>확인</a>
                                     </div>
                                 </td>
                             </tr>
@@ -384,4 +454,4 @@ function Find_id() {
         </div>
     );
 }
-export default Find_id
+export default Find_pw

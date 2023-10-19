@@ -581,7 +581,6 @@ border:1px solid rgb(158, 154, 154);
 .search:hover{
   color:black;
 }
-/*owner_main_page*/
 .owner_main_pageWrap{
   background-color: #f7f7f7;
 }
@@ -661,7 +660,7 @@ border:1px solid rgb(158, 154, 154);
 }
 .owner_main_pageWrap>.contents>.content1{
   width:96%;
-  height: 1000px;
+  height: 700px;
   margin-left: 4%;
   margin-top: 20px;
   border-top : 3px solid #777676;
@@ -673,13 +672,15 @@ border:1px solid rgb(158, 154, 154);
   margin-left: 4% ;
   font-size: 32px;
   font-weight: 700;
+  margin-top: 100px;
 }
 .owner_main_pageWrap>.contents>.content2{
-  width: 96%;
-  margin-left: 4% ;
-  height: 500px;
+  width:96%;
+  height: 700px;
+  margin-left: 4%;
   margin-top: 20px;
   border-top : 3px solid #777676;
+  padding-top: 100px;
 }
 .owner_main_pageWrap>.contents>.content3{
   width: 96%;
@@ -690,12 +691,15 @@ border:1px solid rgb(158, 154, 154);
 }
 .cont_text1{
   width: 500px;
+  margin-top: 200px;
+  margin-left: 150px;
 }
 .cont_text1>span{
+  width: 400px;
   display: block;
   text-align: left;
   line-height: 2;
-  font-size: 20px;
+  font-size: 16px;
 }
 /*owner_notcie*/
 .owner_noticeWrap{
@@ -1070,9 +1074,6 @@ background-color: rgba(0,0,0,0.5);
 }
 .addmenu_sub{
   width: 400px;
-  position: absolute;
-  bottom:10px;
-  right: 31%;
   transform: translate(-10px,-50%);
   background-color: rgb(74, 74, 247);
   box-sizing: border-box;
@@ -1202,6 +1203,9 @@ background-color: rgba(0,0,0,0.5);
   color: white;
   font-size: 17px;
   font-weight: 600;
+}
+#aa{
+  display: none;
 }
 /*owner_storelist_pageWrap*/
 .owner_storelist_pageWrap>.banner{
@@ -1537,10 +1541,10 @@ background-color: rgba(0,0,0,0.5);
   margin-left: 10px;
   display: block;
   width: 80px;
-  height: 25px;
+  height: 40px;
   padding:10px 20px;
   border-radius: 20px;
-  line-height: 1.6;
+  line-height: 1.4;
 }
 .find_id .find_text_id .number_request_result{
   border:3px solid rgb(219, 215, 215);
@@ -2080,6 +2084,87 @@ background-color: gray;
   border:1px solid black;
   box-shadow: 5px 5px 5px 5px gray;
 }
+/*마커 css*/
+.iw_inner {
+  display: flex;
+  background-color: white;
+  border: 2px solid #000; /* 테두리 스타일을 설정할 수 있습니다. */
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); /* 그림자 스타일을 설정할 수 있습니다. */
+  padding: 10px;
+  font-size: 16px;
+  width: 150px;
+  height: 90px;
+}
+.iw_inner > .content1{
+  background-color: red;
+}
+.iw_inner > .content2{
+  display: flex;
+}
+.iw_inner:hover{
+  background-color: rgba(142, 139, 139, 0.5);
+  color: white;
+}
+/*예약확인*/
+#regervation_none{
+  display: none;
+  width:700px;
+  height: 550px;
+  padding:20px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  box-sizing: border-box;
+  position: absolute;
+  background-color: white;
+  border-radius: 10px;
+  border:3px solid rgba(59, 59, 59, 0.3);
+}
+#regervation_view{
+  width:550px;
+  height: 650px;
+  padding:20px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  box-sizing: border-box;
+  position: absolute;
+  background-color: white;
+  border-radius: 20px;
+  z-index: 1000;
+  border:1px solid black;
+  box-shadow: 5px 5px 5px 5px gray;
+}
+.regervation_title{
+  font-size: 30px;
+  margin-bottom: 30px;
+  margin-left: 10px;
+}
+.regervation_content{
+  overflow-y: scroll;
+  overflow-x:hidden; 
+}
+.regervation_content::-webkit-scrollbar {
+  width: 15px;
+}
+.regervation_content::-webkit-scrollbar-thumb {
+  background-color: rgb(67, 66, 66);
+  border-radius: 10px;
+}
+.regervation_content::-webkit-scrollbar-track {
+  background-color: rgb(225, 223, 223);
+  border-radius: 10px;
+}
+.regervation_store_image{
+  width:500px;
+}
+.remove_regervation_Store{
+  background-color: white;
+}
+.remove_regervation_Store:hover{
+  color:white;
+  background-color: gray;
+  }
 @media (prefers-reduion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

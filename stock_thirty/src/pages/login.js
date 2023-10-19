@@ -39,6 +39,7 @@ function Login(props) {
                             label="ID"
                             required
                             name="id"
+                            value={id}
                             sx={{
                                 width: { sm: 200, md: 350 },
                                 "& .MuiInputBase-root": {
@@ -65,6 +66,7 @@ function Login(props) {
                             type="password"
                             required
                             name="password"
+                            value={pw}
                             sx={{
                                 width: { sm: 200, md: 350 },
                                 "& .MuiInputBase-root": {
@@ -81,6 +83,8 @@ function Login(props) {
                                 id: id,
                                 pw: pw,
                             }).then(response => {//데이터를받아오는게성공시 다른페이지호출
+                                setId("");
+                                setPw("");
                                 axios.get('/getSessionMember')
                                     .then(response => {
                                         const userData = response.data;
@@ -99,12 +103,13 @@ function Login(props) {
                                 console.log(error.response.data.resultCode);
                                 console.log(error.response.data.result);
                                 window.alert(error.response.data.result);
-                                navigate("/login")
+                                setId("");
+                                setPw("");
                             })
 
                         }} style={{ cursor: "pointer", borderRadius: "10px" }}>로그인</a>
                     </div>
-                    <div className='serch_id_pw' style={{ margin: "10px 75px 10px 0px" }}>
+                    <div className='serch_id_pw' style={{ margin: "10px 55px 10px 20px" }}>
                         <a href='/sign_up' style={{ marginRight: "10px" }}>회원가입</a>&nbsp;|&nbsp;
                         <a href='find_id' style={{ margin: "0px 10px" }}>아이디 찾기</a>&nbsp;|&nbsp;
                         <a href='find_pw' style={{ marginLeft: "10px" }}>비밀번호 찾기</a>

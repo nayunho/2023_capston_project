@@ -25,14 +25,13 @@ function Home_user() {
   /*지도*/
   /*지도에 현 위치 불러오기*/
 
-  let [showFilter, setShowFilter] = useState(true);
-  let [showDetail, setShowDetail] = useState(false);
+  const [showFilter, setShowFilter] = useState(true);
+  const [showDetail, setShowDetail] = useState(false);
   const mapContainer = useRef(null);
   useEffect(() => {
     const { naver } = window;
-    let clickListener = null;
+    let showDetailsLink = null;
     let map = null;
-    let showDetailsLink = "";
     let infowindow = null;
 
     navigator.geolocation.getCurrentPosition(function (position) {
@@ -43,19 +42,6 @@ function Home_user() {
       };
       map = new naver.maps.Map(mapContainer.current, options);
 
-      // 예시 마커 생성
-      const markerPosition = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      var marker = new naver.maps.Marker({
-        position: markerPosition,
-        map,
-      });
-
-      var contentString = [
-        `<div class="iw_inner"><a id="showDetails">asdasdas</a></div>`
-      ].join(``);
-      infowindow = new naver.maps.InfoWindow({
-        content: contentString
-      });
 
       function toggleFilterAndDetail() {
         console.log(1111);
@@ -63,26 +49,17 @@ function Home_user() {
         setShowDetail(!showDetail);
       }
 
-      function addClickListener() {
-        // click 이벤트 리스너를 한 번만 추가
-        clickListener = function (e) {
-          if (infowindow.getMap()) {
-            infowindow.close();
-          } else {
-            infowindow.open(map, marker);
-            showDetailsLink = document.getElementById('showDetails');
-            // showDetailsLink에 대한 click 이벤트 리스너 추가
-            if (showDetailsLink) {
-              console.log(showDetailsLink);
-              showDetailsLink.addEventListener('click', toggleFilterAndDetail);
-            }
-          }
-        };
+      function closeInfoWindow() {
+        if (showDetailsLink) {
+          showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+        }
+        infowindow.close();
+      }
 
-        naver.maps.Event.addListener(marker, "click", clickListener);
-      };
+
+
+
       // 예시 마커에 대한 클릭 리스너 추가
-      addClickListener();
       axios.get('/ShopMarker')
         .then(response => {
           const shopInfo = response.data;
@@ -93,23 +70,79 @@ function Home_user() {
               map,
             });
             var contentString = [
-              `<div class="iw_inner">${shop.shopName}</div>`
+              `<div class="iw_inner" id="showDetails" style="border-radius: 10px;">`,
+              `<div style="width: 50%; height: 90px; "><img src="/shopimages/${shop.imageFilename}" alt=${shop.imageFilename} style="width: 100%; height: 90px; border-radius:20px; border:4px solid transparent;"></img></div>`,
+              `<div><div style="margin-top: 15px; margin-left: 10px;"><a style="font-weight:700">${shop.shopName}</a></div>`,
+              `<div style="margin-top: 15px; margin-top: 10px;"><span className="ct3" style="font-weight:700">${shop.rating}/5</span></div></div>`,
+              `</div>`
             ].join('');
             var infowindow = new naver.maps.InfoWindow({
               content: contentString
             });
-            naver.maps.Event.addListener(marker, "click", function (e) {
-              if (infowindow.getMap()) {
-                infowindow.close();
-              } else {
-                infowindow.open(map, marker);
+            function toggleFilterAndDetail() {
+              console.log(1111);
+              setShowFilter(!showFilter);
+              setShowDetail(!showDetail);
+            }
+
+            function addClickListener() {
+              // click 이벤트 리스너를 한 번만 추가
+              naver.maps.Event.addListener(marker, "click", function (e) {
+                if (infowindow.getMap()) {
+                  infowindow.close();
+                  if (showDetailsLink) {
+                    showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+                  }
+                } else {
+                  infowindow.open(map, marker);
+                  const iwInner = document.getElementById('showDetails');
+                  const image = iwInner.querySelector('img');
+                  const a = iwInner.querySelector("a");
+                  const ct3 = iwInner.querySelector("span");
+                  iwInner.addEventListener('mouseover', function () {
+                    image.style.backgroundColor = " #383737"; // 이미지 색상을 변경
+                    a.style.color = "white";
+                    ct3.style.color = "white"
+                  });
+
+                  iwInner.addEventListener('mouseout', function () {
+                    image.style.backgroundColor = 'white';
+                    a.style.color = "black";
+                    ct3.style.color = "black"
+                  });
+                  showDetailsLink = document.getElementById('showDetails');
+                  // showDetailsLink에 대한 click 이벤트 리스너 추가
+                  if (showDetailsLink) {
+                    console.log(showDetailsLink);
+                    showDetailsLink.clickListener = toggleFilterAndDetail;
+                    showDetailsLink.addEventListener('click', showDetailsLink.clickListener);
+                  }
+                }
+              });
+            }
+            function closeInfoWindow() {
+              if (showDetailsLink) {
+                showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
               }
-            });
+              infowindow.close();
+            }
+
+            addClickListener();
+
+            document.querySelector('.detail_store_close').addEventListener('click', closeInfoWindow);
+
           });
         })
         .catch(error => {
           console.error('세션 데이터를 가져오는데 실패함', error);
         });
+
+      return () => {
+        if (showDetailsLink) {
+          showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+        }
+        closeInfoWindow();
+      };
     });
   }, [showFilter, showDetail]);
   /*필터 버튼(마이페이지) 누를떄 애니메션효과*/
@@ -136,8 +169,20 @@ function Home_user() {
           window.location.href = userData.redirect;
         } else {
           setUserInfo(userData);
-          console.log("세션데이터가 존재");
-          console.log(userData.id);
+          //로그인한 사용자가 상업자라면 공지사항 알림 가져오기
+          if (userData.role == "상업자") {
+            axios.get('/manager/notice/getalarm')
+              .then(response => {
+                const alarmData = response.data;
+                setNoticeAlarmInfo(alarmData);
+                alarmData.map((alarm, index) => (
+                  console.log(alarm)
+                ));
+              })
+              .catch(error => {
+                console.error('세션 데이터를 가져오는데 실패함', error);
+              });
+          }
         }
       })
       .catch(error => {
@@ -182,7 +227,10 @@ function Home_user() {
   /*알림창*/
   let [temp4, setTemp4] = useState(true);
 
-
+  /*예약확인*/
+  let [temp6, setTemp6] = useState(true);
+  let [regervation,setRegervation] = useState([]);
+  let [selectedregervationStores, setSelectedregervationStores] = useState([]);
   return (
     <div className="App">
       <div className="home_user_App">
@@ -273,12 +321,11 @@ function Home_user() {
 
               <div style={{ width: "1%", height: "100%" }} ></div>
 
-              <div style={{ width: "21%", borderRadius: "50px", height: "100%", backgroundColor: "red", position: "relative" }}>
-                <div style={{ position: "absolute", top: "20px", right: "30px", fontSize: "25px", cursor: "pointer" }} onClick={() => {
+              <div style={{ width: "21%", borderRadius: "50px", height: "100%", backgroundColor: "red" }}>
+                <div className='detail_store_close' style={{ position: "absolute", top: "20px", right: "30px", fontSize: "25px", cursor: "pointer" }} onClick={() => {
                   setShowFilter(!showFilter);
                   setShowDetail(!showDetail);
-
-                }}><a href='/home_user'>x</a></div>
+                }}>x</div>
                 상세페이지 내용
               </div>
 
@@ -334,7 +381,20 @@ function Home_user() {
 
           </div>
           <div id="popsec2" style={{ cursor: "pointer" }}>
-            <a href="" ><span>예약 확인</span></a>
+            <a onClick={() => {
+
+              axios.get('/member/bookmark/check')
+                .then(response => {
+                  setRegervation(response.data);
+
+                  setTemp6(!temp6);
+                })
+                .catch(error => {
+                  console.error('세션 데이터를 가져오는데 실패함', error);
+                });
+
+              setTemp6(!temp6);
+            }} style={{ cursor: "pointer" }} ><span>예약 확인</span></a>
           </div>
           <div id="popsec3" style={{ cursor: "pointer" }}>
             <a href=""> <span>내 신뢰점수</span></a>
@@ -430,7 +490,7 @@ function Home_user() {
                   </div>
                   <div style={{ width: "1000px", marginTop: "10px", lineHeight: "1.8" }}>
                     <div className='fv_store_name' style={{ textAlign: "left" }}>
-                      {store.shopname}
+                      {store.shopName}
                     </div>
                     <div className='fv_store_address'>
                       {store.shopaddress}
@@ -451,15 +511,15 @@ function Home_user() {
             <span>편집</span><span style={{ fontSize: "18px", textAlign: "right" }}><RoomIcon fontSize="small" />{selectedStores.length}개</span>
           </div>
           <div className='divide' style={{ height: "10px" }}><span style={{ display: "none" }}>asd</span></div>
-          <div className="fv_store_list" style={{ marginTop: "20px",width:"100%",height:"70%" }}>
+          <div className="fv_store_list" style={{ marginTop: "20px", width: "100%", height: "70%" }}>
             {shopsData.map((store, index) => (
-              <div key={index} className="fv_store" style={{ display: "flex", borderBottom: "2px solid rgba(0,0,0,0.3)",position:"relative" }}>
+              <div key={index} className="fv_store" style={{ display: "flex", borderBottom: "2px solid rgba(0,0,0,0.3)", position: "relative" }}>
                 <div className='fv_store_image'>
                   <img src={"/shopimages/" + `${store.imagefilename}`} alt={store.imagefilename} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "100%", height: "100px", float: "Left" }} />
                 </div>
                 <div style={{ width: "1000px", marginTop: "10px", lineHeight: "1.8" }}>
                   <div className='fv_store_name' style={{ textAlign: "left" }}>
-                    {store.shopname}
+                    {store.shopName}
                   </div>
                   <div className='fv_store_address'>
                     {store.shopaddress}
@@ -479,24 +539,21 @@ function Home_user() {
                         // 새로운 배열을 생성하여 선택된 항목을 추가
                         let copy = [...selectedStores, store];
                         setSelectedStores(copy);
-                        console.log(copy);
                       }
                     } else {
                       // 선택 해제된 경우, 해당 주소를 가진 항목을 배열에서 제거
                       setSelectedStores(prevStores => prevStores.filter(item => item.shopaddress !== address));
                     }
                   }}
-                style={{position:"absolute",top:"0",right:"0",width:"25px",height:"25px",cursor:"pointer"}}/>
+                  style={{ position: "absolute", top: "0", right: "0", width: "25px", height: "25px", cursor: "pointer" }} />
 
               </div>
             ))}
           </div>
-          <button className="remove_fv_Store" style={{marginTop:"10px",padding:"10px 50px",borderRadius:"50px",border:"1px solid rgba(0,0,0,0.3)",cursor:"pointer",fontWeight:"700",fontSize:"25px"}} onClick={()=>{
-            axios.put('/member/update/nickname', {
-              //선택된 즐겨찾기 가게 삭제
-              nickname: selectedStores,
-
-            }).then(response => {//데이터를받아오는게성공시 다른페이지호출
+          <button className="remove_fv_Store" style={{ marginTop: "10px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
+            console.log(selectedStores);
+            axios.post('/member/bookmark/delete', selectedStores
+            ).then(response => {//데이터를받아오는게성공시 다른페이지호출
               setShopsData(response.data);
               window.alert("수정 완료");
               setSelectedStores([]);
@@ -507,7 +564,7 @@ function Home_user() {
             })
             setTemp5(!temp5);
           }}>
-          삭제 {selectedStores.length}
+            삭제 {selectedStores.length}
           </button>
         </div>
 
@@ -539,9 +596,71 @@ function Home_user() {
               </div>
             ))}
           </div>
-
         </div>
 
+        <div id={`${temp6 == true ? "regervation_none" : "regervation_view"}`}>
+          <span className="regervation_close" style={{ fontSize: "25px", position: "absolute", top: "10px", right: "19px", cursor: "pointer", padding: "0px 10px", fontSize: "25px", fontWeight: "700" }} onClick={() => {
+            setTemp6(!temp6);
+          }}>X</span>
+          <div className='regervation_title' style={{borderBottom: "2px solid rgba(0,0,0,0.3)",paddingBottom:"30px"}}>
+            <span>예약 내역</span>
+          </div>
+          <div className="regervation_content" style={{ width:"90%",height:"70%",margin:"0 auto" }}>
+          {regervation.map((store, index) => (
+              <div key={index} className="regervation_store" style={{ display: "flex", borderBottom: "2px solid rgba(0,0,0,0.3)", position: "relative" }}>
+                <div className='regervation_store_image'>
+                  <img src={"/shopimages/" + `${store.imagefilename}`} alt={store.imagefilename} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "100%", height: "100px", float: "Left" }} />
+                </div>
+                <div style={{ width: "1000px", marginTop: "10px", lineHeight: "1.8" }}>
+                  <div className='regervation_store_name' style={{ textAlign: "left" }}>
+                    {store.shopName}
+                  </div>
+                  <div className='fv_store_address'>
+                    {store.shopaddress}
+                  </div>
+                </div>
+
+                <input
+                  type="checkbox"
+                  checked={selectedregervationStores.includes(store)}
+                  onChange={(e) => {
+                    let isChecked = e.target.checked;
+                    let address = store.shopaddress;
+                    if (isChecked) {
+                      if (selectedregervationStores.some(item => item.shopaddress === address)) {
+                        // 이미 선택된 주소인 경우, 아무것도 하지 않음
+                      } else {
+                        // 새로운 배열을 생성하여 선택된 항목을 추가
+                        let copy = [...selectedregervationStores, store];
+                        setSelectedregervationStores(copy);
+                      }
+                    } else {
+                      // 선택 해제된 경우, 해당 주소를 가진 항목을 배열에서 제거
+                      setSelectedregervationStores(prevStores => prevStores.filter(item => item.shopaddress !== address));
+                    }
+                  }}
+                  style={{ position: "absolute", top: "0", right: "0", width: "25px", height: "25px", cursor: "pointer" }} />
+
+              </div>
+            ))}
+          </div>
+          <button className="remove_regervation_Store" style={{ marginTop: "20px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
+            console.log(selectedregervationStores);
+            axios.post('/member/bookmark/delete', selectedregervationStores
+            ).then(response => {//데이터를받아오는게성공시 다른페이지호출
+              setShopsData(response.data);
+              window.alert("수정 완료");
+              setSelectedregervationStores([]);
+
+            }).catch(error => {//데이터를받아오는게 실패시 오류 메세지출력하고 다시 login페이지 호출
+              setSelectedregervationStores([]);
+              window.alert(error.response.result);
+            })
+            setTemp6(!temp6);
+          }}>
+            삭제 {selectedregervationStores.length}
+          </button>
+        </div>
       </div>
     </div>
   );

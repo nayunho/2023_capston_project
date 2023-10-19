@@ -9,6 +9,7 @@ import Avatar from 'react-avatar';
 import StoreIcon from '@mui/icons-material/Store';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { Outlet } from 'react-router-dom';
+import HouseIcon from '@mui/icons-material/House';
 function Owner_notice() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
@@ -186,14 +187,19 @@ function Owner_notice() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a href="/owner_main_page">재고 30 </a></div>
+                    <div className='logo'><a href="/home_user">재고 30 </a></div>
                     <nav className='nav'>
                         <ul>
+                        <li>
+                                <a href="/owner_main_page" style={{ cursor: "pointer" }}>
+                                    <HouseIcon fontSize="large" />
+                                </a>
+                            </li>
                             <li>
                                 <a onClick={() => {
                                     setTemp(switchTemp);
                                 }} style={{ cursor: "pointer" }} href='/owner_storelist'>
-                                    가게등록
+                                    내가게
                                 </a>
                             </li>
                             <li>

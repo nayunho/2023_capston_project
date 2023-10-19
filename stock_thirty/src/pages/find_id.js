@@ -57,6 +57,9 @@ function Find_id() {
                                 setSearch_switch1(true);
                                 setSearch_switch2(false);
                                 setTapmenu(true);
+                                setUser_pw_phone("");
+                                setUser_id("");
+                                setUser_verification_code2("");
                             } else {
 
                             }
@@ -66,6 +69,9 @@ function Find_id() {
                                 setSearch_switch1(false);
                                 setSearch_switch2(true);
                                 setTapmenu(false);
+                                setUser_phone("");
+                                setUser_name("");
+                                setUser_verification_code1("");
                             } else {
 
                             }
@@ -87,6 +93,7 @@ function Find_id() {
                                         label="user_name"
                                         required
                                         name="user_name"
+                                        value={user_name}
                                         autoComplete="user_name"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -119,6 +126,7 @@ function Find_id() {
                                         label="user_phone"
                                         required
                                         name="user_phone"
+                                        value={user_phone}
                                         autoComplete="user_phone"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -145,6 +153,8 @@ function Find_id() {
                                                 window.alert("인증번호를 보냈습니다.");
                                             }).catch(error => {//실패시
                                                 setName_result(false);
+                                                setUser_name("");
+                                                setUser_phone("");
                                                 window.alert("이름 또는 전화번호가 일치하지 않습니다.");
                                             })
                                         }} style={{ cursor: "pointer" }}>인증번호 요청</a>
@@ -170,6 +180,7 @@ function Find_id() {
                                         required
                                         name="user_verification_code1"
                                         autoComplete="verification code"
+                                        value={user_verification_code1}
                                         sx={{
                                             width: { sm: 200, md: 350 },
                                             "& .MuiInputBase-root": {
@@ -192,12 +203,17 @@ function Find_id() {
                                                 }).then(response => {//데이터 전송 성공시
                                                     window.alert("인증번호가 일치합니다.");
                                                     setVerification_code_result1(true)
+
                                                 }).catch(error => {//실패시
                                                     window.alert("인증번호가 일치하지않습니다.");
                                                     setVerification_code_result1(false)
+                                                    setUser_verification_code1("");
                                                 })
                                             } else if (name_result == false) {
                                                 window.alert("이름과 전화번호를 확인해 주세요");
+                                                setUser_verification_code1("");
+                                                setUser_name("");
+                                                setUser_phone("");
                                             }
                                         }} style={{ cursor: "pointer" }}>확인</a>
                                     </div>
@@ -225,12 +241,20 @@ function Find_id() {
                                                         "Popup",
                                                         `width=${width},height=${height},left=500px,top=200px`
                                                     );
+                                                    setUser_name("");
+                                                    setUser_phone("");
+                                                    setUser_verification_code1("");
                                                 }).catch(error => {//실패시
                                                     window.alert("이름 또는 전화번호가 일치하지 않습니다.");
+                                                    setUser_name("");
+                                                    setUser_phone("");
+                                                    setUser_verification_code1("");
                                                 })
                                             } else {
-                                                
                                                 window.alert("선행과정을 진행해주세요")
+                                                setUser_name("");
+                                                    setUser_phone("");
+                                                    setUser_verification_code1("");
                                             }
                                         }}>아이디 찾기</a>
                                 </td>
@@ -253,6 +277,7 @@ function Find_id() {
                                         label="user_id"
                                         required
                                         name="user_id"
+                                        value={user_id}
                                         autoComplete="user_id"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -277,6 +302,7 @@ function Find_id() {
                                                 window.alert("아이디가 존재합니다.");
                                             }).catch(error => {//실패시
                                                 setId_result(false);
+                                                setUser_id("");
                                                 window.alert("아이디가 존재하지 않습니다.");
                                             })
                                         }} style={{ cursor: "pointer" }}>확인 요청</a>
@@ -301,6 +327,7 @@ function Find_id() {
                                         label="user_phone"
                                         required
                                         name="user_phone"
+                                        value={user_pw_phone}
                                         autoComplete="user_phone"
                                         sx={{
                                             width: { sm: 200, md: 350 },
@@ -315,6 +342,7 @@ function Find_id() {
                                 <td>
                                     <div >
                                         <a className='number_request' onClick={() => {
+                                            if(id_result==true){
                                             //데이터스프링에전송하고 
                                             axios.get('/findPw_sendMessage', {
                                                 params: {
@@ -325,9 +353,15 @@ function Find_id() {
                                                 window.alert("인증번호를 보냈습니다.");
                                             }).catch(error => {//실패시
                                                 setId_Phone_result(false);
-                                                window.alert("이름 또는 전화번호가 일치하지 않습니다.");
+                                                setUser_pw_phone("");
+;                                                window.alert("전화번호가 일치하지 않습니다.");
                                             })
-                                        }} style={{ cursor: "pointer" }}>인증번호 요청</a>
+                                        }else{
+                                            window.alert("아이디를 먼저 확인해주세요");
+                                            setUser_pw_phone("");
+                                            setUser_id("");
+                                        }
+                                        }} style={{ cursor: "pointer",height:"40px",lineHeight:"1.35" }}>인증번호 요청</a>
                                     </div>
                                 </td>
                             </tr>
@@ -350,6 +384,7 @@ function Find_id() {
                                         required
                                         name="user_verification_code2"
                                         autoComplete="verification code"
+                                        value={user_verification_code2}
                                         sx={{
                                             width: { sm: 200, md: 350 },
                                             "& .MuiInputBase-root": {
@@ -383,13 +418,21 @@ function Find_id() {
                                                         `width=${width},height=${height},left=500px,top=200px`
                                                     );
                                                     navigate("/login");
-
+                                                    setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                                 }).catch(error => {//실패시
                                                     window.alert("인증번호가 일치하지않습니다.");
                                                     navigate("/find_pw");
+                                                    setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                                 })
                                             } else if (id_phone_result == false) {
                                                 window.alert("아이디와 전화번호를 확인해 주세요");
+                                                setUser_pw_phone("");
+                                                    setUser_id("");
+                                                    setUser_verification_code2("");
                                             }
                                         }} style={{ cursor: "pointer" }}>확인</a>
                                     </div>

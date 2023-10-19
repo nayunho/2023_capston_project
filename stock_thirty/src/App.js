@@ -20,42 +20,110 @@ import Owner_noticeView from './pages/owner_noticeview.js';
 import Edit_member_information from "./pages/edit_member_information.js";
 import Edit_member_information_social from "./pages/edit_member_information_social.js";
 import Owner_storelist from "./pages/owner_storelist.js";
+import axios from "axios";
 function App() {
   const mapContainer = useRef(null);
 
+  const [showFilter, setShowFilter] = useState(true);
+  const [showDetail, setShowDetail] = useState(false);
   useEffect(() => {
     const { naver } = window;
+    let showDetailsLink = null;
+    let map = null;
+    let infowindow = null;
 
-    const location = new naver.maps.LatLng(37.282962234404806, 127.04758924770678);
-    const options = {
-      center: location,
-      zoom: 18, 
-    };
-    const map = new naver.maps.Map(mapContainer.current, options);
-    
-    const markerPosition = new naver.maps.LatLng(37.282962234404806, 127.04758924770678);
-    var marker = new naver.maps.Marker({
-      position: markerPosition,
-      map,
-    });
-    var contentString = [
-      '<div class="iw_inner">sdfsfdsfsfd</div>'
-    ].join('');
-    var infowindow = new naver.maps.InfoWindow({
-      content: contentString,
-      backgroundColor: 'red', // 정보 창 배경색 변경
-      borderColor: 'red', // 정보 창 테두리 색상 변경
-      borderWidth: 1, // 정보 창 테두리 두께 변경
-    });
+    navigator.geolocation.getCurrentPosition(function (position) {
+      const location = new naver.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      const options = {
+        center: location,
+        zoom: 18,
+      };
+      map = new naver.maps.Map(mapContainer.current, options);
 
-    naver.maps.Event.addListener(marker, "click", function (e) {
-      if (infowindow.getMap()) {
-        infowindow.close();
-      } else {
-        infowindow.open(map, marker);
+     
+      function toggleFilterAndDetail() {
+        console.log(1111);
+        setShowFilter(!showFilter);
+        setShowDetail(!showDetail);
       }
+
+      function closeInfoWindow() {
+        if (showDetailsLink) {
+          showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+        }
+        infowindow.close();
+      }
+
+
+      
+      
+      // 예시 마커에 대한 클릭 리스너 추가
+      axios.get('/ShopMarker')
+        .then(response => {
+          const shopInfo = response.data;
+          shopInfo.forEach(shop => {
+            let markerPosition = new naver.maps.LatLng(shop.latitude, shop.longitude);
+            var marker = new naver.maps.Marker({
+              position: markerPosition,
+              map,
+            });
+            var contentString = [
+              `<div class="iw_inner"><a id="showDetails">${shop.shopName}</a></div>`
+            ].join('');
+            var infowindow = new naver.maps.InfoWindow({
+              content: contentString
+            });
+            function toggleFilterAndDetail() {
+              console.log(1111);
+              setShowFilter(!showFilter);
+              setShowDetail(!showDetail);
+            }
+      
+            function addClickListener() {
+              // click 이벤트 리스너를 한 번만 추가
+              naver.maps.Event.addListener(marker, "click", function (e) {
+                if (infowindow.getMap()) {
+                  infowindow.close();
+                  if (showDetailsLink) {
+                    showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+                  }
+                } else {
+                  infowindow.open(map, marker);
+                  showDetailsLink = document.getElementById('showDetails');
+                  // showDetailsLink에 대한 click 이벤트 리스너 추가
+                  if (showDetailsLink) {
+                    console.log(showDetailsLink);
+                    showDetailsLink.clickListener = toggleFilterAndDetail;
+                    showDetailsLink.addEventListener('click', showDetailsLink.clickListener);
+                  }
+                }
+              });
+            }
+            function closeInfoWindow() {
+              if (showDetailsLink) {
+                showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+              }
+              infowindow.close();
+            }
+      
+            addClickListener();
+      
+            document.querySelector('.detail_store_close').addEventListener('click', closeInfoWindow);
+            
+          });
+        })
+        .catch(error => {
+          console.error('세션 데이터를 가져오는데 실패함', error);
+        });
+        
+    return () => {
+      if (showDetailsLink) {
+        showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+      }
+      closeInfoWindow(); 
+    };
     });
-  })
+  }, [showFilter, showDetail]);
   let [temp, setTemp] = useState(true);
   const filter_hidden = 'filter_hidden';
   const filter_btn_hidden = "filter_btn_hidden";
@@ -114,9 +182,37 @@ function App() {
                     </ul></nav>
                 </header>
                 <div style={{width:"100%",height:"25px"}}></div>
-                <main id="contents" ref={mapContainer} style={{ width: "100%", height: "91%",margin:"0 auto",borderRadius:"20px",boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.2)' }}>
+                <div style={{ width: "100%", height: "91%", overflow: "hidden" }}>
+            <div className={`contents_slide ${showFilter == true ? "" : "filter_slide"}`} style={{ width: "122%", height: "100%", display: "flex" }}>
 
-                </main>
+              <div style={{ width: "1%", height: "100%" }}></div>
+
+              <div className={`filter`} style={{ width: "22%", borderRadius: "50px", height: "100%" }}>
+                필터링
+              </div>
+
+              <div style={{ width: "1%", height: "100%" }} ></div>
+
+              <div style={{ width: "76%", height: "100%" }}>
+                <div ref={mapContainer} style={{ width: "100%", height: "100%", borderRadius: "50px", boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.2)' }}>
+
+                </div>
+              </div>
+
+              <div style={{ width: "1%", height: "100%" }} ></div>
+
+              <div style={{ width: "21%", borderRadius: "50px", height: "100%", backgroundColor: "red", position: "relative" }}>
+                <div style={{ position: "absolute", top: "20px", right: "30px", fontSize: "25px", cursor: "pointer" }} onClick={() => {
+                  setShowFilter(!showFilter);
+                  setShowDetail(!showDetail);
+
+                }}><a href='/home_user'>x</a></div>
+                상세페이지 내용
+              </div>
+
+              <div style={{ width: "1%", height: "100%" }} ></div>
+            </div>
+          </div>
               </div>
               <div id='filter' className={`${temp ? filter_hidden : ""}`}>
                 <div className={`filter ${temp ? filter_hidden : ""}`}>
