@@ -160,6 +160,9 @@ li {
 .filter_hidden {
   opacity: 0.5;
 }
+input[type="range"]::-webkit-slider-thumb {
+    background-color: #007bff; /* 움직이는 손잡이의 색상을 파란색으로 설정 */
+}
 .map_size{
   overflow: hidden;
   height:100%;
@@ -2165,6 +2168,84 @@ background-color: gray;
   color:white;
   background-color: gray;
   }
+  /*가게 상세페이지*/
+.detail_store_name{
+  margin-top:15px;
+}
+.detail_store_name>span{
+  font-size:30px;
+  font-weight:600;
+}
+.detail_store_select{
+  border-bottom: 1px solid rgb(195, 192, 192);
+  height: 50px;
+  margin-top: 10px;
+}
+.select_btn1{
+  padding: 0px 67px 20px 67px;
+  color:rgb(195, 192, 192);
+  font-size: 20px;
+  border-bottom: 4px solid rgb(195, 192, 192);
+  cursor: pointer;
+  background-color: white;
+}
+.select_btn1_open{  
+  color:black;
+  border-bottom: 4px solid black;
+}
+.select_btn2{
+  padding: 0px 67px 20px 67px;
+  color:rgb(195, 192, 192);
+  font-size: 20px;
+  border-bottom:4px solid rgb(195, 192, 192);
+  cursor: pointer;
+  background-color: white;
+}
+.select_btn2_open{
+  color:black;
+  border-bottom: 4px solid black;
+}
+.detail_store_ex{
+  height: 80%;
+  overflow-y: scroll;
+  overflow-x:hidden;
+}
+.detail_store_ex::-webkit-scrollbar {
+  width: 15px;
+}
+.detail_store_ex::-webkit-scrollbar-thumb {
+  background-color: rgb(67, 66, 66);
+  border-radius: 10px;
+}
+.detail_store_ex::-webkit-scrollbar-track {
+  background-color: rgb(225, 223, 223);
+  border-radius: 10px;
+}
+.detail_store_img{
+  width: 370px;
+  height: 250px;
+  margin: 0 auto;
+  margin-top: 65px;
+  background-color: blue;
+  box-shadow: 0px 5px 5px 0px gray;
+  background-repeat: no-repeat;
+  background-size:contain;
+}
+.fv_btn{
+  margin-top: 30px;
+  width:250px;
+  height: 50px;
+  border-radius: 30px;
+  padding-right: 10px;
+  background-color: #ededed;
+}
+.fv_btn>span{
+  font-size: 20px;
+  font-weight: 600;
+}
+.trust_popup{
+  display: none;
+}
 @media (prefers-reduion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
