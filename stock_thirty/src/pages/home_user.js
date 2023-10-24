@@ -46,6 +46,9 @@ function Home_user() {
       return "#e74c3c";
     }
   }
+  let [search_store_switch, setSearch_store_switch] = useState(true);
+  let [switch3,setSwitch3] = useState(true);
+  let [search_store, setSearch_store] = useState([]);
   useEffect(() => {
     const { naver } = window;
     let showDetailsLink = null;
@@ -74,14 +77,21 @@ function Home_user() {
         infowindow.close();
       }
 
-
-
-
-      // 예시 마커에 대한 클릭 리스너 추가
-      axios.get('/ShopMarker')
-        .then(response => {
-          const shopInfo1 = response.data;
-          shopInfo1.forEach(shop => {
+      if (switch3 == false) {
+        axios.get('/getShop/filter', {
+          params: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            distance: rangeValue,
+            unit: "km",
+            price: maxPrice,
+            time: endTime,
+            rating: maxStars.toFixed(1),
+          }
+        }).then(response => {//데이터를받아오는게성공시 다른페이지호출
+          let search_store=response.data;
+          console.log(response.data);
+          search_store.forEach(shop => {
             let markerPosition = new naver.maps.LatLng(shop.latitude, shop.longitude);
             var marker = new naver.maps.Marker({
               position: markerPosition,
@@ -161,10 +171,102 @@ function Home_user() {
             document.querySelector('.detail_store_close').addEventListener('click', closeInfoWindow);
 
           });
+          setSwitch3(true);
+        }).catch(error => {//데이터를받아오는게 실패시 오류 메세지출력하고 다시 login페이지 호출
+          window.alert(error.response.data.result);
+          setSwitch3(true);
         })
-        .catch(error => {
-          console.error('세션 데이터를 가져오는데 실패함', error);
-        });
+      } else {
+        console.log(22222222);
+        // 예시 마커에 대한 클릭 리스너 추가
+        axios.get('/ShopMarker')
+          .then(response => {
+            const shopInfo1 = response.data;
+            shopInfo1.forEach(shop => {
+              let markerPosition = new naver.maps.LatLng(shop.latitude, shop.longitude);
+              var marker = new naver.maps.Marker({
+                position: markerPosition,
+                map,
+              });
+              let copy = shop
+              setShopInfo(prevShopInfo => [...prevShopInfo, shop]);
+              var contentString = [
+                `<div class="iw_inner" id="showDetails" style="border-radius: 10px;">`,
+                `<div style="width: 50%; height: 90px; "><img src="/shopimages/${shop.imageFilename}" alt=${shop.imageFilename} style="width: 100%; height: 90px; border-radius:20px; border:4px solid transparent;"></img></div>`,
+                `<div><div style="margin-top: 15px; margin-left: 10px;"><a style="font-weight:700">${shop.shopName}</a></div>`,
+                `<div style="margin-top: 15px; margin-top: 10px;"><span className="ct3" style="font-weight:700">${shop.rating}/5</span></div></div>`,
+                `</div>`
+              ].join('');
+              var infowindow = new naver.maps.InfoWindow({
+                content: contentString
+              });
+              function toggleFilterAndDetail() {
+                console.log(1111);
+                setShowFilter(!showFilter);
+                setShowDetail(!showDetail);
+              }
+
+              function addClickListener() {
+                // click 이벤트 리스너를 한 번만 추가
+                naver.maps.Event.addListener(marker, "click", function (e) {
+                  if (infowindow.getMap()) {
+                    infowindow.close();
+                    if (showDetailsLink) {
+                      showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+                    }
+                  } else {
+                    infowindow.open(map, marker);
+                    const clickedShopName = shop.shopName;
+
+                    // shopInfo 배열에서 같은 이름을 가진 가게를 찾습니다.
+                    const selectedShopInfo = shopInfo.find(info => info.shopName === clickedShopName);
+
+                    // 만약 해당 정보를 찾았다면 selectedShopInfo에 그 정보가 저장됩니다.
+                    if (selectedShopInfo) {
+                      setSelectedShop(selectedShopInfo);
+                    }
+                    const iwInner = document.getElementById('showDetails');
+                    const image = iwInner.querySelector('img');
+                    const a = iwInner.querySelector("a");
+                    const ct3 = iwInner.querySelector("span");
+                    iwInner.addEventListener('mouseover', function () {
+                      image.style.backgroundColor = " #383737";
+                      a.style.color = "white";
+                      ct3.style.color = "white"
+                    });
+
+                    iwInner.addEventListener('mouseout', function () {
+                      image.style.backgroundColor = 'white';
+                      a.style.color = "black";
+                      ct3.style.color = "black"
+                    });
+                    showDetailsLink = document.getElementById('showDetails');
+                    // showDetailsLink에 대한 click 이벤트 리스너 추가
+                    if (showDetailsLink) {
+                      console.log(showDetailsLink);
+                      showDetailsLink.clickListener = toggleFilterAndDetail;
+                      showDetailsLink.addEventListener('click', showDetailsLink.clickListener);
+                    }
+                  }
+                });
+              }
+              function closeInfoWindow() {
+                if (showDetailsLink) {
+                  showDetailsLink.removeEventListener('click', toggleFilterAndDetail);
+                }
+                infowindow.close();
+              }
+
+              addClickListener();
+
+              document.querySelector('.detail_store_close').addEventListener('click', closeInfoWindow);
+
+            });
+          })
+          .catch(error => {
+            console.error('세션 데이터를 가져오는데 실패함', error);
+          });
+      }
 
       return () => {
         if (showDetailsLink) {
@@ -173,7 +275,7 @@ function Home_user() {
         closeInfoWindow();
       };
     });
-  }, []);
+  }, [search_store_switch]);
   /*필터 버튼(마이페이지) 누를떄 애니메션효과*/
   let [temp, setTemp] = useState(true);
   const filter_hidden = 'filter_hidden';
@@ -301,7 +403,6 @@ function Home_user() {
     const selectedMaxStars = parseInt(event.target.value, 10);
     setMaxStars(selectedMaxStars);
   }
-  let [search_store, setSearch_store] = useState([]);
   /*신뢰점수*/
   let [trust_popup, setTrust_popup] = useState(true);
   return (
@@ -386,6 +487,7 @@ function Home_user() {
                 </div>
 
                 <div className='filter_contents' style={{ height: "95%" }}>
+                
                   <div className='filter_distance' style={{ height: "19%" }}>
                     <h1 style={{ fontWeight: "700", fontSize: "25px", textAlign: "left", marginLeft: "30px", marginBottom: "8%" }}>1. 거리</h1>
                     <div>
@@ -417,18 +519,18 @@ function Home_user() {
                     </div>
                   </div>
                   <div className='filter_endtime' style={{ height: "19%" }}>
-                    <h1 style={{ fontWeight: "700", fontSize: "25px", textAlign: "left", marginLeft: "30px" }}>3. 마감시간</h1>
+                    <h1 style={{ fontWeight: "700", fontSize: "25px", textAlign: "left", marginLeft: "30px" }}>3. 시간</h1>
                     <div>
                       <input
                         type="range"
                         min="0"
                         max="24" // 예: 24시간 범위 설정
-                        step="1" // 1시간씩 이동
+                        step="0.5" // 1시간씩 이동
                         value={endTime}
                         onChange={handleEndTimeChange}
                         style={{ width: "80%", height: "80%" }}
                       />
-                      <p style={{ fontWeight: "700", fontSize: "25px", height: "12%" }}>선택된 마감시간: {endTime} 시</p>
+                      <p style={{ fontWeight: "700", fontSize: "25px", height: "12%" }}>마감까지 {endTime} 시간 이상 남음</p>
                     </div>
                   </div>
                   <div className='filter_star' style={{ height: "19%" }}>
@@ -448,22 +550,8 @@ function Home_user() {
                   </div>
                   <div className='filter_btn'>
                     <button className="remove_regervation_Store" style={{ marginTop: "5px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
-                      axios.put('/member/update/nickname', {
-
-                        nickname: rangeValue,
-                        nickname: maxPrice,
-                        nickname: endTime,
-                        nickname: maxStars.toFixed(1),
-
-                      }).then(response => {//데이터를받아오는게성공시 다른페이지호출
-                        setSearch_store(response.data);
-                        window.alert("검색완료");
-
-
-                      }).catch(error => {//데이터를받아오는게 실패시 오류 메세지출력하고 다시 login페이지 호출
-
-                        window.alert(error.response.result);
-                      })
+                      setSwitch3(!switch3);
+                      setSearch_store_switch(!search_store_switch);
                     }}>검색</button>
                   </div>
                 </div>
@@ -589,11 +677,9 @@ function Home_user() {
           </div>
           <div id="popsec2" style={{ cursor: "pointer" }}>
             <a onClick={() => {
-
-              axios.get('/member/bookmark/check')
+              axios.get('/item/reservation/getreservations')
                 .then(response => {
                   setRegervation(response.data);
-
                   setTemp6(!temp6);
                 })
                 .catch(error => {
@@ -794,14 +880,14 @@ function Home_user() {
             {combinedAlarms.map((alarm, index) => (
               <div key={index} className="fv_store" style={{ display: "block", borderBottom: "2px solid rgba(0,0,0,0.3)" }}>
                 <a style={{ color: "red", fontSize: "25px" }}>new &nbsp;</a>
-                {alarm.object.shopName ? (
-                  <a style={{ fontSize: "25px" }}><b>{alarm.object.shopName}</b></a>
+                {alarm.shopname ? (
+                  <a style={{ fontSize: "25px" }}><b>{alarm.shopname}</b></a>
                 ) : (
-                  <a style={{ fontSize: "25px" }}><b>{alarm.object.title}</b></a>
+                  <a style={{ fontSize: "25px" }}><b>{alarm.title}</b></a>
                 )}
                 <br></br>
                 <a style={{ fontSize: "20px" }}>
-                  {alarm.object.shopName
+                  {alarm.shopname
                     ? "새 할인상품이 등록되었습니다."
                     : "새 공지사항이 등록되었습니다."}
                   <a style={{ color: "red", fontSize: "20px", float: "right" }}>
@@ -813,7 +899,7 @@ function Home_user() {
           </div>
         </div>
 
-        <div id={`${temp6 == true ? "regervation_none" : "regervation_view"}`}>
+                <div id={`${temp6 == true ? "regervation_none" : "regervation_view"}`}>
           <span className="regervation_close" style={{ fontSize: "25px", position: "absolute", top: "10px", right: "19px", cursor: "pointer", padding: "0px 10px", fontSize: "25px", fontWeight: "700" }} onClick={() => {
             setTemp6(!temp6);
           }}>X</span>
@@ -821,17 +907,26 @@ function Home_user() {
             <span>예약 내역</span>
           </div>
           <div className="regervation_content" style={{ width: "90%", height: "70%", margin: "0 auto" }}>
-            {regervation.map((store, index) => (
+          {regervation.map((store, index) => (
               <div key={index} className="regervation_store" style={{ display: "flex", borderBottom: "2px solid rgba(0,0,0,0.3)", position: "relative" }}>
                 <div className='regervation_store_image'>
-                  <img src={"/shopimages/" + `${store.imagefilename}`} alt={store.imagefilename} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "100%", height: "100px", float: "Left" }} />
+                  <img src={"/itemimages/" + `${store.image}`} alt={store.imagefilename} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "100%", height: "100px", float: "Left" }} />
                 </div>
-                <div style={{ width: "1000px", marginTop: "10px", lineHeight: "1.8" }}>
+                <div style={{ width: "1000px", marginTop: "10px", lineHeight: "1.5" }}>
                   <div className='regervation_store_name' style={{ textAlign: "left" }}>
-                    {store.shopName}
+                    {store.shopname}
                   </div>
-                  <div className='fv_store_address'>
+                  <div className='fv_store_address' style={{fontSize:"15px"}}>
                     {store.shopaddress}
+                  </div>
+                  
+                  <div className='fv_store_address'style={{display:"flex"}}>
+                    <div>
+                    {store.itemname}
+                    </div> 
+                    <div style={{marginLeft:"20px"}}>
+                     수량: {store.number} 
+                    </div>
                   </div>
                 </div>
 
@@ -859,19 +954,24 @@ function Home_user() {
               </div>
             ))}
           </div>
-          <button className="remove_regervation_Store" style={{ marginTop: "20px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
+                    <button className="remove_regervation_Store" style={{ marginTop: "20px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
             console.log(selectedregervationStores);
-            axios.post('/member/bookmark/delete', selectedregervationStores
+            axios.post('/item/reservation/cancel', selectedregervationStores
             ).then(response => {//데이터를받아오는게성공시 다른페이지호출
-              setShopsData(response.data);
-              window.alert("수정 완료");
-              setSelectedregervationStores([]);
-
+              window.alert("취소 완료");
+              axios.get('/item/reservation/getreservations')
+              .then(response => {
+                setRegervation(response.data);
+                setSelectedregervationStores([]);
+              })
+              .catch(error => {
+                console.error('세션 데이터를 가져오는데 실패함', error);
+              });
+              
             }).catch(error => {//데이터를받아오는게 실패시 오류 메세지출력하고 다시 login페이지 호출
               setSelectedregervationStores([]);
-              window.alert(error.response.result);
+              window.alert(error.response.data.result);
             })
-            setTemp6(!temp6);
           }}>
             삭제 {selectedregervationStores.length}
           </button>
