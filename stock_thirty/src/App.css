@@ -1167,9 +1167,10 @@ background-color: rgba(0,0,0,0.5);
   height: 50px;
   width: 500px;
   margin-left: 1150px;
-  margin-top: -50px;
+  margin-top: -100px;
 
 }
+
 .item_change_btn{
   width: 100px;
   height: 40px;
@@ -2166,7 +2167,7 @@ background-color: gray;
 }
 .remove_regervation_Store:hover{
   color:white;
-  background-color: gray;
+  background-color: black;
   }
   /*가게 상세페이지*/
 .detail_store_name{
@@ -2245,6 +2246,76 @@ background-color: gray;
 }
 .trust_popup{
   display: none;
+}
+/*예약리스트*/
+.reservation_close{
+  display: none;
+}
+.reservation_list_view{
+  width:600px;
+  height: 700px;
+  padding:20px;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  box-sizing: border-box;
+  position: absolute;
+  background-color: white;
+  border-radius: 20px;
+  z-index: 1000;
+  border:1px solid black;
+  box-shadow: 5px 5px 5px 5px gray;
+}
+.reservation_list{
+  overflow-y: scroll;
+  overflow-x:hidden;
+
+}
+.reservation_list::-webkit-scrollbar {
+  width: 15px;
+}
+.reservation_list::-webkit-scrollbar-thumb {
+  background-color: rgb(67, 66, 66);
+  border-radius: 10px;
+}
+.reservation_list::-webkit-scrollbar-track {
+  background-color: rgb(225, 223, 223);
+  border-radius: 10px;
+}
+.reservation_list_title{
+  font-size: 30px;
+  margin-left: 10px;
+  height: 10%;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+.reservation_solo{
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+.reservation_agree{
+  background-color: white;
+}
+.reservation_deny{
+  background-color:white;
+}
+.reservation_agree:hover{
+  background-color: black;
+  color: white;
+}
+.reservation_deny:hover{
+  background-color: black;
+  color: white;
+}
+.item_reservation_btn{
+  width: 200px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: rgb(74, 74, 247);
+  border-color: rgb(74, 74, 247);
+}
+.item_reservation_btn>span{
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
 }
 @media (prefers-reduion: no-preference) {
   .App-logo {

@@ -153,7 +153,7 @@ function Owner_Storelist() {
                     <div className='logo'><a href="/home_user">재고 30 </a></div>
                     <nav className='nav'>
                         <ul>
-                        <li>
+                            <li>
                                 <a href="/owner_main_page" style={{ cursor: "pointer" }}>
                                     <HouseIcon fontSize="large" />
                                 </a>
@@ -223,7 +223,39 @@ function Owner_Storelist() {
                                                 setTemp3(!temp3);
                                             }} style={{ cursor: "pointer" }}>
                                                 <span>수정</span>
-                                            </button></div>
+                                            </button>
+                                                <button className='shop_change_btn' onClick={() => {
+                                                    window.alert("정말로 삭제하시겠습니까?");
+                                                    console.log(store.shopidx);
+                                                    axios.delete('/shopDelete', {
+                                                        params: {
+                                                            shopidx:store.shopidx
+                                                        }
+                                                    }).then(response => {//데이터를받아오는게성공시 다른페이지호출
+                                                        window.alert("삭제 완료");
+                                                        axios.get('/getMyShop')
+                                                            .then(response => {
+                                                                const userStore = response.data;
+                                                                setUser_store_cnt(userStore.length);
+                                                                if (userStore.redirect) {
+                                                                    console.log("페이지 이동");
+                                                                    window.location.href = userStore.redirect;
+                                                                } else {
+                                                                    setUser_store(userStore);
+                                                                    console.log("세션데이터가 존재");
+                                                                }
+                                                            }, [userInfo])
+                                                            .catch(error => {
+                                                                console.error('세션 데이터를 가져오는데 실패함', error);
+                                                            });
+
+                                                    }).catch(error => {
+                                                        window.alert(error.response.data.result);
+                                                    })
+                                                }} style={{ cursor: "pointer", marginLeft: "20px" }}>
+                                                    <span>삭제</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </li>
                                 ))}
@@ -528,8 +560,31 @@ function Owner_Storelist() {
                     ></TextField>
                 </div>
                 <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
-                    navigate("/owner_storelist")
                     setTemp3(!temp3)
+                    const formData = new FormData();
+                    formData.append('imageFilename', selectedFile);
+                    formData.append('shopName', store_name);
+                    formData.append('shopTel', store_phon);
+                    formData.append('shopAddress', selectedAddress);
+                    formData.append('promotionText', store_promotionText);
+                    formData.append('shopWebsite', store_website);
+                    formData.append('shopidx', store_index);
+                    formData.append('existingAddress', store_address);
+                    formData.append('existingImage', store_img);
+                    formData.append('method', "modify");
+
+                    // axios.post에 직접 formData를 전달
+                    return (
+                        axios.post('/shopRegistration', formData)
+                            .then((response) => {
+                                window.alert("가게 수정 완료");
+                                window.location.href = response.data;
+                            })
+                            .catch(error => {
+                                window.alert(error.response.data.result);
+                                navigate("/owner");
+                            })
+                    );
                 }}>수정 완료</a>
             </div>
         </div>
@@ -564,7 +619,7 @@ function Owner_Storelist() {
                     setStore_promotionText("");
                     setStore_phon("");
                     setStore_name("");
-                    
+
                 })
         );
     }

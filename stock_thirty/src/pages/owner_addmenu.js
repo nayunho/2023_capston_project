@@ -15,6 +15,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import HouseIcon from '@mui/icons-material/House';
+
 function Owner_Addmenu() {
     let [temp, setTemp] = useState(true);
     let [temp1, setTemp1] = useState(true);
@@ -131,17 +132,17 @@ function Owner_Addmenu() {
     const [quantity, setQuantity] = useState('');
     const [menuidx, setMenuidx] = useState('');
 
-/*현재 아이템 저장 변수*/
-const [menuName2, setMenuName2] = useState("");
-const [menu_explanation2, setMenu_explanation2] = useState("");
-const [menu_price2, setMenu_price2] = useState("");
-const [menu_price_discount2, setMenu_price_discount2] = useState("");
-const [menuimg2, setMenuimg2] = useState("");
-const [category2, setCategory2] = useState('');
-const [discountStartTime2, setDiscountStartTime2] = useState('');
-const [discountEndTime2, setDiscountEndTime2] = useState('');
-const [quantity2, setQuantity2] = useState('');
-const [menuidx2, setMenuidx2] = useState('');
+    /*현재 아이템 저장 변수*/
+    const [menuName2, setMenuName2] = useState("");
+    const [menu_explanation2, setMenu_explanation2] = useState("");
+    const [menu_price2, setMenu_price2] = useState("");
+    const [menu_price_discount2, setMenu_price_discount2] = useState("");
+    const [menuimg2, setMenuimg2] = useState("");
+    const [category2, setCategory2] = useState('');
+    const [discountStartTime2, setDiscountStartTime2] = useState('');
+    const [discountEndTime2, setDiscountEndTime2] = useState('');
+    const [quantity2, setQuantity2] = useState('');
+    const [menuidx2, setMenuidx2] = useState('');
     /*메뉴 수정*/
     let [currentitem, setCurrentitem] = useState("current");
     useEffect(() => {
@@ -173,8 +174,81 @@ const [menuidx2, setMenuidx2] = useState('');
     };
     const discountStartTimeDate = dayjs(discountStartTime)
     const discountEndTimeDate = dayjs(discountEndTime)
+    /*예약 리스트*/
+    let [complet, setComplet] = useState(true);
+    let [temp10, setTemp10] = useState(true);
+    let [cc, setCc] = useState("");
+    let [dd, setDd] = useState("");
+    let [user_reservation_list, setUser_reservation_list] = useState([]);
+    useEffect(() => {
+        console.log(user_reservation_list);    // 상태가 변경될 때마다 호출됨
+    }, [user_reservation_list]);
+    useEffect(() => {
+        console.log(complet); // 상태가 변경될 때마다 호출됨
+    }, [complet]);
+    useEffect(() => {    // 상태가 변경될 때마다 호출됨
+    }, [cc])
+    useEffect(() => {    // 상태가 변경될 때마다 호출됨
+    }, [dd])
+    function handleCompleteClick(user, menu_idx) {
+        if (window.confirm("상품을 가져갔습니까?")) {
+            // 사용자가 확인을 선택한 경우
+            const formData = new FormData();
+            formData.append("reservationidx", user.reservationidx)
+            axios.post('/item/reservation/confirm', formData)
+                .then(response => {
+                    axios.get('/shop/item/reservations', {
+                        params: {
+                            itemidx: menu_idx,
+                        }
+                    }).then(response => {
+                        let user_list = response.data;
+                        for (let i = 0; i < user_list.length; i++) {
+                            if (user_list[i].confirm == "wait") {
+                                user_list[i].confirm = false;
+                            }
+                        }
+                        setUser_reservation_list(user_list);
+                    }).catch(error => {
+                        console.error('세션 데이터를 가져오는데 실패함', error);
+                    });
+                })
+                .catch(error => {
+                    console.error('세션 데이터를 가져오는데 실패함', error);
 
-    
+                });
+        }
+    }
+    function handleCompleteClick2(user,menu_idx) {
+        if (window.confirm("예약을 거부하겠습니까?")) {
+            // 사용자가 확인을 선택한 경우
+            axios.delete('/item/reservation/cancel/business', {
+                params: {
+                    reservationIdx: user.reservationidx,
+                    itemidx: user.itemidx,
+                    number: user.number,
+                }
+            }).then(response => {
+                axios.get('/shop/item/reservations', {
+                    params: {
+                        itemidx: menu_idx,
+                    }
+                }).then(response => {
+                    let user_list = response.data;
+                    for (let i = 0; i < user_list.length; i++) {
+                        if (user_list[i].confirm == "wait") {
+                            user_list[i].confirm = false;
+                        }
+                    }
+                    setUser_reservation_list(user_list);
+                }).catch(error => {
+                    console.error('세션 데이터를 가져오는데 실패함', error);
+                });
+            }).catch(error => {
+                console.error('세션 데이터를 가져오는데 실패함', error);
+            });
+        }
+    }
     return (
         <div>
             <div className='owner_addmenu_pageWrap' >
@@ -276,53 +350,79 @@ const [menuidx2, setMenuidx2] = useState('');
                                             <div className='item_ex'>{menu.itemnotice}</div>
                                             <div className='item_pr'>{menu.cost}</div>
                                             <div className='item_dis'>{menu.salecost}</div>
-                                            <div className='item_btn'><button className='item_change_btn' onClick={() => {
-                                                setCurrentitem(menu);
-                                                setTemp4(!temp4);
-                                            }} style={{ cursor: "pointer" }}><span>수정</span></button>
-                                 <button className='item_delete_btn' style={{cursor:"pointer"}} onClick={() => {
-                                                window.alert("정말로 삭제하시겠습니까?");
-                                                axios.delete('/item/delete', {
-                                       params: {
-                                          itemidx: menu.itemidx,
-                                          itemname:menu.itemname,
-                                                       image:menu.image,
-                                                       itemnotice:menu.itemnotice,
-                                                       cost:menu.cost,
-                                                       salecost:menu.salecost,
-                                                       quantity:menu.quantity,
-                                                       shopidx :menu.shopidx
-                                                  }
-                                                  }).then(response => {//데이터를받아오는게성공시 다른페이지호출
-                                                       window.alert("삭제 완료");
-                                                         axios.post('/item/getItems', {
 
-                                                        shopName: selectedStore.shopname,
-                                                        shopTel: selectedStore.shoptel,
-                                                        shopAddress: selectedStore.shopaddress,
-                                                        shopWebsite: selectedStore.shopwebsite,
-                                                        imageFilename: selectedStore.imagefilename,
-                                                        ownerIdx: selectedStore.owneridx,
-                                                        latitude: selectedStore.latitude,
-                                                        longitude: selectedStore.longitude,
-                                                        promotionText: selectedStore.promotionText
-                                        
-                                        
-                                                    }).then((response) => {
-                                                        const menudata = response.data;
-                                                        setMenuData(menudata);
-                                                        setMenu_count(menudata.length);
-                                                        setA(selectedStore.shopname);
-                                                        setAa(false);
-                                                    }).catch(function () {
-                                                        // 에러 처리 등
+                                            <div className='item_btn'>
+                                                <div><button className='item_reservation_btn' style={{ cursor: "pointer" }} onClick={() => {
+                                                    setCc(menu.itemidx);
+                                                    setDd(menu.reservationidx);
+                                                    axios.get('/shop/item/reservations', {
+                                                        params: {
+                                                            itemidx: menu.itemidx,
+                                                        }
+                                                    }).then(response => {
+                                                        let user_list = response.data;
+                                                        for (let i = 0; i < user_list.length; i++) {
+                                                            if (user_list[i].confirm == "wait") {
+                                                                user_list[i].confirm = false;
+                                                            }
+                                                        }
+                                                        setUser_reservation_list(user_list);
+
+                                                    }).catch(error => {
+                                                        console.error('세션 데이터를 가져오는데 실패함', error);
                                                     });
-                            
-                            
-                                                  }).catch(error => {
-                                                    window.alert(error.response.data.result);
-                                                  })
-                                            }}><span>삭제</span></button></div>
+                                                    setTemp10(!temp10);
+                                                }}><span>예약 리스트</span></button></div>
+                                                <div style={{ marginTop: "10px" }}>
+                                                    <button className='item_change_btn' onClick={() => {
+                                                        setCurrentitem(menu);
+                                                        setTemp4(!temp4);
+                                                    }} style={{ cursor: "pointer" }}><span>수정</span></button>
+                                                    <button className='item_delete_btn' style={{ cursor: "pointer" }} onClick={() => {
+                                                        window.alert("정말로 삭제하시겠습니까?");
+                                                        axios.delete('/item/delete', {
+                                                            params: {
+                                                                itemidx: menu.itemidx,
+                                                                itemname: menu.itemname,
+                                                                image: menu.image,
+                                                                itemnotice: menu.itemnotice,
+                                                                cost: menu.cost,
+                                                                salecost: menu.salecost,
+                                                                quantity: menu.quantity,
+                                                                shopidx: menu.shopidx
+                                                            }
+                                                        }).then(response => {//데이터를받아오는게성공시 다른페이지호출
+                                                            window.alert("삭제 완료");
+                                                            axios.post('/item/getItems', {
+
+                                                                shopName: selectedStore.shopname,
+                                                                shopTel: selectedStore.shoptel,
+                                                                shopAddress: selectedStore.shopaddress,
+                                                                shopWebsite: selectedStore.shopwebsite,
+                                                                imageFilename: selectedStore.imagefilename,
+                                                                ownerIdx: selectedStore.owneridx,
+                                                                latitude: selectedStore.latitude,
+                                                                longitude: selectedStore.longitude,
+                                                                promotionText: selectedStore.promotionText
+
+
+                                                            }).then((response) => {
+                                                                const menudata = response.data;
+                                                                setMenuData(menudata);
+                                                                setMenu_count(menudata.length);
+                                                                setA(selectedStore.shopname);
+                                                                setAa(false);
+                                                            }).catch(function () {
+                                                                // 에러 처리 등
+                                                            });
+
+
+                                                        }).catch(error => {
+                                                            window.alert(error.response.data.result);
+                                                        })
+                                                    }}><span>삭제</span></button>
+                                                </div>
+                                            </div>
                                         </div>
                                         {/* 이미지 표시 등 추가 정보 표시 */}
                                     </li>
@@ -590,7 +690,7 @@ const [menuidx2, setMenuidx2] = useState('');
                         }).catch(error => {
                             console.log(error.result)
                             console.log('실패함')
-                            
+
                         })
                     setTemp2(!temp2)
 
@@ -804,7 +904,7 @@ const [menuidx2, setMenuidx2] = useState('');
                                     const menudata = response.data;
                                     setMenuData(menudata);
                                     setMenu_count(menudata.length);
-                                   
+
                                 }).catch(function () {
                                     // 에러 처리 등
                                 });
@@ -877,6 +977,39 @@ const [menuidx2, setMenuidx2] = useState('');
                     setTemp1(!temp1)
                 }}><a>[ CLOSE ]</a></button>
 
+            </div>
+            <div className={`${temp10 == true ? "reservation_close" : "reservation_list_view"}`}>
+                <span className="reservation_list_close" style={{ fontSize: "25px", position: "absolute", top: "10px", right: "19px", cursor: "pointer", padding: "0px 10px", fontSize: "25px", fontWeight: "700", height: "10%" }} onClick={() => {
+                    setTemp10(!temp10);
+                }}>X</span>
+                <div className='reservation_list_title' style={{ marginTop: "20px" }} >
+                    <span >예약 리스트</span>
+                </div>
+                <div className='reservation_list' style={{ height: "80%" }}>
+                    {
+                        user_reservation_list.map((user, index) => (
+                            <div className='reservation_solo' style={{ width: "100%", height: "150px", display: "flex" }}>
+                                <div style={{ width: "70%" }}>
+                                    <div style={{ fontSize: "20px", fontWeight: "700", textAlign: "left", marginLeft: "10px", marginTop: "10px" }}>이름: {user.name} </div>
+                                    <div style={{ fontSize: "20px", fontWeight: "700", textAlign: "left", marginLeft: "10px", marginTop: "10px" }}>전화번호: {user.phone}</div>
+                                    <div style={{ fontSize: "20px", fontWeight: "700", textAlign: "left", marginLeft: "10px", marginTop: "10px" }}>신뢰점수: {user.trust}</div>
+                                    <div style={{ fontSize: "20px", fontWeight: "700", textAlign: "left", marginLeft: "10px", marginTop: "10px" }}>수량: {user.number}</div>
+                                </div>
+                                <div style={{ width: "30%", marginTop: "20px" }} >
+                                    <div ><button className='reservation_agree' style={{ fontWeight: "600", fontSize: "20px", padding: "10px 20px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer" }} onClick={() => {
+
+                                        handleCompleteClick(user, cc);
+                                    }} disabled={user.confirm}>완료</button></div>
+                                    <div ><button className='reservation_deny' style={{ fontWeight: "600", marginTop: "15px", fontSize: "20px", padding: "10px 20px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer" }} onClick={() => {
+                                        handleCompleteClick2(user,cc);
+
+                                    }} disabled={user.confirm}>거부</button></div>
+                                </div>
+                            </div>
+                        ))
+                    }
+
+                </div>
             </div>
         </div>
     );
