@@ -11,14 +11,6 @@ import { lazy, Suspense, createContext, useState, useEffect } from "react";
 function Join() {
     let navigate = useNavigate();
 
-    axios.get("http://localhost:8080/sign_up").then((res) => {
-        console.log(res.data)
-    })
-        .catch(() => {
-            console.log('실패함')
-        })
-
-
     const [id, setId] = useState("");
     const [pw, setpw] = useState("");
     const [name, setName] = useState("");
@@ -222,16 +214,18 @@ function Join() {
         </div>
     )
     function sendUserData() {
+      console.log("id = ", id);
+      console.log("name = ", name);
+      console.log("pw = ", pw);
+      console.log("phone = ", phone);
+      console.log("role = ", role);
         return (
-            
-            axios.get('/join', {
-                params: {
+            axios.post('/join', {
                     id: id,
                     name: name,
                     pw: pw,
                     phone: phone,
                     role: role
-                }
             }).then(() => {
                 window.alert("회원가입 완료")
                 navigate("/login")
@@ -241,14 +235,11 @@ function Join() {
                 setpw("");
                 setphone("");
                 
-            }).catch(function () {
-                window.alert("모든 과정을 입력해주세요")
-                setId("");
-                setName("");
-                setCehck_pw("");
-                setpw("");
-                setphone("");
-            })
+            }).catch(error => {
+             let errorMessages = Object.values(error.response.data).join('\n');
+             console.log(error);
+             window.alert(errorMessages);
+         })
         )
     }
 }

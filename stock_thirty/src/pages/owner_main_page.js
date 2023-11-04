@@ -86,13 +86,6 @@ function Owner_main_page() {
                                     로그아웃
                                 </a>
                             </li>
-                            <li>
-                                <a className='mypages' onClick={() => {
-                                    setTemp1(!temp1);
-                                }} style={{ cursor: "pointer" }}>
-                                    <AccountCircleIcon fontSize="large" /> <span>{userInfo.nickname}</span>
-                                </a>
-                            </li>
                         </ul></nav>
                 </header>
                 <div className={`banner ${temp1 == true ? "" : "banner_hidden"}`} style={{ display: "flex" }}>

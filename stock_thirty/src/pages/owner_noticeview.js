@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import Avatar from 'react-avatar';
 import { useParams } from 'react-router-dom';
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import HouseIcon from '@mui/icons-material/House';
+
 function Owner_noticeview() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
@@ -15,25 +15,32 @@ function Owner_noticeview() {
     function switchTemp() {
         setTemp(!temp);
     }
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const notititle = urlParams.get("notititle");
+    const notiDate = urlParams.get("notiDate");
+    const noticontent = urlParams.get("noticontent");
     useEffect(() => {
         // 스프링에서 세션 데이터를 가져오는 호출
         axios.get('/getSessionMember')
             .then(response => {
                 const userData = response.data;
-                console.log(userData.redirect)
+                console.log(userData.redirect);
                 if (userData.redirect) {
                     console.log("페이지 이동");
                     window.location.href = userData.redirect;
                 } else {
                     setUserInfo(userData);
-                    console.log("세션데이터가 존재");
+                    console.log("세션 데이터가 존재");
                     console.log(userData.id);
                 }
             })
             .catch(error => {
                 console.error('세션 데이터를 가져오는데 실패함', error);
             });
-    }, [recall]);
+
+        // 공지사항 데이터 가져오기
+    }, []);
     return (
         <div>
             <div className='owner_noticeWrap' >
@@ -45,19 +52,14 @@ function Owner_noticeview() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a href="/home_user">재고 30 </a></div>
+                    <div className='logo'><a href="/owner_main_page">재고 30 </a></div>
                     <nav className='nav'>
                         <ul>
-                        <li>
-                                <a href="/owner_main_page" style={{ cursor: "pointer" }}>
-                                    <HouseIcon fontSize="large" />
-                                </a>
-                            </li>
                             <li>
                                 <a onClick={() => {
                                     setTemp(switchTemp);
                                 }} style={{ cursor: "pointer" }} href='/owner'>
-                                    내가게
+                                    가게등록
                                 </a>
                             </li>
                             <li>
@@ -71,17 +73,14 @@ function Owner_noticeview() {
                                 </a>
                             </li>
                             <li>
-                                <a href="/">
+                                <a href="/" onClick={() => {
+                                        axios.get('/SessionLogout', {
+                                        })
+                                        window.alert("로그아웃되었습니다.");
+                                    }
+                                    }>
                                     로그아웃
                                 </a>
-                            </li>
-                            <li>
-                                <a className='mypages' style={{ cursor: "pointer" }} onClick={() => {
-                                    setTemp1(!temp1);
-                                }}>
-                                    <AccountCircleIcon fontSize="large" /> <span>{userInfo.nickname}</span>
-                                </a>
-
                             </li>
                         </ul></nav>
                 </header>
@@ -89,13 +88,16 @@ function Owner_noticeview() {
             <div className='notview_header'>
                 <h1>공지사항</h1>
             </div>
-            <div className='notinfo'>
-                <p className='nottitle'>title</p>
-                <p className='notdate'>2023-10-23</p>
-            </div>
-            <div className='nottxt'>
-                <p>content</p>
-            </div>
+                <div>
+                <div className='notinfo'>
+                    <p className='nottitle'>제목: {notititle}</p>
+                    <p className='notdate'>작성일: {notiDate}</p>
+                </div>
+                <div className='nottxt'>
+                    <p>ㄴㅁㅇㅁㄴ{noticontent}</p>
+                </div>
+                </div>
+
             <div className='notfooter'>
                 <div className='curnot'><a >다음 게시글</a></div>
                 <div className='curnot'><a>이전 게시글</a></div>

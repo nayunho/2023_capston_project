@@ -295,24 +295,17 @@ function Owner_Addmenu() {
                                     로그아웃
                                 </a>
                             </li>
-                            <li>
-                                <a className='mypages' style={{ cursor: "pointer" }} onClick={() => {
-                                    setTemp1(!temp1);
-                                }}>
-                                    <AccountCircleIcon fontSize="large" /> <span>{userInfo.nickname}</span>
-                                </a>
-                            </li>
                         </ul></nav>
                 </header>
                 <div className='addmenu_back' style={{ position: "relative" }}>
-                    <div className='addmenu_header' style={{ marginLeft: "20px" }}>
-                        <span>상품 등록 {'>'}
-                        </span>
-                        <select value={selectedValue} onChange={(e) => {
+                    <div className='addmenu_header' style={{ display:"flex",margin:"0 auto",justifyContent:"space-between" }}>
+                        <div><span>상품 등록 {'>'}
+                        </span></div>
+                        <div><select value={selectedValue} onChange={(e) => {
                             setSelectedStore(userStore.find(store => store.shopaddress === e.target.value));
                             setSelectedValue(e.target.value)
                             // selectedStore에 선택한 가게의 객체가 저장됩니다. 가게이름으로 찾기
-                        }} style={{ height: "28px", fontSize: "20px", borderRadius: "50px", position: "absolute", top: "50px", right: "200px" }}>
+                        }} style={{ height: "28px", fontSize: "20px", borderRadius: "50px" }}>
                             <option value="select">Select a your store</option>
                             {userStore.map((store, index) => (
 
@@ -320,7 +313,7 @@ function Owner_Addmenu() {
                                     {store.shopname}
                                 </option>
                             ))}
-                        </select>
+                        </select></div>
                     </div>
                     <div className='menucont'>
                         <span><EditNoteIcon fontSize="large" style={{ paddingTop: "20px" }} /> 메뉴 관리 {`>`} 메뉴 개수 [ {menu_count} 개]</span>
@@ -636,8 +629,8 @@ function Owner_Addmenu() {
 
                 <button className="addmenu_sub" style={{ marginTop: "40px" }} onClick={() => {
                     const formData = new FormData();
-
-                    formData.append('image', selectedFile);
+                    
+                    formData.append('imageFile', selectedFile);
                     formData.append('shopidx', selectedStore.shopidx);
                     formData.append('itemName', menuName);
                     formData.append('itemnotice', menu_explanation);
@@ -647,8 +640,8 @@ function Owner_Addmenu() {
                     formData.append('starttime', discountStartTime);
                     formData.append('endtime', discountEndTime);
                     formData.append('quantity', quantity);
-
-                    axios.post('/item/register', formData)
+                    
+                    axios.post('/item/create', formData)
                         .then((response) => {
                             const item = response.data;
                             console.log(item);
@@ -683,8 +676,8 @@ function Owner_Addmenu() {
                                     const menudata = response.data;
                                     setMenuData(menudata);
                                     setMenu_count(menudata.length);
-                                }).catch(function () {
-                                    // 에러 처리 등
+                                }).catch(error => {
+                                    window.alert(error.response.data.result);
                                 });
                             }
                         }).catch(error => {
@@ -697,15 +690,20 @@ function Owner_Addmenu() {
                 }}><a>[ SUBMIT ]</a></button>
 
             </div>
-
-            <div className={`${temp4 == true ? "addpop_view_none" : "addpop_view"}`} >
-                <div className='addpop_title'>
+<div className={`${temp4 == true ? "addstpop_view_none" : "addstpop_view"}`} >
+                <div className='addstpop_title'>
                     <span>메뉴 수정</span>
+                    <p className='addstpop_close'
+                        onClick={() => {
+                            setTemp4(!temp4)
+                        }} style={{ cursor: "pointer", fontSize: "32px" }}> X </p>
                 </div>
-                <div className='addmenu_name' >
-                    <span>메뉴 이름</span><span style={{ color: "red" }}>(필수)</span>
+                <div className='addstore_name' >
+                    <div className='addst_name'>
+                        <span>메뉴 이름</span><span style={{ color: "red" }}>(필수)</span>
+                    </div>
                     <TextField
-                        style={{ width: "400px" }}
+                        style={{ width: "1350px", marginRight: "20px", marginTop: "110px" }}
                         placeholder='메뉴 이름을 입력해주세요'
                         autoFocus
                         name="menuname2"
@@ -714,11 +712,13 @@ function Owner_Addmenu() {
                         onChange={(e) => {
                             setMenuName2(e.target.value);
                         }}></TextField>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                    <span>상품 종류</span><span style={{ color: "red" }}>(필수)</span>
+                </div>
+                <div className='addstore_phon' >
+                    <div className='addst_phon'>
+                        <span>상품 종류</span><span style={{ color: "red" }}>(필수)</span>
+                    </div>
                     <TextField
-                        style={{ width: "340px" }}
+                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
                         placeholder='상품 종류를 입력해주세요'
                         required
                         name="category2"
@@ -728,29 +728,60 @@ function Owner_Addmenu() {
                         }}
                     ></TextField>
                 </div>
-                <div className='addmenu_ex' style={{ position: "relative" }}>
-                    <span style={{ fontSize: "20px", float: "left", marginLeft: "28px" }}>메뉴 설명 &nbsp;&nbsp;</span>
+                <div className='addstore_phon' >
+                    <div className='addst_phon'>
+                        <span>상품 수량</span><span style={{ color: "red" }}>(필수)</span>
+                    </div>
                     <TextField
-                        style={{ width: "435px" }}
-                        placeholder='상품 설명를 입력해주세요'
-                        multiline
-                        name="menu_explanation2"
-                        rows={3}
-                        value={menu_explanation2}
-                        inputProps={{
-                            style: {
-                                height: "100px",
-                            },
-                        }}
+                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        placeholder='수량을 입력해주세요'
                         required
+                        name="quantity2"
+                        value={quantity2}
                         onChange={(e) => {
-                            setMenu_explanation2(e.target.value);
+                            setQuantity2(e.target.value);
                         }}
                     ></TextField>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-                    <span>할인 시작 시간</span><span style={{ color: "red" }}>(필수)&nbsp;&nbsp;</span>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                </div>
+                <div className='addstore_phon' >
+                    <div className='addst_phon'>
+                        <span>메뉴 가격</span><span style={{ color: "red" }}>(필수)</span>
+                    </div>
+                    <TextField
+                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        placeholder='메뉴 가격을 입력해주세요'
+                        autoFocus
+                        name="menu_price2"
+                        value={menu_price2}
+                        autoComplete="menu_price2"
+                        required
+                        onChange={(e) => {
+                            setMenu_price2(e.target.value);
+                        }}
+                    ></TextField>
+                </div>
+                <div className='addstore_web' >
+                    <div className='addst_web'>
+                        <span>할인 가격</span><span style={{ color: "red" }}>(필수)</span>
+                    </div>
+                    <TextField
+                        style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
+                        placeholder='할인 가격을 입력해주세요'
+                        required
+                        name="menu_price_discount2"
+                        value={menu_price_discount2}
+                        onChange={(e) => {
+                            setMenu_price_discount2(e.target.value);
+                        }}
+                    ></TextField>
+                </div>
+                <div className='addstore_web' style={{ display: "flex", position: "relative" }} >
+                    <div style={{ marginLeft: "200px" }}>
+                        <div className='addst_web'>
+                            <span>할인 시작 시간</span><span style={{ color: "red" }}>(필수)</span>
+                        </div>
+                        <div style={{ position: "absolute", top: "100px", left: "255px" }}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             onChange={handleDiscountStartTimeChange2}
                             renderInput={(params) => (
@@ -767,8 +798,13 @@ function Owner_Addmenu() {
                             format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
                         />
                     </LocalizationProvider>
-                    <div style={{ position: "absolute", top: "80px", right: "20px" }}>
-                        <span>할인 마감 시간</span><span style={{ color: "red" }}>&nbsp;&nbsp;(필수)&nbsp;&nbsp;&nbsp;</span>
+                        </div>
+                    </div>
+                    <div style={{ marginLeft: "400px" }}>
+                        <div className='addst_web'>
+                            <span>할인 마감 시간</span><span style={{ color: "red" }}>(필수)</span>
+                        </div>
+                        <div style={{ position: "absolute", top: "100px", left: "945px" }}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
                                 onChange={handleDiscountEndTimeChange2}
@@ -786,37 +822,13 @@ function Owner_Addmenu() {
                                 format="YYYY-MM-DD HH:mm:ss" // 원하는 날짜 및 시간 형식 설정
                             />
                         </LocalizationProvider>
+                        </div>
                     </div>
                 </div>
-
-                <div className='addmunu_price' style={{ marginTop: "80px" }}>
-                    <span>메뉴 가격</span><span style={{ color: "red" }}>(필수)</span>
-                    <TextField
-                        style={{ width: "392px" }}
-                        placeholder='메뉴 가격을 입력해주세요'
-                        required
-                        name="menu_price2"
-                        value={menu_price2}
-                        onChange={(e) => {
-                            setMenu_price2(e.target.value);
-                        }}
-                    ></TextField>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span>할인 가격</span><span style={{ color: "red", paddingLeft: "20px" }}>(필수)</span>
-                    <TextField
-                        style={{ width: "370px" }}
-                        placeholder='할인 가격을 입력해주세요'
-                        required
-                        name="menu_price_discount2"
-                        value={menu_price_discount2}
-                        onChange={(e) => {
-                            setMenu_price_discount2(e.target.value);
-                        }}
-                    ></TextField>
-                </div>
-
-                <div className='stock_img' style={{ marginRight: "570px", position: "relative" }}>
-                    <span >상품 이미지</span>
+                <div className='addstore_img' style={{ position: "relative" }} >
+                    <div className='addst_img'>
+                        <span>상품 이미지</span>
+                    </div>
                     <input
                         type="file"
                         id="fileInput"
@@ -839,6 +851,7 @@ function Owner_Addmenu() {
                                     height: 60
                                 }
                             }}
+                            style={{ width: "1350px", position: "absolute", top: "110px", left: "80px" }}
                             onChange={(e) => {
                                 setMenuimg2(e.target.value);
                             }}
@@ -848,26 +861,36 @@ function Owner_Addmenu() {
                         />
                     </label>
 
-                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "60px", marginLeft: "25px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)" }}><span>파일 &nbsp;찾기</span></button>
+                    <button className="search" onClick={openFileDialog} style={{ width: "50px", height: "58px", marginLeft: "25px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", position: "absolute", top: "70px", right: "70px" }}><span>파일 &nbsp;찾기</span></button>
                 </div>
-                <div style={{ position: "absolute", top: "550px", right: "60px" }}>
-                    <span style={{ fontSize: "20px" }}>수량</span><span style={{ color: "red", paddingLeft: "20px", fontSize: "20px" }}>(필수) &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <div className='addstore_img' style={{ position: "relative" }} >
+                    <div className='addst_img'>
+                        <span>메뉴 설명</span>
+                    </div>
                     <TextField
-                        style={{ width: "370px" }}
-                        placeholder='수량을 입력해주세요'
+                        style={{ width: "1350px", position: "absolute", top: "110px", left: "80px" }}
+                        placeholder='상품 설명를 입력해주세요'
+                        multiline
+                        name="menu_explanation2"
+                        value={menu_explanation2}
+                        autoComplete="menu_explanation2"
+                        rows={3}
+                        inputProps={{
+                            style: {
+                                height: "80px",
+                            },
+                        }}
                         required
-                        name="quantity2"
-                        value={quantity2}
                         onChange={(e) => {
-                            setQuantity2(e.target.value);
+                            setMenu_explanation2(e.target.value);
                         }}
                     ></TextField>
                 </div>
+               
                 <button className="addmenu_sub" onClick={() => {
                     const formData = new FormData();
 
-                    formData.append('image', selectedFile2);
-                    formData.append('shopidx', selectedStore.shopidx);
+                    formData.append('imageFile', selectedFile);
                     formData.append('itemName', menuName2);
                     formData.append('itemnotice', menu_explanation2);
                     formData.append('cost', menu_price2);
@@ -877,10 +900,8 @@ function Owner_Addmenu() {
                     formData.append('endtime', discountEndTime2);
                     formData.append('quantity', quantity2);
                     formData.append('itemidx', menuidx2);
-                    formData.append('existingImage', menuimg2);
-                    formData.append('method', "modify");
 
-                    axios.post('/item/register', formData)
+                    axios.put('/item/update', formData)
                         .then((response) => {
                             const item = response.data;
                             console.log(item);
@@ -980,6 +1001,7 @@ function Owner_Addmenu() {
             </div>
             <div className={`${temp10 == true ? "reservation_close" : "reservation_list_view"}`}>
                 <span className="reservation_list_close" style={{ fontSize: "25px", position: "absolute", top: "10px", right: "19px", cursor: "pointer", padding: "0px 10px", fontSize: "25px", fontWeight: "700", height: "10%" }} onClick={() => {
+                    setUser_reservation_list([]);
                     setTemp10(!temp10);
                 }}>X</span>
                 <div className='reservation_list_title' style={{ marginTop: "20px" }} >

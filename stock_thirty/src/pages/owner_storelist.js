@@ -13,6 +13,7 @@ import StoreIcon from '@mui/icons-material/Store';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { TextFieldsSharp } from '@material-ui/icons';
+import LogoutIcon from '@mui/icons-material/Logout';
 function Owner_Storelist() {
     let [temp, setTemp] = useState(true);
     let [temp1, setTemp1] = useState(true);
@@ -138,7 +139,6 @@ function Owner_Storelist() {
             setStore_website(currentstore.shopwebsite)
         }
     }, [currentstore]);
-
     return (
         <div>
             <div className='owner_storelist_pageWrap' >
@@ -176,16 +176,14 @@ function Owner_Storelist() {
                                 </a>
                             </li>
                             <li>
-                                <a href="/">
-                                    로그아웃
-                                </a>
-                            </li>
-                            <li>
-                                <a className='mypages' style={{ cursor: "pointer" }} onClick={() => {
-                                    setTemp1(!temp1);
-                                }}>
-                                    <AccountCircleIcon fontSize="large" /> <span>{userInfo.nickname}</span>
-                                </a>
+                            <a href="/" onClick={() => {
+                                        axios.get('/SessionLogout', {
+                                        })
+                                        window.alert("로그아웃되었습니다.");
+                                    }
+                                    }>
+                                        <LogoutIcon fontSize="large" />
+                                    </a>
                             </li>
                         </ul></nav>
                 </header>
@@ -202,7 +200,7 @@ function Owner_Storelist() {
                             <span>가게 등록</span>
                         </button>
                     </div>
-                    <div className='storelist'>
+                    <div className='storelist' style={{height:"60%"}}>
                         <div className='storelist_title'>
                             <span>30 가게</span>
                         </div>
@@ -402,8 +400,11 @@ function Owner_Storelist() {
                     ></TextField>
                 </div>
                 <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "3px solid rgb(74, 74, 247)" }} onClick={() => {
-
-                    if (store_name == "" && store_phon == "" && store_img == "" && store_address == "") {
+               console.log(store_name)
+               console.log(store_phon)
+               console.log(selectedFile.name)
+               console.log(selectedAddress)
+                    if (store_name == "" && store_phon == "" && selectedFile.name == "" && selectedAddress == "") {
                         window.alert("가게등록실패 다시입력");
                         setTemp2(!temp2)
                         navigate("/owner_storelist")
@@ -415,11 +416,11 @@ function Owner_Storelist() {
                         window.alert("가게 전화번호를 등록해주세요");
                         setTemp2(!temp2)
                         navigate("/owner_storelist")
-                    } else if (store_img == "") {
+                    } else if (selectedFile.name == "") {
                         window.alert("가게이미지을 등록해주세요");
                         setTemp2(!temp2)
                         navigate("/owner_storelist")
-                    } else if (store_address == "") {
+                    } else if (selectedAddress == "") {
                         window.alert("가게주소을 등록해주세요");
                         setTemp2(!temp2)
                         navigate("/owner_storelist")
@@ -562,27 +563,25 @@ function Owner_Storelist() {
                 <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
                     setTemp3(!temp3)
                     const formData = new FormData();
-                    formData.append('imageFilename', selectedFile);
+                    formData.append('imagefile', selectedFile);
                     formData.append('shopName', store_name);
                     formData.append('shopTel', store_phon);
                     formData.append('shopAddress', selectedAddress);
                     formData.append('promotionText', store_promotionText);
                     formData.append('shopWebsite', store_website);
                     formData.append('shopidx', store_index);
-                    formData.append('existingAddress', store_address);
-                    formData.append('existingImage', store_img);
-                    formData.append('method', "modify");
 
                     // axios.post에 직접 formData를 전달
                     return (
-                        axios.post('/shopRegistration', formData)
+                        axios.put('/shop/update', formData)
                             .then((response) => {
                                 window.alert("가게 수정 완료");
                                 window.location.href = response.data;
                             })
                             .catch(error => {
-                                window.alert(error.response.data.result);
-                                navigate("/owner");
+                                let errorMessages = Object.values(error.response.data).join('\n');
+                             console.log(error);
+                             window.alert(errorMessages);
                             })
                     );
                 }}>수정 완료</a>
@@ -591,7 +590,7 @@ function Owner_Storelist() {
     );
     function sendUserData() {
         const formData = new FormData();
-        formData.append('imageFilename', selectedFile);
+        formData.append('imageFile', selectedFile);
         formData.append('shopName', store_name);
         formData.append('shopTel', store_phon);
         formData.append('shopAddress', selectedAddress);
@@ -600,7 +599,7 @@ function Owner_Storelist() {
 
         // axios.post에 직접 formData를 전달
         return (
-            axios.post('/shopRegistration', formData)
+            axios.post('/shop/create', formData)
                 .then((response) => {
                     window.alert("가게 등록 완료");
                     window.location.href = response.data;
@@ -612,7 +611,9 @@ function Owner_Storelist() {
                     setStore_name("");
                 })
                 .catch(error => {
-                    window.alert(error.response.data.result);
+                    let errorMessages = Object.values(error.response.data).join('\n');
+                   console.log(error);
+                  window.alert(errorMessages);
                     setSelectedAddress("");
                     setSelectedFile("");
                     setStore_website("");

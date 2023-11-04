@@ -7,7 +7,6 @@ function Id_result() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const user_id = urlParams.get('user_id');
-    console.log(`User Id: ${user_id}`);
     return (
         <div className='id_resultWrap'>
             <div className='id_title'>

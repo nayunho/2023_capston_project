@@ -93,7 +93,7 @@ function Login(props) {
                                         if(user_role=="사용자"){
                                             window.location.href="/home_user"
                                         }else if(user_role=="상업자"){
-                                            window.location.href="/owner_main_page";
+                                            window.location.href="/home_owner";
                                         }
                                     })
                                     .catch(error => {
