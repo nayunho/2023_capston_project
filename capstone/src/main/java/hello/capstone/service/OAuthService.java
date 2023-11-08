@@ -63,7 +63,6 @@ public class OAuthService{
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
 
             //Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             @SuppressWarnings("deprecation")
@@ -194,9 +193,12 @@ public class OAuthService{
    		 String email = properties.getAsJsonObject().get("email").getAsString();
    		 String phone = properties.getAsJsonObject().get("mobile").getAsString();
           
+         phone.replace("-", "");
+         
          log.info("name={}",name);
          log.info("email={}",email);
          log.info("phone={}",phone);
+         
          
          HashMap<String, Object> naverInfo = new HashMap<String, Object>();
          naverInfo.put("name", name);

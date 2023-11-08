@@ -1,14 +1,60 @@
 package hello.capstone.repository;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import hello.capstone.dto.Item;
+import hello.capstone.dto.Member;
+import hello.capstone.dto.Reservation;
+import hello.capstone.dto.Shop;
 
 @Mapper
 public interface ItemMapper {
 
-	void saveitem(Item item);
+	void saveItem(Item item);
 	
-	Item findByShopIdx_itemname(@Param("shopidx") int shopidx, @Param("itemname") String itemname);
+	void updateItem(Item item);
+	
+	Item findByShopIdxAndItemname(@Param("shopidx") int shopidx, @Param("itemname") String itemname);
+	
+	List<Item> getItems(@Param("shopidx") int shopidx);
+	
+	Item findByItemIdx(int ItemIdx);
+	
+	void itemDelete(Item item);
+	
+	int reservationCheck(Item item);
+	
+	void pushAlarm(@Param("shopidx") int shopidx);
+	
+	void deleteTimeoutAlarm();
+	
+	void deleteReadAlarm(@Param("shop") Shop shop, @Param("member") Member member);
+	
+	List<Map<String, Object>> getAlarm(@Param("memberidx") int memberidx);
+
+	int getQuantity(int itemidx);
+	
+	void reservation(Reservation reservation);
+	
+	void reduceQuantity(Reservation reservation);
+	
+	void reservationConfirm(int ridx);
+	
+	void reservationDelete(int ridx);
+	
+	void reservationCancelBusiness(int reservationIdx);
+	
+	List<Map<String, Object>> getReservations(@Param("memberidx") int memberidx, @Param("confirm") String confirm);
+	
+	void increaseQuantity(@Param("itemidx")int itemidx, @Param("number")int number);
+	
+	void decreaseTrust(String time);
+	
+	void setConfirmToFalse(String time);
+	
+	List<Item> getReservationItem(@Param("memberIdx") int memberIdx);
 }

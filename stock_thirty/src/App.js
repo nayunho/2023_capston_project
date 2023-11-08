@@ -7,7 +7,6 @@ import Login from "./pages/login.js"
 import { useNavigate } from "react-router-dom";
 import Kakao_Loading from "./pages/Kakao_Loading.js";
 import Naver_Loading2 from './pages/Naver_Loading2.js';
-import Owner from './pages/owner';
 import Home_user from './pages/home_user';
 import Finde_id from './pages/find_id.js';
 import Finde_pw from './pages/find_pw.js';
@@ -42,10 +41,21 @@ import Ad_businessman_item from './pages/ad_businessman_item.js';
 import Ad_admin from './pages/ad_admin.js';
 import Ad_inquiry from './pages/ad_inquiry.js';
 import Ad_inquiry_wanswer from './pages/ad_inquiry_wanswer.js';
+import Ad_inquiry_wanswer_update from './pages/ad_inquiry_wanswer_update.js';
 import Ad_inquiry_canswer from './pages/ad_inquiry_canswer.js';
 import Ad_analysis_shop from './pages/ad_analysis_shop.js';
 import Ad_analysis_shop_rating from './pages/ad_analysis_shop_rating.js';
-
+import Ad_analysis_shop_rating_member from './pages/ad_analysis_shop_rating_member.js';
+import Ad_analysis_shop_num from './pages/ad_analysis_shop_num.js';
+import Ad_analysis_shop_item from './pages/ad_analysis_shop_item.js';
+import Ad_business_trust from './pages/ad_business_trust.js';
+import Ad_business_trust_content from './pages/ad_business_trust_content.js';
+import Ad_notice from './pages/ad_notice.js';
+import Ad_notice_write from './pages/ad_notice_write.js';
+import Ad_notice_update from './pages/ad_notice_update.js';
+import Ad_noticeview from './pages/ad_noticeview.js';
+import Ad_login from './pages/ad_login.js';
+import Ad_store_management from './pages/ad_store_management.js';
 function App() {
   const fileInput = useRef(null)
   /*지도*/
@@ -71,6 +81,19 @@ function App() {
       return "#e74c3c";
     }
   }
+   function formatDate(dateString) {
+     const originalDate = new Date(dateString);
+     const options = {
+       year: "numeric",
+       month: "2-digit",
+       day: "2-digit",
+       hour: "2-digit",
+       minute: "2-digit",
+       second: "2-digit",
+     };
+     const formattedDate = originalDate.toLocaleString("ko-KR", options);
+     return formattedDate;
+   }
   let [search_store_switch, setSearch_store_switch] = useState(true);
   let [search_store_switch2, setSearch_store_switch2] = useState(true);
   let [switch3, setSwitch3] = useState(0);
@@ -116,9 +139,10 @@ function App() {
             longitude: position.coords.longitude,
             distance: rangeValue,
             unit: "km",
-            price: maxPrice,
+            minprice: minPrice,
+            maxprice: maxPrice,
             time: endTime,
-            rating: maxStars.toFixed(1),
+            rating: maxStars,
           }
         }).then(response => {//데이터를받아오는게성공시 다른페이지호출
           let search_store = response.data;
@@ -366,8 +390,10 @@ function App() {
   const handleRangeChange = (event) => {
     setRangeValue(event.target.value);
   }
-
-  const [maxPrice, setMaxPrice] = useState(0);
+  /*필터 가격 선택*/
+  const [minPrice, setMinPrice] = useState("0");
+  const [minPrice1, setMinPrice1] = useState(0);
+  const [maxPrice, setMaxPrice] = useState("");
   const [maxPrice1, setMaxPrice1] = useState(0);
   function addCommasToNumber(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -381,9 +407,13 @@ function App() {
       setMaxPrice1(addCommasToNumber(inputValue)); // 문자열로 설정
     }
   }
-
+  useEffect(() => {
+    console.log(maxPrice)
+  },[maxPrice])
     const checkOnlyOne1 = (checkThis) => {
     const checkboxes = document.getElementsByName('price')
+    let selectedPrice = "0";
+    let selectedPrice1 = 0;
     for (let i = 0; i < checkboxes.length; i++) {
       if (checkboxes[i] !== checkThis) {
         checkboxes[i].checked = false;
@@ -391,7 +421,18 @@ function App() {
         setMaxPrice1(checkThis.value);
       }
     }
+
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedPrice = checkbox.value;
+        selectedPrice1 = parseInt(selectedPrice, 10);
+      }
+    });
+
+    setMaxPrice(selectedPrice);
+    setMaxPrice1(addCommasToNumber(selectedPrice1));
   }
+  /*필터 마감 선택*/
   const [endTime, setEndTime] = useState(0); // 초기값 설정 (예: 24시간 마감시간)
 
   const handleEndTimeChange = (event) => {
@@ -399,18 +440,70 @@ function App() {
     setEndTime(selectedTime);
   }
 
+
+  const checkOnlyOne2 = (checkThis) => {
+    const checkboxes = document.getElementsByName('endTime')
+    let selectedTime = 0;
+    for (let i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i] !== checkThis) {
+        checkboxes[i].checked = false;
+        setEndTime(checkThis.value);
+      }
+    }
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedTime = parseInt(checkbox.value, 10);
+      }
+    });
+  
+    setEndTime(selectedTime);
+  }
+  //필터 별점 선택 
   let [maxStars, setMaxStars] = useState(0); // 최대 별점
 
-  //필터 별점 선택 
   const checkOnlyOne = (checkThis) => {
     const checkboxes = document.getElementsByName('rating')
+    let selectedrate = 0;
     for (let i = 0; i < checkboxes.length; i++) {
       if (checkboxes[i] !== checkThis) {
         checkboxes[i].checked = false;
         setMaxStars(checkThis.value);
       }
     }
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedrate = parseInt(checkbox.value, 10);
+      }
+    });
+  
+    setMaxStars(selectedrate);
   }
+
+  const resetFilters = () => {
+    setRangeValue(0);
+    setEndTime(0);
+    setMinPrice("0");
+    setMinPrice1(0);
+    setMaxPrice("0");
+    setMaxPrice1(0);
+    setMaxStars(0);
+  
+    // Reset the checkboxes by unchecking them
+    const checkboxes = document.getElementsByName('price');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  
+    const endTimeCheckboxes = document.getElementsByName('endTime');
+    endTimeCheckboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  
+    const ratingCheckboxes = document.getElementsByName('rating');
+    ratingCheckboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  };
   return (
     <div className="App">
       <div className='wrap' style={{ display: "none" }}>
@@ -452,24 +545,24 @@ function App() {
                         </a>
                       </li>
                     </ul></nav>
-                </header>
-                <div style={{ width: "100%", height: "25px" }}></div>
-                <div style={{ width: "100%", height: "91%", overflow: "hidden" }}>
-                  <div className={`contents_slide ${showFilter == true ? "" : "filter_slide"}`} style={{ width: "140%", height: "100%", display: "flex" }}>
+          </header>
+          <div style={{ width: "100%", height: "25px" }}></div>
+          <div style={{ width: "100%", height: "91%", overflow: "hidden" }}>
+            <div className={`contents_slide ${showFilter == true ? "" : "filter_slide"}`} style={{ width: "140%", height: "100%", display: "flex" }}>
 
-                    <div style={{ width: "1%", height: "100%" }}></div>
+              <div style={{ width: "1%", height: "100%" }}></div>
 
-                    <div className={`filter`} style={{ width: "22%", borderRadius: "50px", height: "99%", backgroundColor: "white", boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)' }}>
+              <div className={`filter`} style={{ width: "19%", borderRadius: "50px", height: "99%", backgroundColor: "white", boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)' }}>
                 <div className='filter_title' style={{ paddingTop: "50px", height: "5%", fontWeight: "600", fontSize: "40px", textAlign: "center", marginBottom: "30px" }}>
                   필터
                 </div>
 
-                <div className='filter_contents' style={{ height: "83%" }}>
+                                <div className='filter_contents' style={{ height: "83%" }}>
 
-                  <div className='filter_distance' style={{ height: "20%" }}>
+                  <div className='filter_distance' style={{ height: "24%", borderTop:"1px solid rgb(180,180,180)",borderBottom:"1px solid rgb(180,180,180)"}}>
                     <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px", color: "#929292" }}>거리</h1>
                     <div>
-
+                  <br />
                       <input
                         type="range"
                         min="0"
@@ -481,81 +574,79 @@ function App() {
                       />
 
                       {rangeValue != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "20px", color: "#828282" }}>
-                          선택된 거리: <span style={{ color: "black", fontWeight: "700", fontSize: "22px" }}>{rangeValue} </span>Km</p>
+                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" }}>
+                          선택된 거리: <span style={{ color: "black", fontWeight: "700", fontSize: "25px" }}>{rangeValue} </span>Km</p>
                       )}
                     </div>
                   </div>
-                  <div className='filter_price' style={{ height: "40%" }}>
-                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px", color: "#929292" }}>가격</h1>
-                    <div>
-                      <div style={{ marginBottom: "15px" }}>
-                        <input
-                          id="ft_price_btn1"
-                          type="checkbox"
-                          name='price'
-                          value='10000'
-                          onChange={(e) => {
-                            checkOnlyOne1(e.target);
-                          }}
-                        /><label for="ft_price_btn1"><span style={{ fontWeight: "600" }}> ~ 10000원</span></label>
-                      </div>
-                      <div style={{ marginBottom: "15px" }}>
-                        <input
-                          id="ft_price_btn2"
-                          type="checkbox"
-                          name='price'
-                          value='30000'
-                          onChange={(e) => {
-                            checkOnlyOne1(e.target);
-                          }}
-                        /><label for="ft_price_btn2"><span style={{ fontWeight: "600" }}> ~ 30000원</span></label>
-                      </div>
-                      <div style={{ marginBottom: "15px" }}>
-                        <input
-                          id="ft_price_btn3"
-                          type="checkbox"
-                          name='price'
-                          value='59000'
-                          onChange={(e) => {
-                            checkOnlyOne1(e.target);
-                          }}
-                        /><label for="ft_price_btn3"><span > ~ 59000원</span></label>
-                      </div>
+                  <div className='filter_price' style={{ height: "27%" , borderBottom:"1px solid rgb(180,180,180)"}}>
+                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px",marginBottom:"20px", color: "#929292" }}>가격</h1>
+                    <div style={{marginBottom:"25px"}}>                      
+                        
+
+
                     </div>
-                    <div >
-                      <input
-                        type="range"
-                        min="0"
-                        max="59999"
-                        step="1000"
+                    <div>
+                      <TextField
+                        style = {{width: 200, height:60 ,fontSize:20}}
+                        placeholder='최소 가격 0원'
+                        inputProps={{style: {fontSize: 25}}}
+                        InputLabelProps={{style: {fontSize: 20, lineHeight:60}}}
+                        name='minprice' 
+                        value={minPrice}
+                        onChange={(e) => {
+                          setMinPrice(e.target.value);
+                          setMinPrice1(addCommasToNumber(e.target.value));
+                      }}                    
+                      >
+
+                      </TextField>
+                      <span style={{fontWeight:"600", padding:"0px 15px 0px 15px",display:"inline-block",marginTop:"8px", fontSize:"30px"}}>~</span>
+                      <TextField
+                        style = {{width: 200, height:60}}
+                        placeholder='최대 가격'
+                        inputProps={{style: {fontSize: 25}}}
+                        InputLabelProps={{style: {fontSize: 20, lineHeight:60}}}
+                        name='maxprice'
                         value={maxPrice}
-                        onChange={handleMaxPriceChange}
-                        style={{ width: "80%", height: "80%", accentColor: "black" }}
-                      />
+                        onChange={(e) => {
+                          setMaxPrice(e.target.value);
+                          setMaxPrice1(addCommasToNumber(e.target.value));
+                      }}
+                      >
+                        
+                      </TextField>
+                    </div>
+                     <div >
+                    
                       {maxPrice != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "20px", color: "#828282" }}>
-                          최대 가격: <span style={{ color: "black", fontWeight: "700", fontSize: "22px" }}>{maxPrice1} </span>원</p>
+                        <p style={{ fontWeight: "600", fontSize: "30px", color: "#828282" }}>
+                          가격: <span style={{ color: "black", fontWeight: "700", fontSize: "30px" }}>{minPrice1} ~ {maxPrice1} </span>원</p>
                       )}
                     </div>
                   </div>
 
 
-                  <div className='filter_endtime' style={{ height: "40%" }}>
-                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px", color: "#929292" }}>마감</h1>
-                    <div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="24" // 예: 24시간 범위 설정
-                        step="0.5" // 1시간씩 이동
-                        value={endTime}
-                        onChange={handleEndTimeChange}
-                        style={{ width: "80%", height: "80%", accentColor: "black" }}
-                      />
+                  <div className='filter_endtime' style={{ height: "30%", borderBottom:"1px solid rgb(180,180,180)" }}>
+                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px",marginBottom:"20px", color: "#929292" }}>마감</h1>
+                    <div style={{marginBottom:"25px"}}>
+                    
+                    </div>
+                    <br />
+                    <div style={{display:"inline-block", marginRight:"250px"}}>
+                      <select
+                   value={endTime}
+                   onChange={handleEndTimeChange}
+                   style={{ width: "150px", height: "60px", accentColor: "black" , fontSize:"20px" }}
+                 >
+                   <option value="0">0 시간</option>
+                   <option value="1">1 시간</option>
+                   <option value="2">2 시간</option>
+                   {/* 다른 시간 옵션들 추가 */}
+                 </select>
                       {endTime != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "20px", color: "#828282" }}>
-                          마감까지 <span style={{ color: "black", fontWeight: "700", fontSize: "22px" }}>{endTime}</span> 시간 이상 남음</p>
+                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" ,display:"inline-block"}}>
+                          마감까지 <span style={{ color: "black", fontWeight: "700", fontSize: "25px" }}>{endTime}</span> 시간 이상 남음</p>
                       )}
                     </div>
                   </div>
@@ -617,7 +708,7 @@ function App() {
                           checkOnlyOne(e.target);
 
                         }}
-                      /><label for="ft_star_btn2"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
+                        /><label for="ft_star_btn2"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
                         <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
                         <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
                         <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
@@ -648,10 +739,19 @@ function App() {
                     </div>
                   </div>
                   <div className='filter_btn'>
-                    <button className="remove_regervation_Store" style={{ marginTop: "5px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" }} onClick={() => {
+                    <button className='refresh_btn' style={{width:"180px",marginTop: "5px", padding: "10px 50px", backgroundColor:"white",borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px"}} onClick={
+                      resetFilters
+                    }>
+                      초기화
+                    </button>
+                    <button className="remove_regervation_Store" style={{ width:"180px",marginTop: "5px", padding: "10px 50px", borderRadius: "50px", border: "1px solid rgba(0,0,0,0.3)", cursor: "pointer", fontWeight: "700", fontSize: "25px" ,backgroundColor:"black",color:"white"}} onClick={() => {
                       setSwitch3(1);
                       setSearch_store_switch(!search_store_switch);
                       setB(1);
+                      console.log(rangeValue);
+                      console.log(maxPrice);
+                      console.log(maxStars);
+                      console.log(endTime);
                     }}>적용</button>
                   </div>
                 </div>
@@ -733,9 +833,9 @@ function App() {
                                   }, 100);
                                 }}>{menuitem.itemname}</span></div>
                                 <div style={{ width: "55%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "rgb(150, 150, 150)" }}>{menuitem.itemnotice}</div>
-                                <div style={{ width: "100%", marginTop: "10px", marginLeft: "-25px" }}><AccessAlarmIcon style={{ marginBottom: "-25px" }}></AccessAlarmIcon> {menuitem.starttime} </div>
+                                <div style={{ width: "100%", marginTop: "10px", marginLeft: "-25px" }}><AccessAlarmIcon style={{ marginBottom: "-25px" }}></AccessAlarmIcon> {formatDate(menuitem.starttime)} </div>
                                 <div> ~ </div>
-                                <div style={{ width: "100%", marginLeft: "5px" }}><span> {menuitem.endtime} </span></div>
+                                <div style={{ width: "100%", marginLeft: "5px" }}><span> {formatDate(menuitem.endtime)} </span></div>
                                 <div style={{ marginLeft: "-80px", width: "100%", height: "40px", lineHeight: "40px" }}><span style={{ textAlign: "right", textDecoration: "line-through", fontSize: "20px", fontWeight: "600", color: "rgb(150, 150, 150)", marginRight: "5px" }}>{menuitem.cost}</span><span style={{ fontSize: "25px", fontWeight: "600", color: "Red" }}>{menuitem.salecost}원</span></div>
                                 <button style={{ width: "150px", height: "40px", borderRadius: "20px", backgroundColor: "black", color: "white", fontSize: "18px", fontWeight: "600", float: "right", cursor: "pointer" }} onClick={() => {
                                   setTimeout(() => {
@@ -747,7 +847,7 @@ function App() {
                               </li>
                             ))}
                           </ul>
-                          <div className={`c_view ${cViewVisible ? 'c_view_visible' : ''}`}>
+                         <div className={`c_view ${cViewVisible ? 'c_view_visible' : ''}`}>
                             <div className="c_view_close" onClick={() => {
                               setTimeout(() => {
                                 setCViewVisible(false);
@@ -757,7 +857,18 @@ function App() {
                             <div style={{ marginTop: "30px" }}>
                               {selectedMenuItem && (
                                 <div>
-                                  <div style={{ marginLeft: "8px", width: "98%", height: "280px", borderRadius: "30px", boxShadow: "inset 0 10px 10px -10px #333,inset 0 -10px 10px -10px #333" }}><img src={"/itemimages/" + `${selectedMenuItem.image}`} alt={selectedMenuItem.image} style={{ backgroundCover: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", width: "100%", height: "100%" }}></img></div>
+                                  <div style={{ marginLeft: "40px", width: "87%", height: "280px", borderRadius: "30px", boxShadow: "inset 0 10px 10px -10px #333, inset 0 -10px 10px -10px #333" }}>
+                             <img
+                               src={"/itemimages/" + `${selectedMenuItem.image}`}
+                               alt={selectedMenuItem.image}
+                               style={{
+                                 objectFit: "cover", // 이미지가 영역에 맞게 조절되도록 함
+                                 width: "100%", // 가로 크기를 100%로 지정
+                                 height: "100%", // 세로 크기를 100%로 지정
+                                 borderRadius: "30px", // 이미지에 둥근 테두리를 추가할 경우 지정
+                               }}
+                             />
+                           </div>
                                   <div style={{ width: "85%", height: "auto", border: "1px solid rgb(150,150,150)", borderRadius: "7px", marginTop: "-20px", margin: "0 auto" }}>
                                     <div style={{ margin: "20px 0px", paddingBottom: "20px", borderBottom: "1px solid rgb(195, 192, 192)" }}>
                                       <span style={{ fontSize: "35px", fontWeight: "600" }}>{selectedMenuItem.itemname}</span>
@@ -777,10 +888,14 @@ function App() {
                                       <span style={{ fontSize: "18px", marginLeft: "10px" }}>남은 수량 : {selectedMenuItem.quantity} </span>
                                     </div>
                                     <div style={{ fontSize: "18px", color: "rgb(95,95,95)", padding: "50px 0px", marginLeft: "40px", width: "80%", height: "auto", wordBreak: "break-all" }}>{selectedMenuItem.itemnotice}</div>
-                                    <div>
-                                      <div style={{ width: "100%", marginTop: "10px", marginLeft: "-5px", fontSize: "20px", marginBottom: "10px" }}><AccessAlarmIcon style={{ marginBottom: "-7px" }}></AccessAlarmIcon> {selectedMenuItem.starttime} ~ <span>{selectedMenuItem.endtime}</span></div>
-                                      <div style={{ width: "100%", marginLeft: "0", fontSize: "20px" }}></div>
-                                    </div>
+                              <div>
+                                <div style={{ width: "100%", marginTop: "10px", marginLeft: "-5px", fontSize: "20px", marginBottom: "10px" }}>
+                                  <AccessAlarmIcon style={{ marginBottom: "-7px" }}></AccessAlarmIcon>할인 시작일 : {formatDate(selectedMenuItem.starttime)}
+                                </div>
+                                <div style={{ width: "100%", marginLeft: "-5px", fontSize: "20px" }}>
+                                  <AccessAlarmIcon style={{ marginBottom: "-7px" }}></AccessAlarmIcon>할인 마일일 :  {formatDate(selectedMenuItem.endtime)}
+                                </div>
+                              </div>
                                   </div>
                                 </div>
                               )}
@@ -870,9 +985,6 @@ function App() {
         <Route path="/home_user" element={<div>
           <Home_user />
         </div>} />
-        <Route path="/owner" element={<div>
-          <Owner />
-        </div>} />
         <Route path="/find_id" element={<div>
           <Finde_id />
         </div>} />
@@ -938,11 +1050,47 @@ function App() {
         <Route path="/ad_inquiry_canswer" element={<div>
           < Ad_inquiry_canswer />
         </div>} />
+         <Route path="/ad_inquiry_wanswer_update" element={<div>
+          < Ad_inquiry_wanswer_update />
+        </div>} />
         <Route path="/ad_analysis_shop" element={<div>
           < Ad_analysis_shop />
         </div>} />
         <Route path="/ad_analysis_shop_rating" element={<div>
           < Ad_analysis_shop_rating />
+        </div>} />
+        <Route path="/ad_analysis_shop_rating_member" element={<div>
+          < Ad_analysis_shop_rating_member />
+        </div>} />
+        <Route path="/ad_analysis_shop_num" element={<div>
+          < Ad_analysis_shop_num />
+        </div>} />
+        <Route path="/ad_analysis_shop_item" element={<div>
+          < Ad_analysis_shop_item />
+        </div>} />
+        <Route path="/ad_business_trust" element={<div>
+          < Ad_business_trust />
+        </div>} />
+        <Route path="/ad_business_trust_content" element={<div>
+          < Ad_business_trust_content />
+        </div>} />
+        <Route path="/ad_notice" element={<div>
+          < Ad_notice />
+        </div>} />
+        <Route path="/ad_notice_write" element={<div>
+          < Ad_notice_write />
+        </div>} />
+        <Route path="/ad_noticeview" element={<div>
+          < Ad_noticeview />
+        </div>} />
+        <Route path="/ad_notice_update" element={<div>
+          < Ad_notice_update />
+        </div>} />
+        <Route path="/ad_login" element={<div>
+          < Ad_login />
+        </div>} />
+        <Route path="/ad_store_management" element={<div>
+          < Ad_store_management />
         </div>} />
       </Routes>
     </div>

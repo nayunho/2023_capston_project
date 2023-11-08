@@ -3,20 +3,14 @@ package hello.capstone.service;
 
 
 import java.sql.Date;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import net.nurigo.sdk.NurigoApp;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
-import net.nurigo.sdk.message.service.DefaultMessageService;
 import hello.capstone.dto.Member;
 import hello.capstone.exception.LogInException;
 import hello.capstone.exception.SignUpException;
@@ -24,6 +18,11 @@ import hello.capstone.exception.errorcode.ErrorCode;
 import hello.capstone.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.response.SingleMessageSentResponse;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,17 +30,20 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginService {
 	
 	private final MemberRepository memberRepository;
+	private final PasswordEncoder bCryptPasswordEncoder;
+	
 	/*
 	 * 회원가입 - 마지막 수정 09/20/ 23시 20분
 	 * */
 	public boolean signUp(Member member) {
 		
-		
+		//중복ID 검사
 		//.ifPresent()는 memberRepository.findById 실행 시 오류 던져주기 위함
 		Optional.ofNullable(memberRepository.findById(member.getId(),"normal"))
 			.ifPresent(user->{
 				throw new SignUpException(ErrorCode.DUPLICATED_USER_ID,null);
 			});
+		
 		
 		long miliseconds = System.currentTimeMillis();
 		Date redate = new Date(miliseconds);
@@ -110,7 +112,6 @@ public class LoginService {
     	
 	}
 	
-	
 	/*
 	 * 로그인 
 	 */
@@ -118,22 +119,21 @@ public class LoginService {
 		
 		
 		Member userMember = memberRepository.findById(id,"normal");
-		boolean pwCheck = passwordCheck(userMember, pw);
+		passwordCheck(userMember, pw);
 
 		return userMember;
 	}
-	
 	
 	/*
 	 * 인증 메시지
 	 */
 	public SingleMessageSentResponse sendMessage(String phone, String code) {
 		
-		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize("NCS2WM9OPHXRSX3S", "HBXEEKMI2NVBRJV4L5HJSFVN31AITSDU", "https://api.coolsms.co.kr");
+		DefaultMessageService messageService = NurigoApp.INSTANCE.initialize("NCS9UG2XED3DLI5I", "TZKJX9RAOQBJO4AW3AWH1HJII4FVV83S", "https://api.coolsms.co.kr");
 		
 		Message message = new Message();
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
-        message.setFrom("01085864484");
+        message.setFrom("01077359350");
         message.setTo(phone);
         message.setText("[재고30]인증번호 " + code + "를 입력하세요.");
 
@@ -143,29 +143,33 @@ public class LoginService {
         return response;
 	}
 	
+	
+	
 /*
  *-----------------------------------------------------------------------------------------------------
  *private 메소드
  *----------------------------------------------------------------------------------------------------- 	
  */
-	
-	//비밀번호 일치 확인
-	private boolean passwordCheck(Member userMember, String pw) {
-		boolean pwCheck = true;
-		if(!(userMember.getPw().equals(pw))) {
+   
+   //아이디 존재 여부 확인
+ 	private void idCheck(String id) {
+ 		
+ 		if(Objects.isNull(memberRepository.findById(id, "normal"))) {
+ 	    	  throw new LogInException(ErrorCode.NULL_USER_ID, null);
+ 	      }
+ 	
+ 	}
+ 	//비밀번호 일치 확인
+	private void passwordCheck(Member userMember, String pw) {
+		boolean pwCheck = bCryptPasswordEncoder.matches(pw, userMember.getPw());
+		if(!pwCheck) {
 	    	  throw new LogInException(ErrorCode.PASSWORD_MISMATCH, null);
 	      }
 		
-		return pwCheck;
 	}
+
 	
-	//중복회원 검사
-	private Member duplicateCheck(Member member) {
-		Member findMember = memberRepository.findById(member.getId(),"normal");
-		
-		return findMember;
-	}
-	//닉네임 임의 random String
+	//닉네임 임의의 random String
 	private String createRandomNickname() {
 		int randomNicknameLen = 8;
 		boolean useLetters = true;
@@ -176,4 +180,14 @@ public class LoginService {
 			
 		return randomNick;
 	}
+	
 }
+
+
+
+
+
+
+
+
+

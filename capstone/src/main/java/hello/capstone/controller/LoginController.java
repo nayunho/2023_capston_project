@@ -1,8 +1,15 @@
 package hello.capstone.controller;
 
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,15 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 import hello.capstone.dto.Member;
 import hello.capstone.exception.CodeVerificationException;
 import hello.capstone.exception.SendMessageException;
+import hello.capstone.exception.ValidationException;
 import hello.capstone.exception.errorcode.ErrorCode;
 import hello.capstone.service.LoginService;
 import hello.capstone.service.MemberService;
+import hello.capstone.validation.group.SignUpValidationGroup;
+import hello.capstone.validation.group.UpdatePwValidationGroup;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
-
 
 @Slf4j
 @RestController
@@ -30,22 +39,24 @@ public class LoginController {
 	
 	private final LoginService loginService;
 	private final MemberService memberService;
+	private final PasswordEncoder bCryptPasswordEncoder;
+	private final MessageSource messageSource;
+
 	/*
 	 * 일반 회원 회원가입
 	 */
     @PostMapping("/join")
-    public String signUp(@RequestBody Member member){
+    public String signUp(@Validated(value = SignUpValidationGroup.class) @RequestBody Member member, BindingResult bindingResult){
     	
-    	log.info("id ={}",member.getId());
-    	log.info("pw={}",member.getPw());
-    	log.info("name ={}",member.getName());
-    	log.info("phone={}",member.getPhone());
-    	log.info("role={}",member.getRole());
+    	if(bindingResult.hasErrors()) {
+    		sendErrors(bindingResult);
+    	}
     	
-    	boolean success = loginService.signUp(member);
+    	String pw = bCryptPasswordEncoder.encode(member.getPw());
+    	member.setPw(pw);
     	
+    	loginService.signUp(member);
     	
-    	log.info("SignUp Success !");
 		return "/login";
     }
     
@@ -67,8 +78,6 @@ public class LoginController {
     	
     	session.setAttribute("member", userMember);
     	
-    	log.info("loginId={}",userMember.getId());
-    	log.info("loginName={}",userMember.getName());
     	
     	return "home_user";
     }
@@ -76,9 +85,22 @@ public class LoginController {
     
     @GetMapping("/getSessionMember")
     public Member getSessionMember(HttpSession session) {
+    	Member member = (Member)session.getAttribute("member");
     	
-    	log.info("member = {}", (Member)session.getAttribute("member"));
-    	return (Member)session.getAttribute("member");
+    	return member; 
+    	
+    }
+    @GetMapping("/getSessionMember/business")
+    public Member getSessionMemberBusiness(HttpSession session) {
+    	Member member = (Member)session.getAttribute("member");
+    	
+    	return member; 
+    }
+    @GetMapping("/getSessionMember/getSessionMemberManager")
+    public Member getSessionMemberManager(HttpSession session) {
+    	Member member = (Member)session.getAttribute("member");
+    	
+    	return member; 
     }
     
     @GetMapping("/SessionLogout")
@@ -92,10 +114,11 @@ public class LoginController {
      * 아아디, 비밀번호 찾기
      */
     //아이디 확인(비밀번호 찾기)
-    @GetMapping("/ID_verification")
-    public String ID_verification(@RequestParam String id, HttpServletRequest request) {
-    	Member member = memberService.ID_verification(id);
+    @GetMapping("/id-verification")
+    public String idVerification(@RequestParam String id, HttpServletRequest request) {
+    	Member member = memberService.IdVerification(id);
     	HttpSession session = request.getSession();
+    	
     	session.setAttribute("findpw_member", member);
     	return "ok";
     }
@@ -103,27 +126,31 @@ public class LoginController {
     /*
      * 비밀번호 찾기(인증 문자 전송)
      */
-    @GetMapping("/findPw_sendMessage")
-    public SingleMessageSentResponse findPw_sendMessage(@RequestParam String phone, HttpServletRequest request) {
+    @GetMapping("/findpw-sendmessage")
+    public SingleMessageSentResponse findPwSendMessage(@RequestParam String phone, HttpServletRequest request) {
     	HttpSession session = request.getSession();
     	Member member = (Member)session.getAttribute("findpw_member");
+    	
     	if(phone.equals(member.getPhone())) {
     		return Message(phone, request);
     	}
     	else {
     		throw new SendMessageException(ErrorCode.PHONE_MISMATCH,null);
     	}
-    }
+    	
+}
     
     /*
      * 아이디 찾기(인증 문자 전송)
      */
-    @GetMapping("/findId_sendMessage")
-    public SingleMessageSentResponse findId_sendMessage(@RequestParam(required = false) String name,@RequestParam String phone, HttpServletRequest request) {
+    @GetMapping("/findid-sendmessage")
+    public SingleMessageSentResponse findIdSendMessage(@RequestParam(value = "name", required = false) String name,@RequestParam("phone") String phone, HttpServletRequest request) {
     	HttpSession session = request.getSession();
+
     	if(name != null) {
-    		Member member2 = memberService.Name_verification(name,phone);
+    		Member member2 = memberService.nameVerification(name,phone);
     		session.setAttribute("findid_member", member2);
+    		
     		if(phone.equals(member2.getPhone())) {
     			return Message(phone,request);
     		}
@@ -137,14 +164,28 @@ public class LoginController {
     } 
     
     /*
+     * 아이디 찾기(이름, 휴대폰 인증 성공 후 실제로 아이디 정보 보여주기)
+     */
+    @GetMapping("/find-id")
+    public String showID(HttpServletRequest request) {
+       HttpSession session = request.getSession();
+       Member findMember = (Member)session.getAttribute("findid_member");
+       String id = findMember.getId();
+       
+       session.removeAttribute("findid_member");
+       return id;
+    }
+    
+    
+    /*
      * 비밀번호 찾기(인증 문자 확인)
      */
-    @GetMapping("Pw_Code_verification")
-    public String Pw_Code_verification(@RequestParam String code, HttpServletRequest request) {
+    @GetMapping("pw-code-verification")
+    public String pwCodeVerification(@RequestParam String code, HttpServletRequest request) {
     	HttpSession session = request.getSession();
     	if(code.equals(session.getAttribute("code")) && session.getAttribute("findpw_member") != null) {
     		session.removeAttribute("code");
-    		return "/pw_result";
+    		return "success";
     	}
     	else {
     		throw new CodeVerificationException(ErrorCode.Code_MISMATCH,null);
@@ -154,8 +195,8 @@ public class LoginController {
     /*
      * 아이디 찾기(인증 문자 확인)
      */
-    @GetMapping("Id_Code_verification")
-    public String Id_Code_verification(@RequestParam String code, HttpServletRequest request) {
+    @GetMapping("id-code-verification")
+    public String IdCodeVerification(@RequestParam String code, HttpServletRequest request) {
     	HttpSession session = request.getSession();
     	if(code.equals(session.getAttribute("code")) && session.getAttribute("findid_member") != null) {
     		session.removeAttribute("code");
@@ -166,41 +207,38 @@ public class LoginController {
     	}
     }
     
-    /*
-     * 비밀번호 새 설정
-     */
     @PutMapping("/updatepw")
-    public String updatepw(@RequestBody HashMap<String,String> pw, HttpServletRequest request) {
-    	String password = pw.get("pw");
+    public String updatePw(@Validated(value = UpdatePwValidationGroup.class) @RequestBody Member memberPw, BindingResult bindingResult, HttpServletRequest request) {
+    	//변경 비밀번호 검증 및 암호화
+    	if(bindingResult.hasErrors()) {
+    		sendErrors(bindingResult);
+    	}
+    	
     	HttpSession session = request.getSession();
     	Member member = (Member)session.getAttribute("findpw_member");
-    	memberService.updatepw(member.getId(),password);
-    	session.removeAttribute("findpw_member");
+    	
+    	//암호화
+    	String pw = bCryptPasswordEncoder.encode(memberPw.getPw());
+    	
+    	memberService.updatePw(member.getId(),pw);
+    	session.removeAttribute("find_member");
+    	
     	return "/login";
     }
     
-    /*
-     * 아이디 찾기(이름, 휴대폰 인증 성공 후 실제로 아이디 정보 보여주기)
-     */
-    @GetMapping("/find_id")
-    public String showID(HttpServletRequest request) {
-    	HttpSession session = request.getSession();
-    	Member find_member = (Member)session.getAttribute("findid_member");
-    	String id = find_member.getId();
-    	log.info("find_member_ID = {}",id);
-    	session.removeAttribute("findid_member");
-    	return id;
+    //-------------------------------------------------------------------------------------------------------
+    
+    
+    //검증 오류
+    private void sendErrors(BindingResult bindingResult) {
+ 	   Map<String, String> errors = new HashMap<>();
+        for (FieldError error : bindingResult.getFieldErrors()) {
+     	   String em = messageSource.getMessage(error, Locale.getDefault());
+           errors.put(error.getField(), em);
+        }
+        throw new ValidationException(errors);
     }
     
-    @GetMapping("/test")
-    public String test() {
-    	return "success";
-    }
-    /*
-     *-----------------------------------------------------------------------------------------------------
-     *private 메소드
-     *----------------------------------------------------------------------------------------------------- 	
-     */
     
     //인증 번호 문자 보내는 코드
     private SingleMessageSentResponse Message(String phone, HttpServletRequest request) {
@@ -210,4 +248,25 @@ public class LoginController {
 		SingleMessageSentResponse reponse = loginService.sendMessage(phone,code);
     	return reponse;
     }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

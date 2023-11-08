@@ -1,7 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
+import axios from "axios";
 import './../App.css';
-function Ad_inquiry() {
+import { useNavigate } from "react-router-dom";
 
+function Ad_inquiry() {
+    const [inquiryInfo, setInquiryInfo] = useState([]);
+    useEffect(() => {
+        axios.get('/inquiry/view/all')
+        .then(response =>{
+            const inquiryData = response.data;
+            setInquiryInfo(inquiryData);
+        })
+        .catch(error => {
+            console.error('세션 데이터를 가져오는데 실패함', error);
+          });
+    },[]);
+    let navigate = useNavigate();
     return (
         <div>
             <div className="main_bar">
@@ -11,31 +25,31 @@ function Ad_inquiry() {
                 <div className="ad">
                     관리자 님, 환영합니다!
                 </div>
-                <div className="content">
+                 <div className="content">
                     <div>회원 관리</div>
-                    <div className="sub" id="one"><a href="#">사용자</a></div>
-                    <div className="sub"><a href="#">상업자</a></div>
-                    <div className="sub"><a href="#">관리자</a></div>
+                    <div className="sub" id="one"><a href="/ad_user" style={{color:"red"}}>사용자</a></div>
+                    <div className="sub"><a href="/ad_businessman">상업자</a></div>
+                    <div className="sub"><a href="/ad_admin">관리자</a></div>
                 </div>
                 <div className="content">
                     <div>콘텐츠 관리</div>
-                    <div className="sub"><a href="#" style={{color:"red"}}>문의 내역</a></div>
-                    <div className="sub"><a href="#">공지사항</a></div>
-                    <div className="sub"><a href="#">가게 등록</a></div>
+                    <div className="sub"><a href="/ad_inquiry">문의 내역</a></div>
+                    <div className="sub"><a href="/ad_notice">공지사항</a></div>
+                    <div className="sub"><a href="/ad_analysis_shop">가게 등록</a></div>
                 </div>
                 <div className="content">
                     <div>인사이트 분석</div>
-                    <div class="sub"><a href="#">가게 분석</a></div>
+                    <div className="sub"><a href="/ad_analysis_shop">가게 분석</a></div>
                 </div>
                 <div className="logout">
-                    <div><a href="#" id="logout">로그아웃</a></div>
+                    <div><a href="/ad_login" id="logout">로그아웃</a></div>
                 </div>
             </div>
 
-            <main>
-                <div className="title">전체 문의(2)</div>
+            <main className='ad_main'>
+                <div className="ad_title">전체 문의(2)</div>
                 <div className="tb">
-                    <table>
+                    <table className='ad_table'>
                         <thead>
                             <tr style={{ height: "50px", fontSize: "25px", fontWeight: "700" }}>
                                 <td style={{ width: "5%" }}>IDX</td>
@@ -45,18 +59,36 @@ function Ad_inquiry() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style={{ height: "50px", fontSize: "20px" }}>
-                                <td style={{ fontWeight: "700" }}>5</td>
-                                <td><a href="#">설문조사를 좀 더 다양하게 업로드해주세요!!</a></td>
-                                <td>2023.05.11</td>
-                                <td style={{color:"red"}}>답변 대기</td>
+                        {inquiryInfo.map((inquiry,index) => (
+                            <tr key={index} style={{ height: "50px", fontSize: "20px" }}>
+                                <td style={{ fontWeight: "700" }}>{inquiry.inquiryidx}</td>
+                                <td><a style={{textDecoration:"underline", cursor:"pointer"}} onClick={()=>{
+                              if(inquiry.status === "답변 완료"){
+                                  axios.get('/inquiry/user/answer/view', {
+                                                params: {
+                                       inquiryidx:inquiry.inquiryidx
+                                                }
+                                              })
+                                                .then(response => {
+                                                  localStorage.setItem('inquiry', JSON.stringify(response.data)); 
+                                                  navigate("/ad_inquiry_canswer");
+                                                })
+                                                .catch(error => {
+                                                  console.error('세션 데이터를 가져오는데 실패함', error);
+                                                });   
+                              }
+                                        else{
+                                  localStorage.setItem('inquiry', JSON.stringify(inquiry)); 
+                                             navigate("/ad_inquiry_wanswer");   
+                                 
+                              }
+                                        }}>{inquiry.content_inquiry}</a></td>
+
+                                <td>{inquiry.redate}</td>
+                                <td style={{color: `${inquiry.status === "답변 대기" ? "blue" : "red"}`}}>{inquiry.status}</td>
                             </tr>
-                            <tr style={{ height: "50px", fontSize: "20px" }}>
-                                <td style={{ fontWeight: "700" }}>7</td>
-                                <td><a href="#">안녕하세요 시스템 오류가 있어서 문의드립니다</a></td>
-                                <td>2023.05.12</td>
-                                <td>답변 완료</td>
-                            </tr>
+                            ))} 
+                            
                         </tbody>
                     </table>
                 </div>
