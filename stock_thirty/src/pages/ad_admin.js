@@ -32,7 +32,7 @@ function Ad_admin() {
                 <div className="content">
                     <div>콘텐츠 관리</div>
                     <div className="sub"><a href="/ad_inquiry">문의 내역</a></div>
-                    <div className="sub"><a href="//ad_notice">공지사항</a></div>
+                    <div className="sub"><a href="/ad_notice">공지사항</a></div>
                     <div className="sub"><a href="/ad_store_managemnet" >가게 관리</a></div>
                 </div>
                 <div className="content">
@@ -40,7 +40,7 @@ function Ad_admin() {
                     <div className="sub"><a href="/ad_analysis_shop">가게 분석</a></div>
                 </div>
                 <div className="logout">
-                    <div><a href="#" id="logout">로그아웃</a></div>
+                    <div><a href="/ad_login" id="logout">로그아웃</a></div>
                 </div>
             </div>
 

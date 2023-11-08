@@ -40,7 +40,7 @@ function Ad_analysis_shop() {
                     <div class="sub"><a href="/ad_analysis_shop" style={{color:"red"}}>가게 분석</a></div>
                 </div>
                 <div className="logout">
-                    <div><a href="#" id="logout">로그아웃</a></div>
+                    <div><a href="/ad_login" id="logout">로그아웃</a></div>
                 </div>
             </div>
 

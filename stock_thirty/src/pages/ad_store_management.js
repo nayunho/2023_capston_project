@@ -43,7 +43,7 @@ function Ad_store_management() {
                     <div class="sub"><a href="/ad_analysis_shop">가게 분석</a></div>
                 </div>
                 <div className="logout">
-                    <div><a href="#" id="logout">로그아웃</a></div>
+                    <div><a href="/ad_login" id="logout">로그아웃</a></div>
                 </div>
             </div>
 
