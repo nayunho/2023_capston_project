@@ -14,6 +14,8 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import { TextFieldsSharp } from '@material-ui/icons';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Typography from '@mui/material/Typography';
+import Marker4 from "./../img/marker4.gif";
 function Owner_Storelist() {
     let [temp, setTemp] = useState(true);
     let [temp1, setTemp1] = useState(true);
@@ -141,11 +143,20 @@ function Owner_Storelist() {
     }, [currentstore]);
     const handleClick = () => {
         if (userInfo.role === '사용자') {
-          window.location.href="/home_user";
+            window.location.href = "/home_user";
         } else if (userInfo.role === '상업자') {
-          window.location.href="/home_owner";
+            window.location.href = "/home_owner";
         }
-     };
+    };
+    /*오류처리(등록)*/
+    let [shop_name, setShopname] = useState("");
+    let [shop_imagefilename, setShop_imagefilename] = useState("");
+    let [shop_address, setShop_address] = useState("");
+    let [shop_tel, setShop_tel] = useState("");
+    /*오류처리(수정)*/ 
+    let [shop_edit_name, setShop_edit_name] = useState("");
+    let [shop_edit_tel, setShop_edit_tel] = useState("");
+    let [shop_edit_address, setShop_edit_address] = useState("");
     return (
         <div>
             <div className='owner_storelist_pageWrap' >
@@ -157,7 +168,7 @@ function Owner_Storelist() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a onClick={handleClick} style={{ cursor: 'pointer' }}> 재고 30 </a></div>
+                    <div className='logo'style={{marginTop:"-20px",cursor:"pointer"}}><a onClick={handleClick}><img style={{marginBottom:"-10px"}} src={Marker4}/><span style={{fontSize:"50px",fontWeight:"600"}}>StockTracker</span></a></div>
                     <nav className='nav'>
                         <ul>
                             <li>
@@ -183,14 +194,14 @@ function Owner_Storelist() {
                                 </a>
                             </li>
                             <li>
-                            <a href="/" onClick={() => {
-                                        axios.get('/SessionLogout', {
-                                        })
-                                        window.alert("로그아웃되었습니다.");
-                                    }
-                                    }>
-                                        <LogoutIcon fontSize="large" />
-                                    </a>
+                                <a href="/" onClick={() => {
+                                    axios.get('/SessionLogout', {
+                                    })
+                                    window.alert("로그아웃되었습니다.");
+                                }
+                                }>
+                                    <LogoutIcon fontSize="large" />
+                                </a>
                             </li>
                         </ul></nav>
                 </header>
@@ -207,7 +218,7 @@ function Owner_Storelist() {
                             <span>가게 등록</span>
                         </button>
                     </div>
-                    <div className='storelist' style={{height:"60%"}}>
+                    <div className='storelist' style={{ height: "60%" }}>
                         <div className='storelist_title'>
                             <span>30 가게</span>
                         </div>
@@ -234,7 +245,7 @@ function Owner_Storelist() {
                                                     console.log(store.shopidx);
                                                     axios.delete('/shopDelete', {
                                                         params: {
-                                                            shopidx:store.shopidx
+                                                            shopidx: store.shopidx
                                                         }
                                                     }).then(response => {//데이터를받아오는게성공시 다른페이지호출
                                                         window.alert("삭제 완료");
@@ -275,7 +286,14 @@ function Owner_Storelist() {
                     borderRadius: "20px"
                 }}>
                     <div className='footer1'><a href="/">재고 30</a></div>
-                    <div className='footer2'>개인정보 및 보호정책 등</div>
+                    <div className='footer2'>
+                        <ul className="footer_notice" style={{ display: "flex", justifyContent: "center", lineHeight: "60px", fontSize: "18px", marginRight: "25px", marginTop: "10px" }}>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>개인정보처리방침</a></li>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>저작권보호정책</a></li>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>이메일무단수집거부</a></li>
+                            <li><a href="#" style={{ padding: "10px" }}>CCTV설치 및 운영지침</a></li>
+                        </ul>
+                    </div>
                 </footer>
             </div>
             <div className={`${temp2 == true ? "addstpop_view_none" : "addstpop_view"}`} >
@@ -283,6 +301,12 @@ function Owner_Storelist() {
                     <span>가게 등록</span>
                     <p className='addstpop_close'
                         onClick={() => {
+                            setStore_name("");
+                            setStore_phon("");
+                            setSelectedFile("");
+                            setSelectedAddress("");
+                            setStore_website("");
+                            setStore_promotionText("");
                             setTemp2(!temp2)
                         }} style={{ cursor: "pointer", fontSize: "32px" }}> X </p>
                 </div>
@@ -300,12 +324,19 @@ function Owner_Storelist() {
                         required
                         onChange={(e) => {
                             setStore_name(e.target.value);
-                        }}></TextField>
+                        }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_name}
+                            </Typography>
+                        }
+                    ></TextField>
                 </div>
                 <div className='addstore_phon' >
                     <div className='addst_phon'>
                         <span>가게 전화번호</span><span style={{ color: "red" }}>(필수)</span>
                     </div>
+
                     <TextField
                         style={{ width: "1350px", marginRight: "80px", marginTop: "40px" }}
                         placeholder='가게 전화번호 입력해주세요'
@@ -315,12 +346,19 @@ function Owner_Storelist() {
                         required
                         onChange={(e) => {
                             setStore_phon(e.target.value);
-                        }}></TextField>
+                        }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_tel}
+                            </Typography>
+                        }
+                    ></TextField>
                 </div>
                 <div className='addstore_img' >
                     <div className='addst_img'>
                         <span>가게 이미지</span><span style={{ color: "red" }}>(필수)</span>
                     </div>
+
                     <input
                         type="file"
                         id="fileInput"
@@ -340,6 +378,11 @@ function Owner_Storelist() {
                             variant="outlined"
                             fullWidth
                             value={selectedFile ? selectedFile.name : ''}
+                            helperText={
+                                <Typography style={{ color: 'red' }}>
+                                    {shop_imagefilename}
+                                </Typography>
+                            }
                         />
                     </label>
 
@@ -358,7 +401,12 @@ function Owner_Storelist() {
                         style={{ width: "1350px", marginRight: "25px", marginTop: "40px" }}
                         onChange={(e) => {
                             setStore_address(e.currentTarget.value);
-                        }} />
+                        }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_address}
+                            </Typography>
+                        } />
 
                     <button className="search" style={{ display: "inline-block", width: "50px", height: "58px", marginLeft: "5px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}><span>주소 &nbsp;찾기</span></button>
                 </div>
@@ -408,7 +456,6 @@ function Owner_Storelist() {
                 </div>
                 <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "3px solid rgb(74, 74, 247)" }} onClick={() => {
                     setTemp(!temp)
-                    setTemp2(!temp2)
                 }}>가게 등록</a>
             </div>
             <div className={`${temp3 == true ? "addstpop_view_none" : "addstpop_view"}`} >
@@ -433,6 +480,11 @@ function Owner_Storelist() {
                         onChange={(e) => {
                             setStore_name(e.target.value);
                         }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_edit_name}
+                            </Typography>
+                        }
                     ></TextField>
                 </div>
                 <div className='addstore_phon' >
@@ -448,6 +500,11 @@ function Owner_Storelist() {
                             setStore_phon(e.target.value);
                         }}
                         value={store_phon}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_edit_tel}
+                            </Typography>
+                        }
                     ></TextField>
                 </div>
                 <div className='addstore_img' >
@@ -493,7 +550,12 @@ function Owner_Storelist() {
                         style={{ width: "1350px", marginRight: "90px", marginTop: "40px" }}
                         onChange={(e) => {
                             setStore_address(e.currentTarget.value);
-                        }} />
+                        }}helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {shop_edit_address}
+                            </Typography>
+                        } 
+                        />
 
                     <button className="search" style={{ display: "inline-block", width: "50px", height: "58px", marginLeft: "-5px", marginTop: "40px", cursor: "pointer", borderRadius: "10px", backgroundColor: "rgb(218, 216, 216)", border: "1px solid rgb(158, 154, 154)", textAlign: "center" }} onClick={() => { openModal() }}><span>주소 &nbsp;찾기</span></button>
                 </div>
@@ -542,7 +604,7 @@ function Owner_Storelist() {
                     ></TextField>
                 </div>
                 <a className="owner_store_btn" type="submit" Width variant="contained" style={{ marginTop: "40px", marginBottom: "50px", cursor: "pointer", borderRadius: "20px", width: "150px", height: "60px", fontSize: "23px", fontWeight: "700", lineHeight: "40px", color: "white", backgroundColor: "rgb(74, 74, 247)", border: "1px solid rgb(74, 74, 247)" }} onClick={() => {
-                    setTemp3(!temp3)
+
                     const formData = new FormData();
                     formData.append('imagefile', selectedFile);
                     formData.append('shopName', store_name);
@@ -558,13 +620,36 @@ function Owner_Storelist() {
                             .then((response) => {
                                 window.alert("가게 수정 완료");
                                 window.location.href = response.data;
+                                setTemp3(!temp3)
                             })
                             .catch(error => {
-                                let errorMessages = Object.values(error.response.data).join('\n');
-                             console.log(error);
-                             window.alert(errorMessages);
+                                if (error.response.data.result == null) {
+                                    setShop_edit_name("")
+                                    setShop_edit_tel("")
+                                    const errorKeys = Object.keys(error.response.data);
+                                    const errorValues = [];
+                                    for (const key of errorKeys) {
+                                        errorValues.push(error.response.data[key]);
+                                    }
+                                    errorKeys.forEach((key, index) => {
+                                        switch (key) {
+                                            case "shopName":
+                                                setShop_edit_name(errorValues[index]);
+                                                break;
+                                            default:
+                                                setShop_edit_tel(errorValues[index]);
+                                                break;
+                                        }
+                                    })
+                                    window.alert("조건을 확인하세요");
+                                } else {
+                                    window.alert(error.response.data.result);
+                                    setShop_edit_tel("");
+                                    setShop_edit_name("");
+                                    setShop_edit_address(error.response.data.result);
+                                }
                             })
-                    );
+                        )
                 }}>수정 완료</a>
             </div>
         </div>
@@ -590,20 +675,47 @@ function Owner_Storelist() {
                     setStore_promotionText("");
                     setStore_phon("");
                     setStore_name("");
+                    setTemp2(!temp2)
                 })
                 .catch(error => {
-                    let errorMessages = Object.values(error.response.data).join('\n');
-                   console.log(error);
-                  window.alert(errorMessages);
-                    setSelectedAddress("");
-                    setSelectedFile("");
-                    setStore_website("");
-                    setStore_promotionText("");
-                    setStore_phon("");
-                    setStore_name("");
-
+                    if (error.response.data.result == null) {
+                        setShopname("")
+                        setShop_imagefilename("")
+                        setShop_address("")
+                        setShop_tel("")
+                        const errorKeys = Object.keys(error.response.data);
+                        const errorValues = [];
+                        for (const key of errorKeys) {
+                            errorValues.push(error.response.data[key]);
+                        }
+                        errorKeys.forEach((key, index) => {
+                            switch (key) {
+                                case "shopName":
+                                    setShopname(errorValues[index]);
+                                    break;
+                                case "imageFile":
+                                    setShop_imagefilename(errorValues[index]);
+                                    break;
+                                case "shopAddress":
+                                    setShop_address(errorValues[index]);
+                                    break;
+                                default:
+                                    setShop_tel(errorValues[index]);
+                                    break;
+                            }
+                        })
+                        window.alert("조건을 확인하세요");
+                    } else {
+                        window.alert(error.response.data.result);
+                        setShopname("")
+                        setShop_address(error.response.data.result)
+                        setShop_tel("")
+                        setShop_imagefilename("")
+                        setStore_address("");
+                    }
                 })
-        );
+        )
+
     }
 }
 export default Owner_Storelist; 

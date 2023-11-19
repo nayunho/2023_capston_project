@@ -14,6 +14,7 @@ import zIndex from '@material-ui/core/styles/zIndex';
 import { useNavigate } from "react-router-dom";
 import HouseIcon from '@mui/icons-material/House';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Marker4 from "./../img/marker4.gif";
 function Owner_main_page() {
     let navigate = useNavigate();
     const [userInfo, setUserInfo] = useState("");
@@ -46,7 +47,7 @@ function Owner_main_page() {
                 console.error('세션 데이터를 가져오는데 실패함', error);
             });
     }, [recall]);
-    let [noticepost,setNoticePost] = useState([{noticeIdx:"1",title:"sss",content:"ssss"},{noticeIdx:"2",title:"aaaa",content:"aaaaa"},{noticeIdx:"3",title:"dddd",content:"ddddd"}]);
+    let [noticepost, setNoticePost] = useState([{ noticeIdx: "1", title: "sss", content: "ssss" }, { noticeIdx: "2", title: "aaaa", content: "aaaaa" }, { noticeIdx: "3", title: "dddd", content: "ddddd" }]);
     useEffect(() => {
         axios.get('/manager/notice/readall')
             .then(response => {
@@ -60,25 +61,25 @@ function Owner_main_page() {
                     setNoticePost(noticepost);
                     console.log("세션데이터가 존재");
                 }
-            },[userInfo]);
+            }, [userInfo]);
     }, []);
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
     const postsPerPage = 10;//페이지당 게시글수
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = noticepost.slice(indexOfFirstPost, indexOfLastPost);
-    
+
     const handleClick = () => {
         if (userInfo.role === '사용자') {
-          window.location.href="/home_user";
+            window.location.href = "/home_user";
         } else if (userInfo.role === '상업자') {
-          window.location.href="/home_owner";
+            window.location.href = "/home_owner";
         }
-     };
+    };
     return (
         <div>
             <div className='owner_main_pageWrap' >
-            <header id='header' className={`${temp1 == true ? "" : "header_hidden"}`} style={{
+                <header id='header' className={`${temp1 == true ? "" : "header_hidden"}`} style={{
                     backgroundColor: 'white', // 헤더 배경색
                     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.2)', // 그림자 효과
                     position: 'sticky', // 스크롤과 함께 고정
@@ -86,7 +87,8 @@ function Owner_main_page() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a onClick={handleClick} style={{ cursor: 'pointer' }}> 재고 30 </a></div>
+                    <div className='logo' style={{ marginTop: "-20px", cursor: "pointer" }}><a onClick={handleClick}><img style={{ marginBottom: "-10px" }} src={Marker4} /><span style={{ fontSize: "50px", fontWeight: "600" }}>StockTracker</span></a></div>
+
                     <nav className='nav'>
                         <ul>
                             <li>
@@ -112,14 +114,14 @@ function Owner_main_page() {
                                 </a>
                             </li>
                             <li>
-                            <a href="/" onClick={() => {
-                                        axios.get('/SessionLogout', {
-                                        })
-                                        window.alert("로그아웃되었습니다.");
-                                    }
-                                    }>
-                                        <LogoutIcon fontSize="large" />
-                                    </a>
+                                <a href="/" onClick={() => {
+                                    axios.get('/SessionLogout', {
+                                    })
+                                    window.alert("로그아웃되었습니다.");
+                                }
+                                }>
+                                    <LogoutIcon fontSize="large" />
+                                </a>
                             </li>
                         </ul></nav>
                 </header>
@@ -161,62 +163,62 @@ function Owner_main_page() {
                     <div className='text'><span>내 가게</span></div>
                     <div className={`content1 ${temp1 == true ? "" : "contents_hidden"}`}>
                         <div>
-                            <div style ={{fontSize:"20px", textAlign:"left",lineHeight:"2"}} className='cont_text0'>
+                            <div style={{ fontSize: "20px", textAlign: "left", lineHeight: "2" }} className='cont_text0'>
                                 <div><span>가게 등록 및 관리</span></div>
                                 <div><span>홍보 및 마케팅은 다음 페이지이용</span></div>
-                                <div style={{borderBottom:"4px solid black", borderRadius:"30px",width:"100px",marginTop:"10px"}}><span></span></div>
+                                <div style={{ borderBottom: "4px solid black", borderRadius: "30px", width: "100px", marginTop: "10px" }}><span></span></div>
                             </div>
-                            <div className='cont_text1' style={{marginLeft:"80px",marginTop:"130px"}}>
-                                <span style={{ width:"400px",fontSize: "50px", fontWeight: "600", textAlign: "left", marginBottom: "10px" }}>내 가게 확인하기</span>
+                            <div className='cont_text1' style={{ marginLeft: "80px", marginTop: "130px" }}>
+                                <span style={{ width: "400px", fontSize: "50px", fontWeight: "600", textAlign: "left", marginBottom: "10px" }}>내 가게 확인하기</span>
                                 <span>사장님들의 가게를 등록해보세요! 등록한 가게들을 한 눈에 살펴 볼 수 있고, 가게에 대한 정보를 입력해 홍보해보세요</span>
-                                <span style={{ marginTop: "30px" }}><a style={{ borderBottom: "1px dashed black", cursor:"pointer" }} onClick={()=>{navigate("/owner_storelist");}}>알아보기 {">"}</a></span>
-                            </div>                                
-                            <a style={{ marginLeft: "-430px", marginTop: "-450px", position: "absolute" }}><img style={{ width: "900px" , filter: "contrast(130%)"}} src='https://i.pinimg.com/564x/a6/54/72/a65472b2e830a9fc1d5cff837443656c.jpg'></img><div style={{ marginLeft: "200px", marginTop: "-500px", width: "1000px", height: "550px", backgroundColor: "#f3eded" }}></div></a>
+                                <span style={{ marginTop: "30px" }}><a style={{ borderBottom: "1px dashed black", cursor: "pointer" }} onClick={() => { navigate("/owner_storelist"); }}>알아보기 {">"}</a></span>
+                            </div>
+                            <a style={{ marginLeft: "-430px", marginTop: "-450px", position: "absolute" }}><img style={{ width: "900px", filter: "contrast(130%)" }} src='https://i.pinimg.com/564x/a6/54/72/a65472b2e830a9fc1d5cff837443656c.jpg'></img><div style={{ marginLeft: "200px", marginTop: "-500px", width: "1000px", height: "550px", backgroundColor: "#f3eded" }}></div></a>
                         </div>
                     </div>
                     <div className='text'><span>상품 등록</span></div>
                     <div className={`content2 ${temp1 == true ? "" : "contents_hidden"}`}>
                         <div>
-                            <div style ={{fontSize:"20px", textAlign:"left",lineHeight:"2",marginTop:"100px"}} className='cont_text0'>
+                            <div style={{ fontSize: "20px", textAlign: "left", lineHeight: "2", marginTop: "100px" }} className='cont_text0'>
                                 <div><span>재고 상품 등록 및 관리</span></div>
                                 <div><span>홍보 및 마케팅은 다음 페이지이용</span></div>
-                                <div style={{borderBottom:"4px solid black", borderRadius:"30px",width:"100px",marginTop:"10px"}}><span></span></div>
+                                <div style={{ borderBottom: "4px solid black", borderRadius: "30px", width: "100px", marginTop: "10px" }}><span></span></div>
                             </div>
-                            <div className='cont_text1' style={{marginLeft:"80px",marginTop:"130px"}}>
-                                <span style={{ width:"400px",fontSize: "50px", fontWeight: "600", textAlign: "left", marginBottom: "10px" }}>재고 등록&수정</span>
+                            <div className='cont_text1' style={{ marginLeft: "80px", marginTop: "130px" }}>
+                                <span style={{ width: "400px", fontSize: "50px", fontWeight: "600", textAlign: "left", marginBottom: "10px" }}>재고 등록&수정</span>
                                 <span>사장님들의 가게를 등록해보세요! 등록한 가게들을 한 눈에 살펴 볼 수 있고, 가게에 대한 정보를 입력해 홍보해보세요</span>
-                                <span style={{ marginTop: "30px" }}><a style={{ borderBottom: "1px dashed black", cursor:"pointer" }} onClick={()=>{navigate("/owner_addmenu");}}>알아보기 {">"}</a></span>
-                            </div>                                
-                            <a style={{ marginLeft: "-430px", marginTop: "-450px", position: "absolute" }}><img style={{ width: "650px" , filter: "contrast(130%)"}} src='https://i.pinimg.com/564x/96/25/1c/96251c1125878e948918e151def81ca0.jpg'></img><div style={{ marginLeft: "250px", marginTop: "-500px", width: "800px", height: "550px", backgroundColor: "#f3eded" }}></div></a>
+                                <span style={{ marginTop: "30px" }}><a style={{ borderBottom: "1px dashed black", cursor: "pointer" }} onClick={() => { navigate("/owner_addmenu"); }}>알아보기 {">"}</a></span>
+                            </div>
+                            <a style={{ marginLeft: "-430px", marginTop: "-450px", position: "absolute" }}><img style={{ width: "650px", filter: "contrast(130%)" }} src='https://i.pinimg.com/564x/96/25/1c/96251c1125878e948918e151def81ca0.jpg'></img><div style={{ marginLeft: "250px", marginTop: "-500px", width: "800px", height: "550px", backgroundColor: "#f3eded" }}></div></a>
                         </div>
                     </div>
                     <div className='text'><span>공지사항</span></div>
                     <div className={`content3 ${temp1 == true ? "" : "contents_hidden"}`}>
                         <div>
-                        {currentPosts.map((nti, index) => (
-                            <tr className='notice_main_content' key={index} style={{ height: "40px", fontSize: "20px" }}>
-                                <td id="notice_row">{nti.noticeIdx}</td>
-                                <td id="notice_row" onClick= {()=>{
-                                    navigate(`/owner_noticeview/${nti.noticeIdx}`)
-                                    axios.get('/manager/notice/read',{
-                                        params: {
-                                            noticeIdx:nti.noticeIdx,
-                                            title:nti.title
-                                        }
-                                    })
-                                    .then(response => {
-                                        const not = response.data;
-                                        const noticep = `?notititle=${not.title}&notiDate=${not.noticeDate}&noticontent=${not.content}`;
-                                        const popupURL = `/owner_noticeview/${nti.noticeIdx}${noticep}`;
-                                        navigate(popupURL);
-                                      })
-                                      .catch(error => {
-                                        console.error('세션 데이터를 가져오는데 실패함', error);
-                                      });
-                                }} style={{ textAlign: "left" }}><span>{nti.title}</span></td>
-                                <td id="notice_row">{nti.noticeDate}</td>
-                            </tr>
-                        ))}
+                            {currentPosts.map((nti, index) => (
+                                <tr className='notice_main_content' key={index} style={{ height: "40px", fontSize: "20px" }}>
+                                    <td id="notice_row">{nti.noticeIdx}</td>
+                                    <td id="notice_row" onClick={() => {
+                                        navigate(`/owner_noticeview/${nti.noticeIdx}`)
+                                        axios.get('/manager/notice/read', {
+                                            params: {
+                                                noticeIdx: nti.noticeIdx,
+                                                title: nti.title
+                                            }
+                                        })
+                                            .then(response => {
+                                                const not = response.data;
+                                                const noticep = `?notititle=${not.title}&notiDate=${not.noticeDate}&noticontent=${not.content}`;
+                                                const popupURL = `/owner_noticeview/${nti.noticeIdx}${noticep}`;
+                                                navigate(popupURL);
+                                            })
+                                            .catch(error => {
+                                                console.error('세션 데이터를 가져오는데 실패함', error);
+                                            });
+                                    }} style={{ textAlign: "left" }}><span>{nti.title}</span></td>
+                                    <td id="notice_row">{nti.noticeDate}</td>
+                                </tr>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -227,8 +229,15 @@ function Owner_main_page() {
                     borderRadius: "20px",
                     marginTop: "32px"
                 }}>
-                    <div className='footer1'><a href="/">재고 30</a></div>
-                    <div className='footer2'>개인정보 및 보호정책 등</div>
+                    <div className='footer1'><a onClick={handleClick}>재고 30</a></div>
+                    <div className='footer2'>
+                        <ul className="footer_notice" style={{ display: "flex", justifyContent: "center", lineHeight: "60px", fontSize: "18px", marginRight: "25px", marginTop: "15px" }}>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>개인정보처리방침</a></li>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>저작권보호정책</a></li>
+                            <li><a href="#" style={{ padding: "10px", borderRight: "1px solid black" }}>이메일무단수집거부</a></li>
+                            <li><a href="#" style={{ padding: "10px" }}>CCTV설치 및 운영지침</a></li>
+                        </ul>
+                    </div>
                 </footer>
             </div>
         </div>

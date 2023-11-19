@@ -16,6 +16,8 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import HouseIcon from '@mui/icons-material/House';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Typography from '@mui/material/Typography';
+import Marker4 from "./../img/marker4.gif";
 function Owner_Addmenu() {
     let [temp, setTemp] = useState(true);
     let [temp1, setTemp1] = useState(true);
@@ -34,7 +36,7 @@ function Owner_Addmenu() {
     const [userInfo, setUserInfo] = useState("");
     useEffect(() => {
         // 스프링에서 세션 데이터를 가져오는 호출
-        axios.get('/getSessionMember')
+        axios.get('/getSessionMember/business')
             .then(response => {
                 const userData = response.data;
                 console.log(userData.redirect)
@@ -249,13 +251,22 @@ function Owner_Addmenu() {
             });
         }
     }
-    const handleClick = () => {
+        const handleClick = () => {
         if (userInfo.role === '사용자') {
           window.location.href="/home_user";
         } else if (userInfo.role === '상업자') {
           window.location.href="/home_owner";
         }
      };
+     
+         /*오류처리*/
+    let [menuname_error, setMenuname_error] = useState("");
+    let [category_error, setCategory_error] = useState("");
+    let [quantity_error, setQuantity_error] = useState("");
+    let [menu_price_error, setMenu_price_error] = useState("");
+    let [menu_price_discount_error, setMenu_price_discount_error] = useState("");
+    let [shop_imagefilename_error, setShop_imagefilename_error] = useState("");
+    
     return (
         <div>
             <div className='owner_addmenu_pageWrap' >
@@ -267,10 +278,11 @@ function Owner_Addmenu() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a onClick={handleClick} style={{ cursor: 'pointer' }}> 재고 30 </a></div>
+
+                     <div className='logo'style={{marginTop:"-20px",cursor:"pointer"}}><a onClick={handleClick}><img style={{marginBottom:"-10px"}} src={Marker4}/><span style={{fontSize:"50px",fontWeight:"600"}}>StockTracker</span></a></div>
                     <nav className='nav'>
                         <ul>
-                            <li>
+                        <li>
                                 <a href="/owner_main_page" style={{ cursor: "pointer" }}>
                                     <HouseIcon fontSize="large" />
                                 </a>
@@ -438,7 +450,7 @@ function Owner_Addmenu() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='footer1'><a href="/">재고 30</a></div>
+                    <div className='footer1'><a onClick={handleClick}>재고 30</a></div>
                     <div className='footer2'>개인정보 및 보호정책 등</div>
                 </footer>
             </div>
@@ -465,7 +477,13 @@ function Owner_Addmenu() {
                         required
                         onChange={(e) => {
                             setMenuName(e.target.value);
-                        }}></TextField>
+                        }}
+                         helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {menuname_error}
+                            </Typography>
+                        }
+                        ></TextField>
                 </div>
                 <div className='addstore_phon' >
                     <div className='addst_phon'>
@@ -480,7 +498,13 @@ function Owner_Addmenu() {
                         required
                         onChange={(e) => {
                             setCategory(e.target.value);
-                        }}></TextField>
+                        }}
+                         helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {category_error}
+                            </Typography>
+                        }
+                        ></TextField>
                 </div>
                 <div className='addstore_phon' >
                     <div className='addst_phon'>
@@ -494,7 +518,13 @@ function Owner_Addmenu() {
                         value={quantity}
                         onChange={(e) => {
                             setQuantity(e.target.value);
-                        }}></TextField>
+                        }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {quantity_error}
+                            </Typography>
+                        }
+                        ></TextField>
                 </div>
                 <div className='addstore_phon' >
                     <div className='addst_phon'>
@@ -511,6 +541,11 @@ function Owner_Addmenu() {
                         onChange={(e) => {
                             setMenu_price(e.target.value);
                         }}
+                        helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {menu_price_error}
+                            </Typography>
+                        }
                     ></TextField>
                 </div>
                 <div className='addstore_web' >
@@ -527,6 +562,11 @@ function Owner_Addmenu() {
                         onChange={(e) => {
                             setMenu_price_discount(e.target.value);
                         }}
+                         helperText={
+                            <Typography style={{ color: 'red' }}>
+                                {menu_price_discount_error}
+                            </Typography>
+                        }
                     ></TextField>
                 </div>
                 <div className='addstore_web' style={{ display: "flex", position: "relative" }} >
@@ -605,6 +645,11 @@ function Owner_Addmenu() {
                             variant="outlined"
                             fullWidth
                             value={selectedFile ? selectedFile.name : ''}
+                             helperText={
+                                <Typography style={{ color: 'red' }}>
+                                    {shop_imagefilename_error}
+                                </Typography>
+                            }
                         />
                     </label>
 
@@ -639,13 +684,13 @@ function Owner_Addmenu() {
                     
                     formData.append('imageFile', selectedFile);
                     formData.append('shopidx', selectedStore.shopidx);
-                    formData.append('itemName', menuName);
+                    formData.append('itemname', menuName);
                     formData.append('itemnotice', menu_explanation);
                     formData.append('cost', menu_price);
                     formData.append('salecost', menu_price_discount);
                     formData.append('category', category);
-                    formData.append('starttime', discountStartTime);
-                    formData.append('endtime', discountEndTime);
+                    formData.append('startParam', discountStartTime);
+                    formData.append('endParam', discountEndTime);
                     formData.append('quantity', quantity);
                     
                     axios.post('/item/create', formData)
@@ -683,16 +728,72 @@ function Owner_Addmenu() {
                                     const menudata = response.data;
                                     setMenuData(menudata);
                                     setMenu_count(menudata.length);
+                                    setTemp2(!temp2)
                                 }).catch(error => {
                                     window.alert(error.response.data.result);
                                 });
                             }
                         }).catch(error => {
-                            console.log(error.result)
-                            console.log('실패함')
-
+                            if (error.response.data.result == null) {
+                                setMenuname_error("")
+                                setCategory_error("")
+                                setQuantity_error("")
+                                setMenu_price_error("")
+                                setMenu_price_discount_error("")
+                                setShop_imagefilename_error("")
+                                const errorKeys = Object.keys(error.response.data);
+                                
+                                const errorValues = [];
+                                for (const key of errorKeys) {
+                                    errorValues.push(error.response.data[key]);
+                                }
+                                console.log(errorKeys);
+                                console.log(errorValues);
+                                errorKeys.forEach((key, index) => {
+                                    switch (key) {
+                                        case "itemname":
+                                            setMenuname_error(errorValues[index]);
+                                            break;
+                                        case "category":
+                                            setCategory_error(errorValues[index]);
+                                            break;
+                                        case "quantity":
+                                            setQuantity_error(errorValues[index]);
+                                            break;
+                                        case "cost":
+                                            setMenu_price_error(errorValues[index]);
+                                            break;
+                                        case "salecost":
+                                            setMenu_price_discount_error(errorValues[index]);
+                                            break;
+                                        default:
+                                            setShop_imagefilename_error(errorValues[index]);
+                                            break;
+                                    }
+                                })
+                                window.alert("조건을 확인하세요");
+                            }
+                     else {
+                                if(error.response.data.result=="이미 등록된 상품입니다."){
+                                    setMenuname_error(error.response.data.result)
+                                    setCategory_error("")
+                                    setQuantity_error("")
+                                    setMenu_price_error("");
+                                    setMenu_price_discount_error("")
+                                    setShop_imagefilename_error("");
+                                    setMenuName("")
+                                    window.alert(error.response.data.result);
+                                }else{
+                                    window.alert(error.response.data.result);
+                                    setMenuname_error("")
+                                    setCategory_error("")
+                                    setQuantity_error("")
+                                    setMenu_price_error("");
+                                    setMenu_price_discount_error("")
+                                    setShop_imagefilename_error("");
+                                }
+                            }
                         })
-                    setTemp2(!temp2)
 
                 }}><a>[ SUBMIT ]</a></button>
 
@@ -897,14 +998,14 @@ function Owner_Addmenu() {
                 <button className="addmenu_sub" onClick={() => {
                     const formData = new FormData();
 
-                    formData.append('imageFile', selectedFile);
-                    formData.append('itemName', menuName2);
+                    formData.append('imageF', selectedFile);
+                    formData.append('itemname', menuName2);
                     formData.append('itemnotice', menu_explanation2);
                     formData.append('cost', menu_price2);
                     formData.append('salecost', menu_price_discount2);
                     formData.append('category', category2);
-                    formData.append('starttime', discountStartTime2);
-                    formData.append('endtime', discountEndTime2);
+                    formData.append('startParam', discountStartTime2);
+                    formData.append('endParam', discountEndTime2);
                     formData.append('quantity', quantity2);
                     formData.append('itemidx', menuidx2);
 
@@ -938,8 +1039,9 @@ function Owner_Addmenu() {
                                 });
                             }
                         }).catch(error => {
-                            console.log(error.result)
-                            console.log('실패함')
+                      let errorMessages = Object.values(error.response.data).join('\n');
+                      console.log(error);
+                      window.alert(errorMessages);
                         })
                     setTemp4(!temp4)
 

@@ -11,6 +11,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import { Outlet } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HouseIcon from '@mui/icons-material/House';
+import Marker4 from "./../img/marker4.gif";
 function Owner_notice() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
@@ -65,7 +66,19 @@ function Owner_notice() {
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
     const currentPosts = noticepost.slice(indexOfFirstPost, indexOfLastPost);
-
+    function formatDate(dateString) {
+        const originalDate = new Date(dateString);
+        const options = {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        };
+        const formattedDate = originalDate.toLocaleString("ko-KR", options);
+        return formattedDate;
+      }
     const pageNumbers = [];
 
     for (let i = 1; i <= Math.ceil(noticepost.length / postsPerPage); i++) {
@@ -89,7 +102,7 @@ function Owner_notice() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a onClick={handleClick} style={{ cursor: 'pointer' }}> 재고 30 </a></div>
+                     <div className='logo'style={{marginTop:"-20px",cursor:"pointer"}}><a onClick={handleClick}><img style={{marginBottom:"-10px"}} src={Marker4}/><span style={{fontSize:"50px",fontWeight:"600"}}>StockTracker</span></a></div>
                     <nav className='nav'>
                         <ul>
                             <li>
@@ -127,44 +140,40 @@ function Owner_notice() {
                         </ul></nav>
                 </header>
                 <div className={`banner ${temp1 == true ? "" : "banner_hidden"}`} style={{ borderRadius: "20px", boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.3)' }}>
-                    <div className={`text ${temp1 == true ? "" : "contents_hidden"}`}>
-                        <span >가게를 등록하여</span><br />
-                        <span>자신의 가게를 보여주세요!</span>
-                    </div>
-                </div>
-                <div className={`${temp1 == true ? "" : "contents_hidden"}`}>
                     <div className='notice_title'>공지사항</div>
                     <div className='notice_title_exception'>(주)재고30의 공지사항을 알려드립니다.</div>
                 </div>
-                <div className='notice_contents' style={{ margin: "0 auto", height: "500px" }}>
+                <div className='notice_contents' style={{height: "500px" }}>
                     <table className={`notice_table ${temp1 == true ? "" : "contents_hidden"}`} style={{ borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px', borderTopLeftRadius: '20px', borderTopRightRadius: '20px', boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.5)' }} >
-                        <tr style={{ fontSize: "25px", backgroundColor: "rgba(0,0,0,0.1)" }}>
+                        <tr style={{ fontSize: "25px", backgroundColor: "rgb(220,220,220)"}}>
                             <th style={{ width: "150px", height: "40px", borderTopLeftRadius: '20px' }}>No</th>
                             <th>제목</th>
-                            <th style={{ width: "150px", borderTopRightRadius: '20px' }}>등록일</th>
+                            <th style={{ width: "150px"}}></th>
+                            <th style={{ width: "140px", borderTopRightRadius: '20px' }}>등록일</th>
                         </tr>
                         {currentPosts.map((nti, index) => (
                             <tr className='notice_main_content' key={index} style={{ height: "46px", fontSize: "20px" }}>
-                                <td id="notice_row">{nti.noticeIdx}</td>
+                                <td id="notice_row">{nti.noticeidx}</td>
                                 <td id="notice_row" onClick= {()=>{
-                                    navigate(`/owner_noticeview/${nti.noticeIdx}`)
+                                    navigate(`/owner_noticeview/${nti.noticeidx}`)
                                     axios.get('/manager/notice/read',{
                                         params: {
-                                            noticeIdx:nti.noticeIdx,
+                                            noticeIdx:nti.noticeidx,
                                             title:nti.title
                                         }
                                     })
                                     .then(response => {
                                         const not = response.data;
-                                        const noticep = `?notititle=${not.title}&notiDate=${not.noticeDate}&noticontent=${not.content}`;
-                                        const popupURL = `/owner_noticeview/${nti.noticeIdx}${noticep}`;
+                                        const noticep = `?notititle=${not.title}&notiDate=${formatDate(not.noticedate)}&noticontent=${not.content}`;
+                                        const popupURL = `/owner_noticeview/${nti.noticeidx}${noticep}`;
                                         navigate(popupURL);
                                       })
                                       .catch(error => {
                                         console.error('세션 데이터를 가져오는데 실패함', error);
                                       });
                                 }} style={{ textAlign: "left" }}><span>{nti.title}</span></td>
-                                <td id="notice_row">{nti.noticeDate}</td>
+                                <td id="notice_row" style={{color:"blue"}}>{nti.noticemodify}</td>
+                                <td id="notice_row">{formatDate(nti.noticedate)}</td>
                             </tr>
                         ))}
 
@@ -200,8 +209,16 @@ function Owner_notice() {
                     marginTop: "32px",
                     height:"85px",
                 }}>
-                    <div className='footer1'><a href="/"><Outlet></Outlet>재고 30</a></div>
-                    <div className='footer2'>개인정보 및 보호정책 등</div>
+                    
+                    <div className='footer1'><a onClick={handleClick}><Outlet></Outlet>재고 30</a></div>
+                    <div className='footer2'>
+                    <ul className="footer_notice" style={{display:"flex",justifyContent:"center",lineHeight:"60px",fontSize:"18px",marginRight:"25px",marginTop:"15px"}}>
+                        <li><a href="#" style={{padding:"10px",borderRight:"1px solid black"}}>개인정보처리방침</a></li>
+                        <li><a href="#" style={{padding:"10px",borderRight:"1px solid black"}}>저작권보호정책</a></li>
+                        <li><a href="#" style={{padding:"10px",borderRight:"1px solid black"}}>이메일무단수집거부</a></li>
+                        <li><a href="#"style={{padding:"10px"}}>CCTV설치 및 운영지침</a></li>
+                    </ul>
+                    </div>
                 </footer>
                 <div className={`${temp1 == true ? "popup_view_none" : "popup_view"}`} style={{top:"50%"}}>
                     <div>

@@ -9,6 +9,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import axios from "axios";
 import { lazy, Suspense, createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Marker4 from "./../img/marker4.gif";
 
 function Login(props) {
     const a="/logo192.png";
@@ -19,11 +20,11 @@ function Login(props) {
         <div className='wrap' style={{ backgroundColor: "rgb(209, 209, 214)" }}>
             <div className="loginWrap"style={{borderRadius:"20px",boxShadow: "0px 0px 5px rgba(0, 0, 0, 1)" }} >
                 <div className="imgarea" style={{borderTopLeftRadius: "20px",borderBottomLeftRadius: "20px"}}>
-                    <div className="text">
-                        <h2>제목</h2>
-                        <span>환영합니다</span>
+                    <div className="text" style={{ width: "800px", height: "200px" }}>
+                        <img src={Marker4} style={{ width: "130px", height: "90px",marginTop:"30px" }} />
+                        <span style={{ fontSize:"90px", color:"black",fontWeight:"600" }}>StockTracker</span>
                     </div>
-                </div>
+                </div> 
                 <div className="login"style={{borderTopRightRadius: "20px",borderBottomRightRadius: "20px",boxShadow:"-10px 0px 5px rgba(0, 0, 0, 0.3)"}} >
                     <p>Login</p>
                     <div id="textFeild">
@@ -92,7 +93,7 @@ function Login(props) {
                                         const user_role = userData.role;
                                         if(user_role=="사용자"){
                                             window.location.href="/home_user"
-                                        }else if(user_role=="상업자"){
+                                        }else if(user_role=="상업자" ||user_role== "관리자"){
                                             window.location.href="/home_owner";
                                         }
                                     })

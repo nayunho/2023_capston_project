@@ -1,11 +1,15 @@
 package hello.capstone.repository;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import hello.capstone.dto.Alarm;
 import hello.capstone.dto.Item;
 import hello.capstone.dto.Member;
 import hello.capstone.dto.Reservation;
@@ -18,11 +22,11 @@ public interface ItemMapper {
 	
 	void updateItem(Item item);
 	
+	Item findByItemIdx(int ItemIdx);
+	
 	Item findByShopIdxAndItemname(@Param("shopidx") int shopidx, @Param("itemname") String itemname);
 	
 	List<Item> getItems(@Param("shopidx") int shopidx);
-	
-	Item findByItemIdx(int ItemIdx);
 	
 	void itemDelete(Item item);
 	
@@ -34,8 +38,8 @@ public interface ItemMapper {
 	
 	void deleteReadAlarm(@Param("shop") Shop shop, @Param("member") Member member);
 	
-	List<Map<String, Object>> getAlarm(@Param("memberidx") int memberidx);
-
+	List<Map<String,Object>> getAlarm(@Param("memberidx") int memberidx);
+	
 	int getQuantity(int itemidx);
 	
 	void reservation(Reservation reservation);
@@ -55,6 +59,4 @@ public interface ItemMapper {
 	void decreaseTrust(String time);
 	
 	void setConfirmToFalse(String time);
-	
-	List<Item> getReservationItem(@Param("memberIdx") int memberIdx);
 }

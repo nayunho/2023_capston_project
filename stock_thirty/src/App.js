@@ -81,6 +81,21 @@ function App() {
       return "#e74c3c";
     }
   }
+  /*별점 */
+  let [temp7, setTemp7] = useState(true);
+  const [clicked, setClicked] = useState([false, false, false, false, false]);
+  const array = [1, 2, 3, 4, 5]
+  
+    const handleSetStar = index => {
+    let clickStates = [...clicked];
+    for (let i = 0; i < 6; i++) {
+      clickStates[i] = i <= index ? true : false;
+    }
+    setClicked(clickStates);
+    setMaxStars(index);
+  };
+  let score = clicked.filter(Boolean).length;
+  let [starreservation, setStarreservation] = useState([]);
    function formatDate(dateString) {
      const originalDate = new Date(dateString);
      const options = {
@@ -462,21 +477,8 @@ function App() {
   let [maxStars, setMaxStars] = useState(0); // 최대 별점
 
   const checkOnlyOne = (checkThis) => {
-    const checkboxes = document.getElementsByName('rating')
-    let selectedrate = 0;
-    for (let i = 0; i < checkboxes.length; i++) {
-      if (checkboxes[i] !== checkThis) {
-        checkboxes[i].checked = false;
-        setMaxStars(checkThis.value);
-      }
-    }
-    checkboxes.forEach((checkbox) => {
-      if (checkbox.checked) {
-        selectedrate = parseInt(checkbox.value, 10);
-      }
-    });
-  
-    setMaxStars(selectedrate);
+
+    setMaxStars(checkThis);
   }
 
   const resetFilters = () => {
@@ -487,6 +489,7 @@ function App() {
     setMaxPrice("0");
     setMaxPrice1(0);
     setMaxStars(0);
+    handleSetStar(0);
   
     // Reset the checkboxes by unchecking them
     const checkboxes = document.getElementsByName('price');
@@ -553,16 +556,15 @@ function App() {
               <div style={{ width: "1%", height: "100%" }}></div>
 
               <div className={`filter`} style={{ width: "19%", borderRadius: "50px", height: "99%", backgroundColor: "white", boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)' }}>
-                <div className='filter_title' style={{ paddingTop: "50px", height: "5%", fontWeight: "600", fontSize: "40px", textAlign: "center", marginBottom: "30px" }}>
+                <div className='filter_title' style={{ paddingTop: "20px", height: "3%", fontWeight: "600", fontSize: "30px", textAlign: "center", marginBottom: "30px" }}>
                   필터
                 </div>
 
-                                <div className='filter_contents' style={{ height: "83%" }}>
+                <div className='filter_contents' style={{ height: "92%" }}>
 
-                  <div className='filter_distance' style={{ height: "24%", borderTop:"1px solid rgb(180,180,180)",borderBottom:"1px solid rgb(180,180,180)"}}>
+                  <div className='filter_distance' style={{ height: "21%", borderTop:"1px solid rgb(180,180,180)",borderBottom:"1px solid rgb(180,180,180)"}}>
                     <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px", color: "#929292" }}>거리</h1>
                     <div>
-                  <br />
                       <input
                         type="range"
                         min="0"
@@ -570,27 +572,24 @@ function App() {
                         step="0.1"
                         value={rangeValue}
                         onChange={handleRangeChange}
-                        style={{ width: "80%", height: "80%", accentColor: "black" }}
+                        style={{ width: "70%", height: "80%", accentColor: "black" }}
                       />
 
                       {rangeValue != 0 && (
                         <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" }}>
-                          선택된 거리: <span style={{ color: "black", fontWeight: "700", fontSize: "25px" }}>{rangeValue} </span>Km</p>
+                          선택된 거리: <span style={{ color: "black", fontWeight: "700", fontSize: "30px" }}>{rangeValue} </span>Km</p>
                       )}
                     </div>
                   </div>
-                  <div className='filter_price' style={{ height: "27%" , borderBottom:"1px solid rgb(180,180,180)"}}>
+                  <div className='filter_price' style={{ height: "22%" , borderBottom:"1px solid rgb(180,180,180)"}}>
                     <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px",marginBottom:"20px", color: "#929292" }}>가격</h1>
                     <div style={{marginBottom:"25px"}}>                      
-                        
-
-
                     </div>
                     <div>
                       <TextField
-                        style = {{width: 200, height:60 ,fontSize:20}}
-                        placeholder='최소 가격 0원'
-                        inputProps={{style: {fontSize: 25}}}
+                        style = {{width: 150, height:60 ,fontSize:15}}
+                        placeholder='0원'
+                        inputProps={{style: {fontSize: 22}}}
                         InputLabelProps={{style: {fontSize: 20, lineHeight:60}}}
                         name='minprice' 
                         value={minPrice}
@@ -601,11 +600,11 @@ function App() {
                       >
 
                       </TextField>
-                      <span style={{fontWeight:"600", padding:"0px 15px 0px 15px",display:"inline-block",marginTop:"8px", fontSize:"30px"}}>~</span>
+                      <span style={{fontWeight:"600", padding:"0px 15px 0px 15px",display:"inline-block",marginTop:"8px", fontSize:"40px"}}>-</span>
                       <TextField
-                        style = {{width: 200, height:60}}
+                        style = {{width: 150, height:60,fontSize:15}}
                         placeholder='최대 가격'
-                        inputProps={{style: {fontSize: 25}}}
+                        inputProps={{style: {fontSize: 22}}}
                         InputLabelProps={{style: {fontSize: 20, lineHeight:60}}}
                         name='maxprice'
                         value={maxPrice}
@@ -620,121 +619,53 @@ function App() {
                      <div >
                     
                       {maxPrice != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "30px", color: "#828282" }}>
-                          가격: <span style={{ color: "black", fontWeight: "700", fontSize: "30px" }}>{minPrice1} ~ {maxPrice1} </span>원</p>
+                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" }}>
+                          <span style={{ color: "black", fontWeight: "700", fontSize: "28px" }}>{minPrice1} - {maxPrice1} </span>원</p>
                       )}
                     </div>
                   </div>
 
 
-                  <div className='filter_endtime' style={{ height: "30%", borderBottom:"1px solid rgb(180,180,180)" }}>
-                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px",marginBottom:"20px", color: "#929292" }}>마감</h1>
-                    <div style={{marginBottom:"25px"}}>
+                  <div className='filter_endtime' style={{ height: "20%", borderBottom:"1px solid rgb(180,180,180)" }}>
+                    <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px",marginBottom:"10px", color: "#929292" }}>마감</h1>
                     
-                    </div>
-                    <br />
-                    <div style={{display:"inline-block", marginRight:"250px"}}>
-                      <select
-                   value={endTime}
-                   onChange={handleEndTimeChange}
-                   style={{ width: "150px", height: "60px", accentColor: "black" , fontSize:"20px" }}
-                 >
-                   <option value="0">0 시간</option>
-                   <option value="1">1 시간</option>
-                   <option value="2">2 시간</option>
-                   {/* 다른 시간 옵션들 추가 */}
-                 </select>
+                    <div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="24" // 예: 24시간 범위 설정
+                        step="0.5" // 1시간씩 이동
+                        value={endTime} 
+                        onChange={handleEndTimeChange}
+                        style={{ width: "70%", height: "80%", accentColor: "black" }}
+                      />
                       {endTime != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" ,display:"inline-block"}}>
+                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" }}>
                           마감까지 <span style={{ color: "black", fontWeight: "700", fontSize: "25px" }}>{endTime}</span> 시간 이상 남음</p>
                       )}
                     </div>
                   </div>
-                  <div className='filter_star' style={{ height: "50%" }}>
+                  <div className='filter_star' style={{ height: "20%" }}>
                     <h1 style={{ fontSize: "20px", textAlign: "left", marginLeft: "30px", color: "#929292" }}>별점</h1>
                     <div style={{ marginRight: "25px" }}>
-                      <input
-                        id="ft_star_btn5"
-                        type="checkbox"
-                        name='rating'
-                        value='5'
-                        onChange={(e) => {
-                          checkOnlyOne(e.target);
+                       <div className='point' style={{ width: "100%", marginTop: "0px", marginRight: "110px" }}>  {array.map((index) => (
+                      <StarRateIcon
+                        style={{
+                          marginTop: "-10px"
+                          , fontSize: "4rem"
                         }}
-                      /><label for="ft_star_btn5"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' /></span></label>
-                      <br />
-                      <input
-                        id="ft_star_btn4"
-                        type="checkbox"
-                        name='rating'
-                        value='4'
-                        onChange={(e) => {
-                          checkOnlyOne(e.target);
-
-                        }}
-                      /><label for="ft_star_btn4"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                      </span></label>
-                      <br />
-                      <input
-                        id="ft_star_btn3"
-                        type="checkbox"
-                        name='rating'
-                        value='3'
-                        onChange={(e) => {
-                          checkOnlyOne(e.target);
-
-                        }}
-                      /><label for="ft_star_btn3"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                      </span></label>
-                      <br />
-                      <input
-                        id="ft_star_btn2"
-                        type="checkbox"
-                        name='rating'
-                        value='2'
-                        onChange={(e) => {
-                          checkOnlyOne(e.target);
-
-                        }}
-                        /><label for="ft_star_btn2"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                      </span></label>
-                      <br />
-                      <input
-                        id="ft_star_btn1"
-                        type="checkbox"
-                        size="larger"
-                        name='rating'
-                        value='1'
-                        onChange={(e) => {
-                          checkOnlyOne(e.target);
-
-                        }}
-                      /><label for="ft_star_btn1"><span><StarRateIcon style={{ fontSize: "2rem" }} className='filterstar' />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                        <StarBorderIcon style={{ fontSize: "2rem", fontWeight: "100", color: "#828282" }} />
-                      </span></label>
-
+                        key={index}
+                        name='rating'                     
+                        onClick={() => handleSetStar(index)}
+                        className={clicked[index] && 'StarRateIcon'}
+                        value={index}
+                       
+                        
+                      />))}
+                    </div>
                       {maxStars != 0 && (
-                        <p style={{ fontWeight: "600", fontSize: "20px", color: "#828282" }}>
-                          최대 별점 : <span style={{ color: "black", fontWeight: "700", fontSize: "22px" }}>{maxStars}</span></p>
+                        <p style={{ fontWeight: "600", fontSize: "25px", color: "#828282" }}>
+                          별점 : <span style={{ color: "black", fontWeight: "700", fontSize: "25px" }}>{maxStars}</span> 점 이상</p>
                       )}
                     </div>
                   </div>

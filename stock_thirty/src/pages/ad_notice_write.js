@@ -37,7 +37,7 @@ function Ad_notice_write() {
                 <div className="ad">
                     관리자 님, 환영합니다!
                 </div>
-                  <div className="content">
+                <div className="content">
                     <div>회원 관리</div>
                     <div className="sub" id="one"><a href="/ad_user" style={{color:"red"}}>사용자</a></div>
                     <div className="sub"><a href="/ad_businessman">상업자</a></div>
@@ -47,7 +47,7 @@ function Ad_notice_write() {
                     <div>콘텐츠 관리</div>
                     <div className="sub"><a href="/ad_inquiry">문의 내역</a></div>
                     <div className="sub"><a href="/ad_notice">공지사항</a></div>
-                    <div className="sub"><a href="/ad_analysis_shop">가게 등록</a></div>
+                    <div className="sub"><a href="/ad_store_management">가게 등록</a></div>
                 </div>
                 <div className="content">
                     <div>인사이트 분석</div>
@@ -64,11 +64,11 @@ function Ad_notice_write() {
                     <div className="qu">
                         <div className="d"><div style={{fontWeight:"700",fontSize:"35px"}}></div><div style={{fontWeight:"700",fontSize:"25px"}}></div><div style={{fontWeight:"700",fontSize:"20px"}}></div></div> 
                             <div className="qu_con">
-                                 <div style={{marginLeft:"60px"}}><textarea 
-                                   rows="1" 
+                                 <div style={{marginLeft:"180px"}}><textarea 
                                    cols="83" 
                                    placeholder="제목을 작성해주세요."
                                    name="title_notice"
+                                   style={{resize: "vertical",maxHeight:"40px",minHeight:"40px",lineHeight:"1.7"}}
                                    onChange={(e) => {
                                     setTitle_notice(e.target.value);
                                  }}
@@ -76,8 +76,9 @@ function Ad_notice_write() {
                                 <div><textarea 
                                    rows="8" 
                                    cols="83" 
-                                   placeholder="공지사항 내용을 작성해주세요."
+                                   placeholder="공지사항 내용을 작성해주세요,,!"
                                    name="content_notice"
+                                   style={{resize: "vertical",minHeight:"200px"}}
                                    onChange={(e) => {
                                     setContent_notice(e.target.value);
                                  }}
@@ -85,7 +86,7 @@ function Ad_notice_write() {
                                 
                             <div>
                             
-                               <button onClick={()=>{   
+                               <button className="ad_write_btn" onClick={()=>{   
                          const formData = new FormData();
                          formData.append("title",title_notice); 
                          formData.append("content",content_notice); 

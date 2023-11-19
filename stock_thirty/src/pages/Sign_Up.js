@@ -7,6 +7,8 @@ import PhoneAndroidIcon from "@material-ui/icons/PhoneAndroid";
 import EmailIcon from "@material-ui/icons/Email";
 import axios from "axios";
 import { lazy, Suspense, createContext, useState, useEffect } from "react";
+import Typography from '@mui/material/Typography';
+import Marker4 from "./../img/marker4.gif";
 
 function Join() {
     let navigate = useNavigate();
@@ -28,7 +30,12 @@ function Join() {
             return alert('비밀번호와 비밀번호 확인은 같아야 합니다.')
         }
     }
-
+    
+    let [id_result, setId_result] = useState("");
+    let [pw_result, setPw_result] = useState("");
+    let [name_result, setName_result] = useState("");
+    let [role_result, setRole_result] = useState("");
+    let [phone_result, setPhone_result] = useState("");
     useEffect(() => {
         if(temp==false){
         sendUserData();
@@ -67,7 +74,13 @@ function Join() {
                             autoFocus
                             onChange={(e) => {
                                 setId(e.target.value);
-                            }} />
+                            }} 
+                     helperText={
+                                 <Typography style={{ color: 'red' }}>
+                               {id_result}
+                           </Typography>
+                            }
+                            /> 
                         &nbsp;&nbsp;
 
                     </div>
@@ -96,7 +109,13 @@ function Join() {
                                 }}
                                 onChange={(e) => {
                                     setpw(e.currentTarget.value);
-                                }} />
+                                }} 
+                                helperText={
+                                    <Typography style={{ color: 'red' }}>
+                                  {pw_result}
+                              </Typography>
+                               }
+                                />
                         </div>
                     </div>
                     <div id="textFeild">
@@ -127,7 +146,10 @@ function Join() {
                                 }}
                                 error={hasNotSameError('check_pw')} // 해당 텍스트필드에 error 핸들러 추가
                                 helperText={
-                                    hasNotSameError('check_pw') ? "입력한 비밀번호와 일치하지 않습니다." : null
+                                    hasNotSameError('check_pw') ? 
+                                    <Typography style={{ color: 'red' }}>
+                                  입력한 비밀번호와 일치하지 않습니다.
+                              </Typography> : null
                                 } // 에러일 경우에만 안내 문구 표시
                             />
                         </div>
@@ -154,7 +176,12 @@ function Join() {
                             }}
                             onChange={(e) => {
                                 setName(e.target.value);
-                            }} />
+                            }} 
+                            helperText={
+                                    <Typography style={{ color: 'red' }}>
+                                  {name_result}
+                              </Typography>
+                            }/>
                     </div>
                     <div id="textFeild">
                         <TextField
@@ -178,7 +205,12 @@ function Join() {
                             }}
                             onChange={(e) => {
                                 setphone(e.target.value);
-                            }} />
+                            }} 
+                            helperText={
+                                    <Typography style={{ color: 'red' }}>
+                                  {phone_result}
+                              </Typography>
+                            }/>
                     </div>
                     <div className="partWrap">
                         <input className="part" type="button" value="사용자" onClick={(e) => {
@@ -189,6 +221,9 @@ function Join() {
                             let typped = e.target.value;
                             setrole(typped);
                         }}></input>
+                        <div className="helperText">
+                      <span style={{ color: 'red' }}>{role_result}</span>
+                    </div>
                     </div>
 
                     <Button onClick={() => { 
@@ -205,16 +240,15 @@ function Join() {
 
                 </div>
                 <div className="imgarea" style={{borderTopRightRadius: "20px",borderBottomRightRadius: "20px"}}>
+                   <div className="text" style={{ width: "800px", height: "200px" }}>
+                        <img src={Marker4} style={{ width: "130px", height: "90px",marginTop:"30px" }} />
+                        <span style={{ fontSize:"90px", color:"black",fontWeight:"600" }}>StockTracker</span>
+                    </div>
                 </div>
             </div>
         </div>
     )
     function sendUserData() {
-      console.log("id = ", id);
-      console.log("name = ", name);
-      console.log("pw = ", pw);
-      console.log("phone = ", phone);
-      console.log("role = ", role);
         return (
             axios.post('/join', {
                     id: id,
@@ -232,9 +266,45 @@ function Join() {
                 setphone("");
                 
             }).catch(error => {
-             let errorMessages = Object.values(error.response.data).join('\n');
-             console.log(error);
-             window.alert(errorMessages);
+            if (error.response.data.result == null) {
+               setId_result("")
+               setPw_result("")
+               setName_result("")
+               setPhone_result("")
+               setRole_result("")
+                    const errorKeys = Object.keys(error.response.data);
+                    const errorValues = [];
+                    for (const key of errorKeys) {
+                        errorValues.push(error.response.data[key]);
+                    }
+                    errorKeys.forEach((key,index) =>{
+                  switch (key){
+                     case "id":
+                        setId_result(errorValues[index]);
+                        break;
+                     case "pw":
+                        setPw_result(errorValues[index]);
+                        break;
+                     case "name":
+                        setName_result(errorValues[index]);
+                        break;
+                     case "phone":
+                        setPhone_result(errorValues[index]);
+                        break;
+                     default:
+                        setRole_result(errorValues[index]);
+                        break;
+                  }
+               })
+                } else {
+                    window.alert(error.response.data.result);
+                    setId("")
+                    setId_result("이미 사용 중인 아이디입니다.")
+               setPw_result("")
+               setName_result("")
+               setPhone_result("")
+               setRole_result("")
+                }
          })
         )
     }

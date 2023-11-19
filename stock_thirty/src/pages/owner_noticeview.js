@@ -5,9 +5,9 @@ import { useEffect, useRef } from 'react';
 import Avatar from 'react-avatar';
 import { useParams } from 'react-router-dom';
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import Marker4 from "./../img/marker4.gif";
 import LogoutIcon from '@mui/icons-material/Logout';
 import HouseIcon from '@mui/icons-material/House';
-import { useNavigate } from "react-router-dom";
 function Owner_noticeview() {
     let [recall, setRecall] = useState(false);
     let [temp1, setTemp1] = useState(true);
@@ -45,12 +45,11 @@ function Owner_noticeview() {
     }, []);
     const handleClick = () => {
         if (userInfo.role === '사용자') {
-          window.location.href="/home_user";
+            window.location.href = "/home_user";
         } else if (userInfo.role === '상업자') {
-          window.location.href="/home_owner";
+            window.location.href = "/home_owner";
         }
-     };
-     let navigate = useNavigate();
+    };
     return (
         <div>
             <div className='owner_noticeWrap' >
@@ -62,7 +61,7 @@ function Owner_noticeview() {
                     zIndex: 1, // 다른 요소 위에 나타나도록 설정
                     borderRadius: "20px"
                 }}>
-                    <div className='logo'><a onClick={handleClick} style={{ cursor: 'pointer' }}> 재고 30 </a></div>
+                    <div className='logo' style={{ marginTop: "-20px", cursor: "pointer" }}><a onClick={handleClick}><img style={{ marginBottom: "-10px" }} src={Marker4} /><span style={{ fontSize: "50px", fontWeight: "600" }}>StockTracker</span></a></div>
                     <nav className='nav'>
                         <ul>
                             <li>
@@ -74,7 +73,7 @@ function Owner_noticeview() {
                                 <a onClick={() => {
                                     setTemp(switchTemp);
                                 }} style={{ cursor: "pointer" }} href='/owner_storelist'>
-                                    내 가게
+                                    내가게
                                 </a>
                             </li>
                             <li>
@@ -88,14 +87,14 @@ function Owner_noticeview() {
                                 </a>
                             </li>
                             <li>
-                            <a href="/" onClick={() => {
-                                        axios.get('/SessionLogout', {
-                                        })
-                                        window.alert("로그아웃되었습니다.");
-                                    }
-                                    }>
-                                        <LogoutIcon fontSize="large" />
-                                    </a>
+                                <a href="/" onClick={() => {
+                                    axios.get('/SessionLogout', {
+                                    })
+                                    window.alert("로그아웃되었습니다.");
+                                }
+                                }>
+                                    <LogoutIcon fontSize="large" />
+                                </a>
                             </li>
                         </ul></nav>
                 </header>
@@ -103,7 +102,7 @@ function Owner_noticeview() {
             <div className='notview_header'>
                 <h1>공지사항</h1>
             </div>
-                <div>
+            <div>
                 <div className='notinfo'>
                     <p className='nottitle'>{notititle}</p>
                     <p className='notdate'>{notidate}</p>
@@ -111,16 +110,14 @@ function Owner_noticeview() {
                 <div className='nottxt'>
                     <p>{noticontent}</p>
                 </div>
-                </div>
+            </div>
 
             <div className='notfooter'>
                 <div className='curnot'><a >다음 게시글</a></div>
                 <div className='curnot'><a>이전 게시글</a></div>
             </div>
             <div>
-                <button className='notlist_btn' onClick={()=>{
-                    navigate("/owner_notice")
-                }} style={{cursor:"pointer"}}>목록</button>
+                <button className='notlist_btn'>목록</button>
             </div>
         </div>
     );

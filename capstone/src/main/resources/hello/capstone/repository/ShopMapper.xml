@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.capstone.repository.ShopMapper">
+    
+
+	<select id="findByAddress" resultType ="Shop">
+		select * from shop where shopaddress = #{address} Limit 1;
+	</select>
+	
+	<insert id="saveShop">
+      insert into shop(shopname, shopaddress, owneridx	,shoptel, shopwebsite, imagefilename, promotionText, registrationDate, longitude, latitude) values( #{shopName}, #{shopAddress}, #{ownerIdx},#{shopTel}, #{shopWebsite}, #{imageFilename}, #{promotionText}, DATE(NOW()), #{longitude}, #{latitude});
+	</insert>
+	
+	<delete id = "shopDelete">
+		delete from shop 
+		where shopidx = #{shopidx};
+	</delete>
+	
+	<select id="getShopIdx">
+		select shopidx from shop where shopname = #{shopName} and shopaddress = #{shopAddress};
+	</select>
+	
+	<select id="getShopByIdx">
+		select * from shop where shopidx = #{shopidx};
+	</select>
+	
+	<select id = "getShops" resultType = "Shop">
+    	select distinct s.*
+        from shop s
+        inner join item i ON s.shopidx = i.shopidx
+        where i.endtime &gt;= now();
+    </select>
+	
+	<select id = "getShopByMember" resultType = "hashmap">
+		select * 
+		from shop
+		where owneridx = #{memberidx};
+	</select>
+	
+	<update id="modifyShop">
+		update shop set shopname = #{shopName}, shopaddress = #{shopAddress}, owneridx = #{ownerIdx}, shoptel = #{shopTel}, shopwebsite = #{shopWebsite}, imagefilename = #{imageFilename}, promotionText = #{promotionText} , latitude = #{latitude}, longitude = #{longitude}
+		where shopidx = #{shopidx}		 
+	</update>
+	
+	<select id = "runPriceFilter" resultType = "Shop">
+	      select * 
+	      from shop 
+	      where shopidx in (
+	         select distinct shopidx from item 
+	         where salecost &lt;= #{maxPrice} and 
+	         salecost &gt;= #{minPrice} and 
+	         endtime &gt;= now()
+	      );
+	 </select>
+	
+	<select id = "runRatingFilter" resultType = "Shop">
+		select distinct s.*
+		from shop s 
+		join item i on s.shopidx = i.shopidx
+		where #{rating} &lt;= s.rating and i.endtime &gt;= now();
+	</select>
+	
+	<update id = "setRatings">
+		update shop set rating = #{rating}
+		where shopidx = #{shopidx};
+	</update>
+	
+	<select id = "getItemReservations">
+		select r.reservationidx, m.memberidx, m.name, m.phone, m.trust, r.number, r.confirm, r.itemidx 
+		from member as m 
+		left join reservation as r
+		on m.memberidx = r.memberidx
+		where r.itemidx = #{itemidx};
+	</select>
+	
+</mapper> 

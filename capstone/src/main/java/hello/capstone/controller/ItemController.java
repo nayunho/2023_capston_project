@@ -1,9 +1,11 @@
-package hello.capstone.controller;
+ package hello.capstone.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +13,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -47,96 +52,32 @@ public class ItemController {
 
    private final ItemService itemService;
    private final ShopService shopService;
-   private final MessageSource messageSource;  
+   private final MessageSource messageSource;
    
-   /*
-    * 리팩토링 전 등록, 수정 // 한 메소드에서 두개의 기능을 가지고 있음.(기본에 충실하지 못했음), 여러가지 필요없는 지저분 코드가 많고 컨트롤러가 무거워짐.
-    */
-   
-   
-   /*
-    * 아이템 등록
-    */
-//   @PostMapping("/register")
-//   public Item ItemRegistration(@RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
-//           				   @RequestParam(value = "itemidx", defaultValue = "0") String iidx,
-//                           @RequestParam("shopidx") String sid,
-//                           @RequestParam("itemName") String itemname,
-//                           @RequestParam("cost") String ct,
-//                           @RequestParam("salecost") String sct,
-//                           @RequestParam("quantity") String qt,
-//                           @RequestParam("category") String category,
-//                           @RequestParam("itemnotice") String itemnotice,
-//                           @RequestParam("endtime") String et,
-//                           @RequestParam("starttime") String st,
-//                           @RequestParam(value = "existingImage", required = false) String existingImage,
-//                           @RequestParam(value = "method", defaultValue = "register") String method,
-//                           HttpSession session
-//                           ) throws IllegalStateException, IOException, ParseException {
-//      
-//      
-//      
-//      int itemidx = Integer.parseInt(iidx);
-//      int shopidx = Integer.parseInt(sid);
-//      int cost = Integer.parseInt(ct);
-//      int salecost = Integer.parseInt(sct);
-//      int quantity = Integer.parseInt(qt);
-//      
-//      Item item = new Item();
-//      item.setItemidx(itemidx);
-//      item.setShopidx(shopidx);
-//      item.setItemname(itemname);
-//      item.setItemnotice(itemnotice);
-//      item.setCost(cost);
-//      item.setSalecost(salecost);
-//      item.setQuantity(quantity);
-//      item.setCategory(category);
-//
-//
-//      Timestamp starttime = convertStringToTimestamp(st);
-//
-//      Timestamp endtime = convertStringToTimestamp(et);
-//      
-//      item.setStarttime(starttime);
-//      item.setEndtime(endtime);
-//
-//      if(imageFile != null) {
-//         String fullPath = fileDir + imageFile.getOriginalFilename();
-//         imageFile.transferTo(new File(fullPath));
-//         item.setImage(imageFile.getOriginalFilename());
-//      }
-//      else {
-//    	  item.setImage(existingImage);
-//      }
-//
-//
-//      
-//      itemService.itemsave(item, method);
-//        
-//      return item;
-//   }
-   
-
-   /*
-    * 리팩토링 후 상품 등록, 수정 -> 등록 및 수정을 분리하고 지저분한 코드를 최소화했으며, 연결을 담당하는 컨트롤러가 너무 무거워지지 않도록 Service에서 더 많은 로직을 처리
-    */
+   @Value("${itemfile.dir}")
+   private String fileDir;
    
    /*
     * item 등록
     */
    @PostMapping("/create")
    public void itemCreate(@Validated(value = SaveItemValidationGroup.class) @ModelAttribute Item item, BindingResult bindingResult,
-                        @RequestParam("startParam") String startParam,
-                        @RequestParam("endParam") String endParam) throws IllegalStateException, IOException, ParseException{
-      
-      if(bindingResult.hasErrors()) {
-    	  sendErrors(bindingResult);
-      }
-      
-      item.setStarttime(convertStringToTimestamp(startParam));
-      item.setEndtime(convertStringToTimestamp(endParam));
-      
-      itemService.saveItem(item);
+		                  @RequestParam("startParam") String startParam,
+		                  @RequestParam("endParam") String endParam) throws IllegalStateException, IOException, ParseException{
+	   
+	   	if(bindingResult.hasErrors()) {
+			Map<String, String> errors = new HashMap<>();
+	    	for (FieldError error : bindingResult.getFieldErrors()) {
+	    		String em = messageSource.getMessage(error, Locale.getDefault());
+	            errors.put(error.getField(), em);
+	        }
+	    	throw new ValidationException(errors);
+		}
+	   
+	   item.setStarttime(convertStringToTimestamp(startParam));
+	   item.setEndtime(convertStringToTimestamp(endParam));
+	   
+	   itemService.saveItem(item);
    }
    
    /*
@@ -144,53 +85,39 @@ public class ItemController {
     */
    @PutMapping("/update")
    public void itemUpdate(@Validated(value = UpdateItemValidationGroup.class) @ModelAttribute Item item, BindingResult bindingResult, 
-                          @RequestParam(value = "imageF", required = false) MultipartFile imageFile,
-                          @RequestParam(value = "endParam", required = false) String endParam,
-                          @RequestParam(value = "startParam", required = false) String startParam) 
-                             throws ParseException, IllegalStateException, IOException {
+		                  @RequestParam(value = "imageF", required = false) MultipartFile imageFile,
+			              @RequestParam(value = "endParam", required = false) String endParam,
+			              @RequestParam(value = "startParam", required = false) String startParam) 
+			            		  throws ParseException, IllegalStateException, IOException {
+	   
+	   	if(bindingResult.hasErrors()) {
+			Map<String, String> errors = new HashMap<>();
+	    	for (FieldError error : bindingResult.getFieldErrors()) {
+	    		String em = messageSource.getMessage(error, Locale.getDefault());
+	            errors.put(error.getField(), em);
+	        }
+	    	throw new ValidationException(errors);
+		}
+	   
+	   Item oldItem = itemService.findByItemIdx(item.getItemidx());
 
-      if(bindingResult.hasErrors()) {
-    	  sendErrors(bindingResult);
-      }
-      
-      Item oldItem = itemService.findByItemIdx(item.getItemidx());
-
-      oldItem.setItemname(item.getItemname());
-      oldItem.setCost(item.getCost());
-      oldItem.setSalecost(item.getSalecost());
-      oldItem.setQuantity(item.getQuantity());
-      oldItem.setCategory(item.getCategory());
-      oldItem.setItemnotice(item.getItemnotice());
-
-      if(endParam != null || endParam =="" ) {
-         oldItem.setEndtime(convertStringToTimestamp(endParam));
-      }
-      if(startParam != null || startParam =="" ) {
-         oldItem.setStarttime(convertStringToTimestamp(startParam));
-      }
-
-      
-      itemService.updateItem(oldItem, imageFile);
+	   oldItem.setItemname(item.getItemname());
+	   oldItem.setCost(item.getCost());
+	   oldItem.setSalecost(item.getSalecost());
+	   oldItem.setQuantity(item.getQuantity());
+	   oldItem.setCategory(item.getCategory());
+	   oldItem.setItemnotice(item.getItemnotice());
+	   log.info("endparam = {}", endParam);
+	   if(endParam != null || endParam =="" ) {
+		   oldItem.setEndtime(convertStringToTimestamp(endParam));
+	   }
+	   if(startParam != null || startParam =="" ) {
+		   oldItem.setStarttime(convertStringToTimestamp(startParam));
+	   }
+	   
+	   
+	   itemService.updateItem(oldItem, imageFile);
    }
-   
-   //검증 오류
-   private void sendErrors(BindingResult bindingResult) {
-	   Map<String, String> errors = new HashMap<>();
-       for (FieldError error : bindingResult.getFieldErrors()) {
-    	   String em = messageSource.getMessage(error, Locale.getDefault());
-           errors.put(error.getField(), em);
-       }
-       throw new ValidationException(errors);
-   }
-   
-   /*
-    * 아이템 삭제
-    */
-   @DeleteMapping("/delete")
-   public void itemDelete(@ModelAttribute Item item) {
-	   itemService.itemDelete(item);
-   }
-   
    
    /*
     * 아이템 정보가져오기
@@ -205,47 +132,72 @@ public class ItemController {
       return items;
    }
    
-    
+   /*
+    * 아이템 삭제
+    */
+   @DeleteMapping("/delete")
+   public void itemDelete(@ModelAttribute Item item) {
+	   itemService.itemDelete(item);
+   }
    
    /*
     * 상품 예약
     */
    @PostMapping("/reservation")
-   public void reservation(@RequestParam("shopidx") int shopIdx,
-	   				       @RequestParam("memberidx") int memberIdx,
-	   					   @RequestParam("itemidx") int itemIdx,
-	   					   @RequestParam("number") int number,
-	   					   @RequestParam("shopname") String shopname,
-	   					   @RequestParam("itemname") String itemname,
-	   					   @RequestParam("name") String name,
-	   					   @RequestParam("phone") String phone) {
+   public String reservation(HttpSession session, @RequestParam("shopidx") String si,
+		   					 @RequestParam("memberidx") String mi,
+		   					 @RequestParam("itemidx") String ii,
+		   					 @RequestParam("number") String num,
+		   					 @RequestParam("shopname") String shopname,
+		   					 @RequestParam("itemname") String itemname) {
 	   
-	   Reservation reservation = new Reservation(0,memberIdx,shopIdx,itemIdx,number,null,"wait");
+	   int memberidx = Integer.parseInt(mi);
+	   int shopidx = Integer.parseInt(si);
+	   int itemidx = Integer.parseInt(ii);
+	   int number = Integer.parseInt(num);
+	   
+	   log.info("itemidx={}", itemidx);
+	   
+	   Member member = (Member) session.getAttribute("member");
+	   String name = member.getName(); 
+	   String phone = member.getPhone();
+	   
+	   Reservation reservation = new Reservation(0,memberidx,shopidx,itemidx,number,null,"wait");
 	   
 	   itemService.reservation(reservation, shopname, itemname, name, phone);
-	   
-   }
-   
-   /*
-    *  상품 예약 확인(상업자가 확인 버튼 클릭)
-    */
-   @PostMapping("/reservation/confirm")
-   public String confirm(@RequestParam("reservationidx") int reservationIdx) {
-	   itemService.reservationConfirm(reservationIdx);
-	   
 	   return "";
    }
    
    /*
-    * 상품 예약 취소(사용자)
+    * 상품 예약 확인(상업자가 확인 버튼 클릭)
+    */
+   @PostMapping("/reservation/confirm")
+   public void reservationComplete(@RequestParam("reservationidx") String ridx) {
+	   int reservationidx = Integer.parseInt(ridx);
+	   itemService.reservationConfirm(reservationidx);
+   }
+   
+   /*
+    * 사용자 입장에서 상품 예약 취소
     */
    @PostMapping("/reservation/cancel")
-   public void cancel(HttpSession session, @RequestBody List<Map<String, Object>> reservationinfo) {
+   public String cancel(HttpSession session, @RequestBody List<Map<String, Object>> reservationinfo) {
+	   
+	   log.info("reservationinfo = {}", reservationinfo);
+	   
+	   for(Map<String, Object> info : reservationinfo) {
+		   log.info("reservationidx = {}",info.get("reservationidx"));
+	   }
+	   
 	   Member member = (Member) session.getAttribute("member");
 	   String phone = member.getPhone();
 	   String name = member.getName();
 	   
+	   log.info("phone = {}", phone);
+	   log.info("name = {}", name);
+	   
 	   itemService.reservationCancel(reservationinfo, name, phone);
+	   return "";
    }
    
    /*
@@ -253,8 +205,8 @@ public class ItemController {
     */
    @GetMapping("/reservation/getreservations")
    public List<Map<String, Object>> getReservations(@RequestParam("confirm") String confirm,HttpSession session){
+	   log.info("confirm={}",confirm);
 	   Member member = (Member) session.getAttribute("member");
-	   
 	   return itemService.getReservations(member.getMemberIdx(), confirm);
    }
    
@@ -262,17 +214,23 @@ public class ItemController {
     * 상품 예약 취소(상업자)
     */
    @DeleteMapping("/reservation/cancel/business")
-   public void reservationCancelBusiness(@RequestParam("reservationIdx") Integer reservationIdx) {
-	   itemService.reservationCancelBusiness(reservationIdx);
+   public void reservationCancelBusiness(HttpSession session,
+		    							 @RequestParam("reservationIdx") Integer reservationIdx,
+		   								 @RequestParam("itemidx") Integer itemidx,
+		   								 @RequestParam("number") Integer number
+		   								 ) {
+	   Member member = (Member) session.getAttribute("member");
 	   
+	   String name = member.getName();
+	   String phone = member.getPhone();
+	   
+	   itemService.reservationCancelBusiness(reservationIdx,itemidx,number, name, phone);
    }
    
    
-   
-   //---------------------------------------------------------------------------------------------------
-   
-	
-   //String을 Timestamp로 변환하는 함수
+   /*
+    * String을 Timestamp로 변환하는 함수
+    */
    private Timestamp convertStringToTimestamp(String dateString) throws ParseException {
      
 	   try {
@@ -292,9 +250,3 @@ public class ItemController {
 	       
    }
 }
-
-
-
-
-
-

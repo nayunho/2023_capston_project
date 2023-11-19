@@ -1,6 +1,7 @@
 package hello.capstone.dto;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 
 import org.hibernate.validator.constraints.Range;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,7 @@ import hello.capstone.validation.group.SaveItemValidationGroup;
 import hello.capstone.validation.group.UpdateItemValidationGroup;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;

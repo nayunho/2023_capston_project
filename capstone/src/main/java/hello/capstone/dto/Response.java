@@ -12,7 +12,7 @@ public class Response<T> {
     private T result;
 
 
-    //  Service에서 데이터가 중복이 되었다면 오류 처리를 하는데
+	//  Service에서 데이터가 중복이 되었다면 오류 처리를 하는데
     public static <T> Response<T> error(String resultCode, T result){
         return new Response(resultCode, result);
     }

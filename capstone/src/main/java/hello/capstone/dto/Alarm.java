@@ -1,5 +1,6 @@
 package hello.capstone.dto;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -12,8 +13,4 @@ public class Alarm {
 	private int memberIdx;
 	private int shopIdx;
 	private Timestamp regisdate;
-
-	public Alarm() {
-		
-	}
 }

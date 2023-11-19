@@ -3,6 +3,7 @@ package hello.capstone.service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,18 +16,23 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
+import hello.capstone.dto.Coordinates;
 import hello.capstone.dto.Item;
 import hello.capstone.dto.Member;
 import hello.capstone.dto.Reservation;
 import hello.capstone.dto.Shop;
 import hello.capstone.exception.ExistReservationException;
+import hello.capstone.exception.NullPhoneException;
 import hello.capstone.exception.QuantityException;
 import hello.capstone.exception.SaveItemException;
 import hello.capstone.exception.TimeSettingException;
 import hello.capstone.exception.errorcode.ErrorCode;
 import hello.capstone.repository.ItemRepository;
+import hello.capstone.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.NurigoApp;
@@ -35,44 +41,17 @@ import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ItemService {
 
 	private final ItemRepository itemRepository;
-	@Value("${itemfile.dir}")
-    private String fileDir;
+	private final MemberRepository memberRepository;
 	
-	/*
-	 * 아이템 등록
-	 */
-//	public boolean itemsave(Item item, String method) {
-//		
-//		if(method.equals("register")) {
-//			
-//		}
-//		
-//		
-//		//MySql의 Timestamp는 타임존을 반영하기 때문에 9시간 전으로 저장이 됨. 그걸 맞추기위해 9시간을 더해줌
-//		Timestamp startTimeForSeoul = new Timestamp(item.getStarttime().getTime() + (9 * 60 * 60 * 1000));
-//		Timestamp endTimeForSeoul = new Timestamp(item.getEndtime().getTime() + (9 * 60 * 60 * 1000));
-//		item.setStarttime(startTimeForSeoul);
-//		item.setEndtime(endTimeForSeoul);
-//		
-//		int timeOut = startTimeForSeoul.compareTo(endTimeForSeoul);
-//		if(timeOut >= 0) {
-//			throw new TimeSettingException(ErrorCode.TIME_SETTING_ERROR,null);
-//		}
-//		
-//		log.info("service_item = {}", item);
-//		
-//		itemRepository.saveitem(item, method);
-//		
-//		itemRepository.pushAlarm(item.getShopidx());
-//		
-//		return true;
-//	}
+   @Value("${itemfile.dir}")
+   private String fileDir;
 	
 	/*
 	 * 아이템 저장
@@ -82,13 +61,25 @@ public class ItemService {
 		
 		//이미지 파일 이름 저장
 		if(item.getImageFile() != null) {
-			 item = saveImageFile(item.getImageFile(), item);
-	    }
-
-		duplicateItemCheck(item);		
-		timeCheck(item);
+	         String fullPath = fileDir + item.getImageFile().getOriginalFilename();
+	         item.getImageFile().transferTo(new File(fullPath));
+	         item.setImage(item.getImageFile().getOriginalFilename());
+	      }
 		
-		itemRepository.saveItem(item);		
+		//중복아이템 검사
+		Optional.ofNullable(itemRepository.findByShopIdxAndItemname(item.getShopidx(), item.getItemname()))
+		.ifPresent(user->{
+			throw new SaveItemException(ErrorCode.DUPLICATED_ITEM,null);
+		});
+		
+		//시작시간보다 마감시간이 빠른지 검사
+		int timeOut = item.getStarttime().compareTo(item.getEndtime());
+		if(timeOut >= 0) {
+			throw new TimeSettingException(ErrorCode.TIME_SETTING_ERROR,null);
+		}
+		
+		itemRepository.saveItem(item);
+		
 		itemRepository.pushAlarm(item.getShopidx());
 		
 	}
@@ -101,60 +92,40 @@ public class ItemService {
 		
 		//이미지 파일이 새로 바뀐 경우
 		if(imageFile != null) {
-			item = saveImageFile(imageFile, item);
+			String fullPath = fileDir + imageFile.getOriginalFilename();
+			log.info("파일 저장 fullPath ={}",fullPath);
+			imageFile.transferTo(new File(fullPath));
+			item.setImage(imageFile.getOriginalFilename());
 		}
+		log.info("Item = {}", item);
 		
-		timeCheck(item);
-		
-		itemRepository.updateItem(item);
-	}
-	
-	//중복아이템 검사
-	private void duplicateItemCheck(Item item) {
-		Optional.ofNullable(itemRepository.findByShopIdxAndItemname(item.getShopidx(), item.getItemname()))
-		.ifPresent(user->{
-			throw new SaveItemException(ErrorCode.DUPLICATED_ITEM,null);
-		});
-	}
-	
-	//시작시간보다 마감시간이 빠른지 검사
-	private void timeCheck(Item item) {
+		//시작시간보다 마감시간이 빠른지 검사
 		int timeOut = item.getStarttime().compareTo(item.getEndtime());
 		if(timeOut >= 0) {
 			throw new TimeSettingException(ErrorCode.TIME_SETTING_ERROR,null);
 		}
+		
+		itemRepository.updateItem(item);
 	}
 	
-    /*
-     * 아이템 가져오기
-     */
-   
-    public List<Item> getItems(int shopIdx){
-       List<Item> items = new ArrayList<Item>();
-       items = itemRepository.getItems(shopIdx);
-             
-       for(Item item : items) {
-    	   item = changeTimeZone(item);
-       }
-       return items;  
-    }
-    
-    //타임존 정보 맞추기
-    private Item changeTimeZone(Item item) {
-    	Timestamp starttime = new Timestamp(item.getStarttime().getTime() - (9 * 60 * 60 * 1000));
- 	    Timestamp endtime = new Timestamp(item.getEndtime().getTime() - (9 * 60 * 60 * 1000));
- 	   
- 	    item.setStarttime(starttime);
- 	    item.setEndtime(endtime);
- 	    
- 	    return item;
-    }
-	
 	/*
-	 * 인덱스로 아이템찾기
+	 * 아이템 가져오기
 	 */
-	public Item findByItemIdx(int itemIdx) {
-		return itemRepository.findByItemIdx(itemIdx);
+	
+	public List<Item> getItems(int shopIdx){
+		List<Item> items = new ArrayList<Item>();
+		items = itemRepository.getItems(shopIdx);
+		
+		for(int i = 0; i < items.size(); i++) {
+			Timestamp starttime = new Timestamp(items.get(i).getStarttime().getTime() - (9 * 60 * 60 * 1000));
+			Timestamp endtime = new Timestamp(items.get(i).getEndtime().getTime() - (9 * 60 * 60 * 1000));
+			
+			items.get(i).setStarttime(starttime);
+			items.get(i).setEndtime(endtime);
+		}
+		
+		return items;
+		
 	}
 	
 	/*
@@ -165,7 +136,15 @@ public class ItemService {
 		if(itemRepository.reservationCheck(item) != 0){
 			throw new ExistReservationException(ErrorCode.EXIST_RESERVATION_PERSON,null);
 		}
-		itemRepository.itemDelete(item);	
+		itemRepository.itemDelete(item);
+		
+		
+	}
+	/*
+	 * 인덱스로 아이템찾기
+	 */
+	public Item findByItemIdx(int itemIdx) {
+		return itemRepository.findByItemIdx(itemIdx);
 	}
 	
 	/*
@@ -183,28 +162,58 @@ public class ItemService {
 	}
 	
 	/*
-	 * 
 	 * 읽은 알람 삭제
 	 */
 	public void deleteReadAlarm(Shop shop, Member member) {
 		itemRepository.deleteReadAlarm(shop, member);
 	}
 	
+	
+	
+	/*
+	 * 1분마다 실행되는 cron표현식 item들에 마감시간을 확인하여 신뢰점수 차감
+	 */
+	@Scheduled(cron ="0 * * * * *")
+	public void checkItemEndtime() {
+		log.info("item @Scheduled 실행");
+		LocalDateTime now = LocalDateTime.now();
+		Timestamp timestamp = Timestamp.valueOf(now);
+
+        // 현재 시간보다 이전인 아이템 삭제
+		itemRepository.checkTrust(timestamp);
+	}
+	
+	/*
+	 * 1분마다 실행되는 cron표현식 24시간만 유지되는 알림쪽지 
+	 */
+	@Scheduled(cron ="0 * * * * *")
+	public void deleteTimeoutAlarm() {
+		log.info("alarm @Scheduled 실행");
+		itemRepository.deleteTimeoutAlarm();
+	}
+	
 	/*
 	 *  상품 예약
 	 */
-	public void reservation(Reservation reservation, String shopName, String itemName, String name, String phone) {
+	public void reservation(Reservation reservation, String shopname, String itemname, String name, String phone) {
 		
 		int number = reservation.getNumber();
-		int quantity = itemRepository.getQuantityByitemIdx(reservation.getItemidx());
+		int itemidx = reservation.getItemidx();
+		int quantity = itemRepository.getQuantityByitemIdx(itemidx);
+		
+		if(phone == null) {
+			throw new NullPhoneException(ErrorCode.NULL_PHONE, null);
+		}
 		
 		if(quantity < number) {
 			throw new QuantityException(ErrorCode.EXCESS_QUANTITY,null);
 		}
 		
-		reservation.setRedate(new Date(System.currentTimeMillis()));
+		long miliseconds = System.currentTimeMillis();
+		Date redate = new Date(miliseconds);
+		reservation.setRedate(redate);
 		
-		String content = "[재고30]\n" + name + "님 정상적으로 예약이 완료되었습니다.\n\n" + "가게 이름: " + shopName + "\n상품명: " + itemName + "\n수량: " + number;
+		String content = "[재고30]\n" + name + "님 정상적으로 예약이 완료되었습니다.\n\n" + "가게 이름: " + shopname + "\n상품명: " + itemname + "\n수량: " + number;
 		
 		itemRepository.reservation(reservation);
 		sendMessage(phone, content);
@@ -214,20 +223,20 @@ public class ItemService {
 	/*
 	 *  상품 예약 확인(상업자가 확인 버튼 클릭)
 	 */
-	public void reservationConfirm(int reservationIdx) {
-		itemRepository.reservationConfirm(reservationIdx);
+	public void reservationConfirm(int ridx) {
+		itemRepository.reservationConfirm(ridx);
 	}
 	
 	/*
 	 * 상품 예약 취소
 	 */
-	public void reservationCancel(List<Map<String, Object>> reservationInfo, String name, String phone) {
+	public void reservationCancel(List<Map<String, Object>> reservationinfo, String name, String phone) {
 		
-		for(Map<String, Object> info : reservationInfo) {
-			int reservationIdx = (int)info.get("reservationidx");
-			int itemIdx = (int)info.get("itemidx");
+		for(Map<String, Object> info : reservationinfo) {
+			int ridx = (int)info.get("reservationidx");
+			int itemidx = (int)info.get("itemidx");
 			int number = (int)info.get("number");
-			itemRepository.reservationCancel(reservationIdx, itemIdx, number);
+			itemRepository.reservationCancel(ridx, itemidx, number);
 		}
 		String content = "[재고30]\n" + name + "님 정상적으로 예약이 취소되었습니다.\n";
 		sendMessage(phone, content);
@@ -243,12 +252,13 @@ public class ItemService {
     /*
      * 상품 예약 취소,거부 (상업자)
      */
-    public void reservationCancelBusiness(int reservationIdx) {
-    	itemRepository.reservationCancelBusiness(reservationIdx);
+    public void reservationCancelBusiness(int reservationIdx, Integer itemidx, Integer number, String name, String phone) {
+    	itemRepository.reservationCancelBusiness(reservationIdx,itemidx,number);
+    	String content = "[재고30]\n" + name + "님 상업자로부터 예약을 거절당하셨습니다.\n";
+    	sendMessage(phone, content);
     }
 	
-	
-    /*
+	/*
 	 * 인증 메시지
 	 */
 	public SingleMessageSentResponse sendMessage(String phone, String content) {
@@ -260,33 +270,11 @@ public class ItemService {
         message.setFrom("01077359350");
         message.setTo(phone);
         message.setText(content);
-        log.info("phone = {}", phone);
+
         SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
         log.info("sendMessageResponse={}", response);
 
         return response;
-	}
-	
-	/*
-	 * 1분마다 실행되는 cron표현식 item들에 마감시간을 확인하여 member의 trust 변경
-	 */
-	@Scheduled(cron ="0 * * * * *")
-    public void checkItemEndtime() {
-       log.info("item @Scheduled 실행");
-       LocalDateTime now = LocalDateTime.now();
-       Timestamp timestamp = Timestamp.valueOf(now);
-
-       // 현재 시간보다 이전인 아이템 
-       itemRepository.checkTrust(timestamp);
-    }
-	
-	/*
-	 * 1분마다 실행되는 cron표현식 24시간만 유지되는 알림쪽지 
-	 */
-	@Scheduled(cron ="0 * * * * *")
-	public void deleteTimeoutAlarm() {
-		log.info("alarm @Scheduled 실행");
-		itemRepository.deleteTimeoutAlarm();
 	}
 	
 	
@@ -308,27 +296,4 @@ public class ItemService {
         
         return (int)before;
 	}
-		
-	/*
-	 * 파일 저장 메소드
-	 */
-	private Item saveImageFile(MultipartFile imageFile, Item item) throws IllegalStateException, IOException {
-		String fullPath = fileDir + imageFile.getOriginalFilename();
-		log.info("파일 저장 fullPath ={}",fullPath);
-		
-		imageFile.transferTo(new File(fullPath));
-		item.setImage(imageFile.getOriginalFilename());
-		
-		return item;
-	}
-	
-	
 }
-
-
-
-
-
-
-
-

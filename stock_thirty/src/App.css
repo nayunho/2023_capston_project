@@ -136,7 +136,9 @@ li {
   width: 80%;
   height: 100%;
 }
-
+.footer_notice a:hover{
+  text-decoration: underline;
+}
 .wrap {
   width: 100%;
   /* 너비를 고정으로 변경 */
@@ -176,24 +178,6 @@ li {
     translateX(-20.7%);
 }
 
-.filter_contents {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.filter_contents::-webkit-scrollbar {
-  width: 15px;
-}
-
-.filter_contents::-webkit-scrollbar-thumb {
-  background-color: rgb(67, 66, 66);
-  border-radius: 10px;
-}
-
-.filter_contents::-webkit-scrollbar-track {
-  background-color: rgb(225, 223, 223);
-  border-radius: 10px;
-}
 
 /*가게 상세페이지*/
 .detail_store_name {
@@ -383,15 +367,15 @@ li {
   background-repeat: no-repeat;
   background-size: cover;
 }
-
 .joinWrap>.imgarea>.text {
   padding: 20px 40px;
-  background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
+  text-align: left;
   transform: translate(-50%, -50%);
   color: white;
+  font-size: 25px;
   box-sizing: border-box;
 }
 
@@ -420,6 +404,12 @@ li {
 }
 
 /* login */
+.login_signup_title{
+  line-height: 4;
+  font-size: 50px;
+  font-weight: 700;
+  cursor: pointer;
+}
 .wrap {
   position: relative;
   width: 100%;
@@ -450,12 +440,14 @@ li {
 
 .loginWrap>.imgarea>.text {
   padding: 20px 40px;
-  background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
-  top: 50%;
+  background-color: rgba(255, 255, 255, 0.763);
+  top: 45%;
   left: 50%;
+  text-align: left;
   transform: translate(-50%, -50%);
-  color: white;
+  color: black;
+  font-size: 30px;
   box-sizing: border-box;
 }
 
@@ -688,7 +680,23 @@ li {
   border: 1px solid black;
   box-shadow: 5px 5px 5px 5px gray;
 }
+.al_view_content{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.al_view_content::-webkit-scrollbar {
+  width: 15px;
+}
 
+.al_view_content::-webkit-scrollbar-thumb {
+  background-color: rgb(67, 66, 66);
+  border-radius: 10px;
+}
+
+.al_view_content::-webkit-scrollbar-track {
+  background-color: rgb(225, 223, 223);
+  border-radius: 10px;
+}
 /*owner*/
 .ownerWrap {
   width: 100%;
@@ -944,33 +952,19 @@ li {
 /*owner_notcie*/
 .owner_noticeWrap {
   background-color: #eae7e7;
+  
 }
 
 .owner_noticeWrap>.banner {
   width: 100%;
   height: 200px;
   border-radius: 20px;
-  background-color: red;
+  background: radial-gradient(#2e2e2e, #090909);
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
   background-size: cover;
-}
-
-.owner_noticeWrap>.banner>.text {
-  padding: 10px 20px;
-  color: white;
-  width: 300px;
-  height: 150px;
-  border-radius: 50px;
-  text-align: center;
-  line-height: 2.9;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  font-size: 25px;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.3);
+  padding-top: 10px;
 }
 
 .notice_contents {
@@ -981,18 +975,26 @@ li {
 .notice_title {
   margin-top: 20px;
   font-size: 35px;
+  color: white;
+  font-weight: 600;
 }
 
 .notice_title_exception {
   margin-top: 20px;
   font-size: 30px;
   margin-bottom: 20px;
+  color: white;
+  
 }
 
 .notice_contents>.notice_table {
-  width: 100%;
+  width: 80%;
+  top: 24%;
+  left:10%;
   border-collapse: collapse;
   border-radius: 20px;
+  position: absolute;
+  z-index: 1;
 }
 
 .notice_main_content {
@@ -1039,7 +1041,7 @@ li {
 
 /*owner_noticeview*/
 .notview_header {
-  width: 98%;
+  width: 90%;
   margin: 0 auto;
   height: 200px;
   line-height: 220px;
@@ -1048,7 +1050,7 @@ li {
 }
 
 .notinfo {
-  width: 98%;
+  width: 90%;
   height: 100px;
   border-bottom: 1px solid #969191;
   margin: 0 auto;
@@ -1071,15 +1073,15 @@ li {
 .nottxt {
   min-height: 450px;
   margin: 0 auto;
-  margin-left: 60px;
   font-size: 25px;
-  width: 94%;
+  width: 84%;
   text-align: left;
   padding-bottom: 70px;
+  word-wrap: break-word;
 }
 
 .notfooter {
-  width: 98%;
+  width:90%;
   margin: 0 auto;
   border-top: 2px solid #6e6e6e;
 }
@@ -3049,8 +3051,14 @@ li {
   border: 1px solid black;
   box-shadow: 5px 5px 5px 5px gray;
 }
+.filter_point>.StarRateIcon {
+  color: gold;
+  /* 기본 별 색상 */
+  cursor: pointer;
+  /* 커서를 포인터로 변경하여 클릭 가능한 것처럼 보이도록 함 */
+}
 
-.StarRateIcon {
+.point>.StarRateIcon {
   color: gold;
   /* 기본 별 색상 */
   cursor: pointer;
@@ -3270,6 +3278,49 @@ input[name='endTime']:checked+label:before {
 }
 
 /*.ad_user*/
+.ad_rewrite_btn{
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 40px;
+  margin-right: 10px;
+}
+.ad_rewrite_btn:hover{
+  background-color: #545454;
+}
+.ad_delete_btn{
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 40px;
+  margin-right: 20px;
+  margin-top: 20px;
+}
+.ad_delete_btn:hover{
+  background-color: #545454;
+}
+.ad_write_btn{
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 40px;
+  margin-top: 20px;
+}
+.ad_write_btn:hover{
+  background-color: #545454;
+}
 .main_bar {
   position: fixed;
   top: 0px;
@@ -3467,26 +3518,16 @@ input[name='endTime']:checked+label:before {
   display: flex;
   font-size: 20px;
   margin-bottom: 10px;
-}
-
-.d>div:first-child {
-  width: 3%;
-  font-size: 30px;
-
-}
-
-.d>div:nth-child(2) {
-  margin-top: 10px;
-  width: 87%;
+  justify-content:space-between;
 }
 
 .d>div:last-child {
-  display: flex;
+  display:flex;
+  
   width: 10%;
   font-size: 15px;
-  justify-content: end;
-  align-items: end;
   color: gray;
+  margin-right: 10px;
 }
 
 .qu_con {
@@ -3518,116 +3559,174 @@ input[name='endTime']:checked+label:before {
   font-size: 30px;
   border-bottom: 3px solid gray;
 }
+/*ad_noticeview*/
+.ad_noticeview_main{
+  position:absolute;
+  top:70px; left:20vw;
+  width:80%;
+}
+.ad_noticeview_title{
+  margin-top:50px;
+  margin-left:30px;
+  text-align: center;
+  width:90%;
+  padding-bottom:15px;
+  font-weight:bolder;
+  font-size:30px;
+  border-bottom:3px solid gray;
+}
+.ad_noticeview_all{
+  margin-left:30px;
+  margin-top:10px;
+  width:90%;
+}
+.ad_noticeview_content{
+  margin-left:100px;
+  margin-top:30px;
+  width:90%;
+}
+.ad_inquiry_canswer_qu_con_result{
+  word-wrap: break-word;
+  margin: 20px 10px 0px 20px;
+  max-width: 1000px;
+  min-height: 400px;
+}
+.ad_noticeview_header{
+  font-size:20px;
+  margin-bottom:10px;
+}
+.ad_noticeview_header>div:first-child{
+  width:95%;
+  text-align: center;
+}
+.ad_noticeview_header>div:last-child{
+  width:100%;
+  text-align: right;
+  color:gray;
+}
+.ad_noticeview_qu_con{
+  display:flex;
+  padding-top:5px;
+  padding-left:5px;
+  border-radius: 5px;
+  background-color:rgb(236, 234, 234);
+}
+.ad_noticeview_qu_con>div:first-child{
+  margin-top:-10px;
+  margin-right:5px;
+  width:3%;
+  font-size:30px;
+  color:red;
+}
+.ad_noticeview_qu_con>div:nth-child(2){
+  font-size:25px;
+  width:87%;
+  color:black;
+  background-color: b;
+  text-align: left;
+}
 
 /*ad_inquiry_canswer*/
-.ad_inquiry_canswer_main {
-  position: absolute;
-  top: 70px;
-  left: 20vw;
-  width: 80%;
+.ad_inquiry_canswer_main{
+  position:absolute;
+  top:70px; left:20vw;
+  width:80%;
 }
-
-.ad_inquiry_canswer_title {
-  margin-top: 50px;
-  margin-left: 30px;
-  width: 90%;
-  padding-bottom: 15px;
-  font-weight: bolder;
-  font-size: 30px;
-  border-bottom: 3px solid gray;
+.ad_inquiry_canswer_title{
+  margin-top:50px;
+  margin-left:30px;
+  width:90%;
+  padding-bottom:15px;
+  font-weight:bolder;
+  font-size:30px;
+  border-bottom:3px solid gray;
+  text-align: center;
 }
-
-.ad_inquiry_canswer_question {
-  margin-top: 10px;
-  width: 90%;
+.ad_inquiry_canswer_question{
+  margin-top:10px;
+  width:90%;
 }
-
-.ad_inquiry_canswer_qu {
-  margin-left: 100px;
-  margin-top: 30px;
-  width: 90%;
+.ad_inquiry_canswer_qu{
+  margin-left:140px;
+  margin-top:30px;
+  width:90%;
+  
 }
-
-.ad_inquiry_canswer_d {
-  display: flex;
-  font-size: 20px;
-  margin-bottom: 10px;
+.ad_inquiry_canswer_qu_con_result{
+  word-wrap: break-word;
+  margin: 20px 10px 0px 20px;
+  max-width: 1000px;
+  min-height: 400px;
+  text-align: left;
 }
-
-.ad_inquiry_canswer_d>div:first-child {
-  width: 3%;
-  font-size: 30px;
-
+.ad_inquiry_canswer_d{
+  display:flex;
+  font-size:20px;
+  justify-content:space-between;
+  margin-bottom:10px;
 }
-
-.ad_inquiry_canswer_d>div:nth-child(2) {
-  margin-top: 10px;
-  width: 87%;
+.ad_inquiry_canswer_d>div:first-child{
+  width:20%;
 }
-
-.ad_inquiry_canswer_d>div:last-child {
-  display: flex;
-  width: 10%;
-  font-size: 15px;
-  justify-content: end;
-  align-items: end;
-  color: gray;
+.ad_inquiry_canswer_d>div:nth-child(2){
+  margin-top:10px;
+  width:80%;
 }
-
-.ad_inquiry_canswer_qu_con {
-  display: flex;
-  padding-top: 5px;
-  padding-left: 5px;
+.ad_inquiry_canswer_d>div:last-child{
+  display:flex;
+  width:10%;
+  justify-content:end;
+  align-items:end;
+  color:gray;
+}
+.ad_inquiry_canswer_qu_con{
+  display:flex;
+  padding-top:5px;
+  padding-left:5px;
   border-radius: 5px;
-  background-color: rgb(236, 234, 234);
+  background-color:rgb(236, 234, 234);
 }
-
-.ad_inquiry_canswer_qu_con>div:first-child {
-  margin-top: -10px;
-  margin-right: 5px;
-  width: 3%;
-  font-size: 30px;
-  color: red;
+.ad_inquiry_canswer_qu_con>div:first-child{
+  margin-top:-10px;
+  margin-right:5px;
+  width:3%;
+  font-size:30px;
+  color:red;
 }
-
-.ad_inquiry_canswer_qu_con>div:nth-child(2) {
-  font-size: 25px;
-  width: 87%;
-  color: black;
+.ad_inquiry_canswer_qu_con>div:nth-child(2){
+  font-size:25px;
+  width:87%;
+  color:black;
   background-color: b;
 }
-
-.ad_inquiry_canswer_qu_con>div:last-child {
-  display: flex;
-  width: 10%;
-  font-size: 20px;
-  justify-content: end;
-  align-items: end;
-  color: gray;
+.ad_inquiry_canswer_qu_con>div:last-child{
+  display:flex;
+  width:10%;
+  font-size:20px;
+  justify-content:end;
+  align-items:end;
+  color:gray;
 }
-
 /*ad_store_managemnet*/
-.edit_store_management {
+.edit_store_management{
   height: 100px;
 }
-
-.edit_store_management_btn {
+.edit_store_management_btn{
   cursor: pointer;
-  padding: 10px;
+  padding:10px;
   width: 80px;
   height: 50px;
   font-size: 20px;
   border-radius: 20px;
-  color: blue;
+  color:blue;
   background: white;
   font-weight: 700;
   margin: 10px 0px 10px 0px;
-  border: 3px solid blue;
+  border:3px solid blue;
   opacity: 0.5;
 }
-
-.edit_store_management_btn:hover {
-  color: white;
+.edit_store_management_btn:hover{
+  color:white;
   background-color: blue;
 }
 
