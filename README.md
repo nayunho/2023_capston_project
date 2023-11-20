@@ -34,7 +34,7 @@
 
 
 ## 시연 영상
-## [재고30][github]  
+### [재고30][github]  
 
 
  [github]: https://github.com/nayunho/
