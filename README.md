@@ -12,7 +12,7 @@
 * #### 2023.09 ~ 2023.11 (3개월)    
 
 ## 개발 한경   
-* #### 언어          Java(JDK 1.8), HTML/CSS, JavaScript  
+* #### 언어       &nbsp;   Java(JDK 1.8), HTML/CSS, JavaScript  
 * #### 서버          Apache 2.x, Apache Tomcat 9.0  
 * #### 프레임워크    Spring Boot, Maybastis 3.0.2   
 * #### DB            MySQL  
