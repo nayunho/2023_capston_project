@@ -1,1 +1,2 @@
-<strong>worh30</strong>
+<h1>재고30</h1>
+재고30
