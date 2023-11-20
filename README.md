@@ -19,5 +19,5 @@
 * #### IDE :         Eclipse 2022 09, Postman, MySQL Workbanch 6.3  
 * #### API :         KAKAO/NAVER login, Naver MAP, coolsms(문자) API  
 
-
+<img src=ERD설계.png width=850 height=450>    
 
