@@ -9,6 +9,6 @@
 ## 프로젝트기간
 * #### 2023.09 ~ 2023.11 (3개월)    
 
-<img src=재고30.png width=700 height=500>  
+<img src=재고30.png width=800 height=500>  
 
 
