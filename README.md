@@ -9,6 +9,6 @@
 ## 프로젝트기간
 * #### 2023.09 ~ 2023.11 (3개월)    
 
-<img src=Linux.jfif width=200 height=150>  
+<img src=재고30.png width=500 height=500>  
 
 
