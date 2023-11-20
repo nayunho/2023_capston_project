@@ -18,13 +18,15 @@
 * #### IDE :         Eclipse 2022 09, Postman, MySQL Workbanch 6.3  
 * #### API :         KAKAO/NAVER login, Naver MAP, coolsms(문자) API    
 
-## 개발 한경   
-* #### 언어 :        Java(JDK 1.8), HTML/CSS, JavaScript  
-* #### 서버 :        Apache 2.x, Apache Tomcat 9.0  
-* #### 프레임워크 :  Spring Boot, Maybastis 3.0.2   
-* #### DB :          MySQL  
-* #### IDE :         Eclipse 2022 09, Postman, MySQL Workbanch 6.3  
-* #### API :         KAKAO/NAVER login, Naver MAP, coolsms(문자) API     
+## 주요 기능   
+* #### 카카오/네이버 소셜 로그인
+* #### 가게 및 상품 등록/수정시 오류 처리
+* #### 거리/가격/시간/별점 별 필터 기능
+* #### 관리자 페이지
+* #### 현재 위치 기반 지도로 마커 표시 기능
+* #### 아이디 또는 비밀번호 찾을떄 인증번호 보내는 기능
+* #### 즐겨찾기한 가게 표시 및 알림/문의/예약/예약내역 확인 기능
+
 
 
 ## ERD  
