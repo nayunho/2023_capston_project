@@ -18,6 +18,14 @@
 * #### IDE :         Eclipse 2022 09, Postman, MySQL Workbanch 6.3  
 * #### API :         KAKAO/NAVER login, Naver MAP, coolsms(문자) API    
 
+## 개발 한경   
+* #### 언어 :        Java(JDK 1.8), HTML/CSS, JavaScript  
+* #### 서버 :        Apache 2.x, Apache Tomcat 9.0  
+* #### 프레임워크 :  Spring Boot, Maybastis 3.0.2   
+* #### DB :          MySQL  
+* #### IDE :         Eclipse 2022 09, Postman, MySQL Workbanch 6.3  
+* #### API :         KAKAO/NAVER login, Naver MAP, coolsms(문자) API     
+
 
 ## ERD  
 <img src=ERD설계.png width=850 height=450>    
